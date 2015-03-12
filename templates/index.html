@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+    {% load staticfiles %}
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="../static/ico/favicon.ico">
+    <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}">
 
     <title>Sunami - The Music Community Hub</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/css/bootstrap.css" rel="stylesheet">
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="../static/css/style.css" rel="stylesheet">
-    <link href="../static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
+    <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet">
 
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -34,7 +37,7 @@
 
     <!-- Fixed navbar -->
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -42,20 +45,33 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html"><img class="company-logo" src="../static/img/sunami-small.png"></a>
+          <a class="navbar-brand" href="index.html"><img class="company-logo" src="{% static "img/sunami-small.png" %}"></a>
+        </div>
+        <div class="navbar-collapse collapse navbar-left">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#" class="underline-animate">LISTEN</a></li>
+            <li><a href="#" class="underline-animate">PLAY</a></li>
+          </ul>
         </div>
         <div class="navbar-collapse collapse navbar-right">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">HOME</a></li>
-            <li><a href="about.html">ABOUT</a></li>
-            <li><a href="contact.html">CONTACT</a></li>
+            <li><form class="search navbar-form">
+              <input type="search" name="q" placeholder="Search" autocomplete="off">
+              <ul class="search-ac">
+                <!--<li><a href="#">Search Result #1<br><span>Description...</span></a></li>
+                <li><a href="#">Search Result #2<br><span>Description...</span></a></li>
+                <li><a href="#">Search Result #3<br><span>Description...</span></a></li>
+                <li><a href="#">Search Result #4</a></li>-->
+              </ul>
+            </form></li>
+            <li><a href="#" class="underline-animate">LOGIN</a></li>
+            <li><a href="#" class="underline-animate">SIGN UP</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">PAGES <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog fa-fw fa-2x"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="blog.html">BLOG</a></li>
-                <li><a href="single-post.html">SINGLE POST</a></li>
-                <li><a href="portfolio.html">PORTFOLIO</a></li>
-                <li><a href="single-project.html">SINGLE PROJECT</a></li>
+                <li><a href="#">PROFILE SETTINGS</a></li>
+                <li><a href="#">THEME SETTINGS</a></li>
+                <li><a href="#">LOGOUT</a></li>
               </ul>
             </li>
           </ul>
