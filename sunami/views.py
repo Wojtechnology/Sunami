@@ -4,4 +4,4 @@ from django.views.generic import View
 # Class to display front page
 class IndexView(View):
 	def get(self, request):
-		return render(request, 'index.html')
+		return render(request, 'sunami-app.html')

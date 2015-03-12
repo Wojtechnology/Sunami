@@ -251,7 +251,7 @@ a:focus {
 	BOOTSTRAP MODIFICATIONS & TWEAKS
 ################################################################# */
 .navbar {
-	min-height: 58px;
+	min-height: 63px;
 	padding-top: 5px;
 	margin-bottom: 0px;
 }
