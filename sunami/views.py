@@ -4,4 +4,9 @@ from django.views.generic import View
 # Class to display front page
 class IndexView(View):
 	def get(self, request):
-		return render(request, 'sunami-app.html')
+		return render(request, 'index.html')
+
+# Class to display input page
+class LoginView(View):
+	def get(self, request):
+		return render(request, 'login.html')
