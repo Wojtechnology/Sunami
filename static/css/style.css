@@ -119,6 +119,10 @@ form {
 {
     margin-top: 10px;
 }
+.login-button {
+	background-color: #00b3fe;
+	border-color: #00b3fe;
+}
 
 /*	################################################################
 	SEARCH FORM
@@ -346,7 +350,7 @@ a:focus {
 }
 
 .navbar-default .navbar-nav > li > a:hover {
-	color: #00b3fe;
+	color: #;
 }
 
 .navbar-default .navbar-nav > li > a.underline-animate:hover {
