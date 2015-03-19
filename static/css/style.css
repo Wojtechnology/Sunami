@@ -46,6 +46,37 @@ a.navbar-brand:hover {
 	height: 50px;
 }
 
+.display-profile {
+	text-indent: 30px;
+}
+
+.display-profile:hover {
+	color: #00b3fe !important;
+}
+
+.display-profile div {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+@media (max-width: 767px){
+	.display-profile div {
+		top: 3px;
+		left: 10px;
+	}
+}
+
+@media (min-width: 768px){
+	.display-profile div {
+		top: 10px;
+		left: 5px;
+	}
+}
+
 /* Some initial styling */
 
 * {
@@ -194,6 +225,7 @@ a:focus {
 	color: #ABABAB;
 	font-weight: 500;
 	font-size: 12px;
+	overflow: hidden;
 }
 
 .navbar-default .navbar-nav > li > a.underline-animate {
