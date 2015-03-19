@@ -3,4 +3,5 @@ venv/
 data/
 static/img/
 static/fonts/
+media/
 logfile

@@ -94,95 +94,6 @@ form {
   border: transparent;
 }
 
-.search-ac {
-  display: none;
-  position: absolute;
-  top: 35px;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background: #fdfdfd;
-  border: 1px solid;
-  border-color: #cbcfe2 #c8cee7 #c4c7d7;
-  border-radius: 3px;
-  background-image: -webkit-linear-gradient(top, #fdfdfd, #eceef4);
-  background-image: -moz-linear-gradient(top, #fdfdfd, #eceef4);
-  background-image: -o-linear-gradient(top, #fdfdfd, #eceef4);
-  background-image: linear-gradient(to bottom, #fdfdfd, #eceef4);
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-.search-ac:hover {
-  display: block;
-}
-.search-ac li {
-  display: block;
-}
-.search-ac li:first-child {
-  margin-top: -1px;
-}
-.search-ac li:first-child:before, .search-ac li:first-child:after {
-  content: '';
-  display: block;
-  width: 0;
-  height: 0;
-  position: absolute;
-  left: 50%;
-  margin-left: -5px;
-  border: 5px outset transparent;
-}
-.search-ac li:first-child:before {
-  border-bottom: 5px solid #c4c7d7;
-  top: -11px;
-}
-.search-ac li:first-child:after {
-  border-bottom: 5px solid #fdfdfd;
-  top: -10px;
-}
-.search-ac li:first-child:hover:before, .search-ac li:first-child:hover:after {
-  display: none;
-}
-.search-ac li:last-child {
-  margin-bottom: -1px;
-}
-.search-ac a {
-  display: block;
-  position: relative;
-  margin: 0 -1px;
-  padding: 6px 40px 6px 10px;
-  color: #808394;
-  font-weight: 500;
-  text-decoration: none;
-  text-shadow: 0 1px white;
-  border: 1px solid transparent;
-  border-radius: 3px;
-}
-.search-ac a span {
-  font-weight: 200;
-}
-.search-ac a:before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  margin-top: -9px;
-  width: 18px;
-  height: 18px;
-  background: url("../img/arrow.png") 0 0 no-repeat;
-}
-.search-ac a:hover {
-  color: white;
-  text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
-  background: #338cdf;
-  border-color: #2380dd #2179d5 #1a60aa;
-  background-image: -webkit-linear-gradient(top, #59aaf4, #338cdf);
-  background-image: -moz-linear-gradient(top, #59aaf4, #338cdf);
-  background-image: -o-linear-gradient(top, #59aaf4, #338cdf);
-  background-image: linear-gradient(to bottom, #59aaf4, #338cdf);
-  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
-}
-
 /*	################################################################
 	1. GENERAL STRUCTURES
 ################################################################# */
@@ -384,7 +295,7 @@ a:focus {
 ################################################################# */
 
 #headerwrap {
-	min-height: 550px;
+	min-height: 600px;
 	padding-top: 100px;
 	padding-bottom: 0px;
 	text-align: center;
