@@ -1,27 +1,42 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile
 from accounts.forms import UserForm
+
+# Login required wrapper for as_view method for class views
+class LoginRequiredMixin(object):
+	@classmethod
+	def as_view(cls, **initkwargs):
+		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
+		return login_required(view)
 
 # Class to login to user profile
 # Write tests for this
 class LoginView(View):
-
 	def get(self, request):
+		# If user already logged in, redirect to home page
+		if request.user.is_authenticated():
+			return redirect('index')
+
 		return render(request, 'accounts/login.html')
 
 	def post(self, request):
-
 		errors = []
 
 		email = request.POST.get('email')
 		password = request.POST.get('password')
 
 		# Find username based on email address given
-		username = User.objects.filter(email = email)[0].username
+		username = ''
+
+		try:
+			username = User.objects.get(email = email).username
+		except:
+			errors.append('This Email does not exist')
 
 		user = authenticate(username = username, password = password)
 
@@ -31,6 +46,7 @@ class LoginView(View):
 			# If user is active, send back to homepage logged in
 			if user.is_active:
 				login(request, user)
+				return redirect('index')
 
 			else:
 				errors.append('Account is inactive')
@@ -38,8 +54,14 @@ class LoginView(View):
 		else:
 			errors.append('Password does not match Email')
 
-		return render(request, 'accounts/login.html', {'errors' : errors})
+		return render(request, 'accounts/login.html', {'errors' : errors[0:1]})
 
+
+# Class to logout and redirect 
+class LogoutView(LoginRequiredMixin, View):
+	def get(self, request):
+		logout(request)
+		return redirect('index')
 
 # Class to register a new user profile
 # Write tests for this

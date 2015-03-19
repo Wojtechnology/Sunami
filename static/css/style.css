@@ -39,6 +39,7 @@ a.navbar-brand:hover {
 
 .errorlist {
 	color: #00b3fe;
+	list-style-type: none;
 }
 
 .error-area {
