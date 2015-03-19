@@ -23,15 +23,15 @@ class SignUpView(View):
 
 		user_form = UserForm(data = request.POST)
 
-		if user_form.is_valid() and profile_form.is_valid:
+		if user_form.is_valid():
 			user = user_form.save()
 
 			# Required to hash the password
 			user.set_password(user.password)
 			user.save()
 
-			# Makes sure we can create a profile to link to the user
-			profile = UserProfile(user = user, create_date = timezone.now(), update_date = timezone.now())
+			# DateTimes automatically added in models.py
+			profile = UserProfile(user = user)
 			profile.save()
 
 			registered = True

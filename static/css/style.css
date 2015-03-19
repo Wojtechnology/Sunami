@@ -37,6 +37,14 @@ a.navbar-brand:hover {
 	color: white;
 }
 
+.errorlist {
+	color: #00b3fe;
+}
+
+.error-area {
+	height: 50px;
+}
+
 /* Some initial styling */
 
 * {
@@ -51,7 +59,7 @@ body {
 form {
 	width: 200px;
 	height: 40px;
-	margin: 100px auto 0;
+	margin: 0 auto 0;
 	position: relative;
 }
 
