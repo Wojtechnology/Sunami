@@ -9,6 +9,8 @@ class UserProfile(models.Model):
 
 	status = models.CharField('User Status', max_length = 500, blank = True)
 	display_picture = models.ImageField('User Display Picture', upload_to = 'display_pictures', blank = True)
+	create_date = models.DateTimeField('Date User Created')
+	update_date = models.DateTimeField('Date User Modified')
 
 	def __str__(self):
 		return self.user.username
