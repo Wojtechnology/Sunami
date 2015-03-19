@@ -5,10 +5,21 @@
 <div class="container">
     <div class="row">
         <h1 class="white-label">Login</h1>
+
+        <div class="error-area">
+             <ul class="errorlist">
+            {% for error in errors %}
+
+                <li>{{ error }}</li>
+
+            {% endfor %}
+            </ul>
+        </div>
+
         <form role="form" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <input type="email" class="form-control" placeholder="Email" name="address" required>
+                <input type="email" class="form-control" placeholder="Email" name="email" required>
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" placeholder="Password" name="password" required>
@@ -17,7 +28,6 @@
         </form>
     </div><! --/row -->
  </div><! --/container -->
-
 
 {% endblock %}
 

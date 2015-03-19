@@ -3,10 +3,6 @@ from django.contrib.auth.models import User
 from accounts.models import UserProfile
 
 class UserForm(forms.ModelForm):
-	username = forms.CharField(widget = forms.TextInput(attrs = {'placeholder' : 'Username'}))
-	password = forms.CharField(widget = forms.PasswordInput(attrs = {'placeholder' : 'Password'}))
-	email = forms.CharField(widget = forms.EmailInput(attrs = {'placeholder' : 'Email'}))
-
 	def __init__(self, *args, **kwargs):
 		super(UserForm, self).__init__(*args, **kwargs)
 
@@ -15,6 +11,11 @@ class UserForm(forms.ModelForm):
 	class Meta:
 		model = User
 		fields = ('username', 'email', 'password')
+		widgets = {
+			'username' : forms.TextInput(attrs = {'placeholder' : 'Username'}),
+			'password' : forms.PasswordInput(attrs = {'placeholder' : 'Password'}),
+			'email' : forms.EmailInput(attrs = {'placeholder' : 'Email'})
+			}
 
 	# Enforces unique emails for accounts
 	def clean_email(self):
