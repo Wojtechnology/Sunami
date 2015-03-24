@@ -63,6 +63,14 @@ a.navbar-brand:hover {
 	background-position: 50% 50%;
 }
 
+button {
+	-webkit-transition: background-color .4s linear, color .4s linear;
+	-moz-transition: background-color .4s linear, color .4s linear;
+	-o-transition: background-color .4s linear, color .4s linear;
+	-ms-transition: background-color .4s linear, color .4s linear;
+	transition: background-color .4s linear, color .4s linear;
+}
+
 @media (max-width: 767px){
 	.display-profile div {
 		top: 3px;
