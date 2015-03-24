@@ -71,8 +71,8 @@ def generate_code():
 # Send Registration Email
 def send_registration_confirmation(user):
 	p = user.userprofile
-	title = 'Crowdle account confirmation'
-	content = 'http://127.0.0.1:8000/profile/confirm/' + p.authentication_code + '/' + user.username
+	title = 'Sunami Account Confirmation'
+	content = 'http://127.0.0.1:8000/profile/confirm/' + p.confirmation_code + '/' + user.username
 	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
 
 # Class to authenticate user
@@ -96,11 +96,14 @@ class SignUpView(View):
 
 			# Required to hash the password
 			user.set_password(user.password)
+			user.is_active = False
 			user.save()
 
 			# DateTimes automatically added in models.py
-			profile = UserProfile(user = user)
+			profile = UserProfile(user = user, confirmation_code = generate_code())
 			profile.save()
+
+			send_registration_confirmation(user)
 
 			registered = True
 
