@@ -104,45 +104,6 @@ form {
 }
 
 /*	################################################################
-	SEARCH FORM
-################################################################# */
-
-.search {
-  position: relative;
-  display: inline-block;
-  margin: 0 auto;
-  max-width: 250px;
-  padding-top: 12px;
-  padding-left: 10px;
-  border: transparent;
-}
-.search input {
-  height: 26px;
-  width: 100%;
-  padding: 0 12px 0 25px;
-  background: white url("../img/search.png") 8px 6px no-repeat;
-  border: 1px solid;
-  border-color: #a8acbc #babdcc #c0c3d2;
-  border-radius: 13px;
-  -webkit-appearance: textfield;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  -webkit-box-shadow: inset 0 1px #e5e7ed, 0 1px #fcfcfc;
-  box-shadow: inset 0 1px #e5e7ed, 0 1px #fcfcfc;
-}
-.search input:focus {
-  outline: 0;
-  border-color: #66b1ee;
-  -webkit-box-shadow: 0 0 2px rgba(85, 168, 236, 0.9);
-  box-shadow: 0 0 2px rgba(85, 168, 236, 0.9);
-}
-.search input:focus + .search-ac {
-  display: block;
-  border: transparent;
-}
-
-/*	################################################################
 	1. GENERAL STRUCTURES
 ################################################################# */
 	* { 
@@ -219,11 +180,6 @@ a:focus {
 	padding-top: 5px;
 	margin-bottom: 0px;
 }
-
-/*.navbar-brand {
-	font-family: 'Raleway', sans-serif;
-	font-weight: 900;
-}*/
 
 .navbar-header .navbar-brand {
 	color: #ABABAB;

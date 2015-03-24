@@ -8,10 +8,9 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
 	user = models.OneToOneField(User)
 
+	confirmation_code = models.CharField('Confirmation Code', max_length = 50, default = '')
 	status = models.CharField('User Status', max_length = 500, blank = True)
 	display_picture = models.ImageField('User Display Picture', upload_to = 'display_pictures', blank = True)
-	create_date = models.DateTimeField('Date User Created', default = timezone.now())
-	update_date = models.DateTimeField('Date User Modified', default = timezone.now())
 
 	def __str__(self):
 		return self.user.username

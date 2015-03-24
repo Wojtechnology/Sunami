@@ -63,6 +63,20 @@ class LogoutView(LoginRequiredMixin, View):
 		logout(request)
 		return redirect('index')
 
+# Generate confirmation code
+def generate_code():
+	confirmation_code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for i in range(33))
+	return confirmation_code
+
+# Send Registration Email
+def send_registration_confirmation(user):
+	p = user.userprofile
+	title = 'Crowdle account confirmation'
+	content = 'http://127.0.0.1:8000/profile/confirm/' + p.authentication_code + '/' + user.username
+	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
+
+# Class to authenticate user
+
 # Class to register a new user profile
 # Write tests for this
 class SignUpView(View):
