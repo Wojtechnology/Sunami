@@ -15,15 +15,13 @@
 
             <h1 class="white-label">Sign Up</h1>
 
-                <div class="error-area">
-                    {% for field in user_form %}
+            {% for field in user_form %}
 
-                        {{ field.errors }}
+                {{ field.errors }}
 
-                    {% endfor %}
-                </div>
-
-            <form role="form" method="post">
+            {% endfor %}
+    
+               <form role="form" method="post">
                 {% csrf_token %}
                 
                 {% for field in user_form %}

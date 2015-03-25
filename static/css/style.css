@@ -42,10 +42,6 @@ a.navbar-brand:hover {
 	list-style-type: none;
 }
 
-.error-area {
-	height: 50px;
-}
-
 .display-profile {
 	text-indent: 30px;
 }
@@ -69,6 +65,11 @@ button {
 	-o-transition: background-color .4s linear, color .4s linear;
 	-ms-transition: background-color .4s linear, color .4s linear;
 	transition: background-color .4s linear, color .4s linear;
+	outline: none;
+}
+
+button:focus {
+	outline: 0 !important;
 }
 
 @media (max-width: 767px){
@@ -98,9 +99,7 @@ body {
 
 form {
 	width: 200px;
-	height: 40px;
 	margin: 0 auto 0;
-	position: relative;
 }
 
 /*	################################################################
