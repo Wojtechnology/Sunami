@@ -33,14 +33,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_ROOT = MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# Email settings
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USERNAME = 'sunamisound@gmail.com'
-EMAIL_PASSWORD = 'mu$icN@ti0n'
-EMAIL_PORT = 587
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -68,6 +60,13 @@ ROOT_URLCONF = 'sunami.urls'
 
 WSGI_APPLICATION = 'sunami.wsgi.application'
 
+# Email settings
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USERNAME = 'sunamisound@gmail.com'
+EMAIL_PASSWORD = 'mu$icN@ti0n'
+EMAIL_PORT = 587
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

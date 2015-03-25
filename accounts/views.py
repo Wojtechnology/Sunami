@@ -26,7 +26,7 @@ class LoginView(View):
 		if request.user.is_authenticated():
 			return redirect('index')
 
-		return render(request, 'accounts/login.html')
+		return render(request, 'accounts/login.html', {'page_title' : 'Sunami - Login'})
 
 	def post(self, request):
 		errors = []
@@ -58,7 +58,7 @@ class LoginView(View):
 		else:
 			errors.append('Password does not match Email')
 
-		return render(request, 'accounts/login.html', {'errors' : errors[0:1]})
+		return render(request, 'accounts/login.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Login'})
 
 
 # Class to logout and redirect 
@@ -80,6 +80,20 @@ def send_registration_confirmation(user):
 	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
 
 # Class to authenticate user
+class ConfirmView(View):
+	def get(self, request, confirmation_code, username):
+		try:
+			user = User.objects.get(username = username)
+			profile = user.userprofile
+			if profile.authentication_code == authentication_code:
+				user.is_active = True
+				user.save()
+				return render(request, 'accounts/confirm.html', {'confirmed' : True, 
+					'page_title' : 'Sunami - Account Confirmation'})
+		except:
+			pass
+		return render(request, 'accounts/confirm.html', {'confirmed' : False, 
+			'page_title' : 'Sunami - Accounts Confirmation'})
 
 # Class to register a new user profile
 # Write tests for this
@@ -88,7 +102,8 @@ class SignUpView(View):
 	def get(self, request):
 		user_form = UserForm()
 
-		return render(request, 'accounts/signup.html', {'user_form' : user_form, 'registered' : False})
+		return render(request, 'accounts/signup.html', {'user_form' : user_form, 'registered' : False, 
+			'page_title' : 'Sunami - Sign Up'})
 
 	def post(self, request):
 		registered = False
@@ -114,4 +129,5 @@ class SignUpView(View):
 		else:
 			print(user_form.errors)
 
-		return render(request, 'accounts/signup.html', {'user_form' : user_form, 'registered' : registered})
+		return render(request, 'accounts/signup.html', {'user_form' : user_form, 'registered' : registered, 
+			'page_title' : 'Sunami - Sign Up'})
