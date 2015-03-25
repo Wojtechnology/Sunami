@@ -75,6 +75,7 @@ def generate_code():
 # Send Registration Email
 def send_registration_confirmation(user):
 	p = user.userprofile
+	print(user.email)
 	title = 'Sunami Account Confirmation'
 	content = 'http://127.0.0.1:8000/profile/confirm/' + p.confirmation_code + '/' + user.username
 	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
@@ -85,7 +86,7 @@ class ConfirmView(View):
 		try:
 			user = User.objects.get(username = username)
 			profile = user.userprofile
-			if profile.authentication_code == authentication_code:
+			if profile.confirmation_code == confirmation_code:
 				user.is_active = True
 				user.save()
 				return render(request, 'accounts/confirm.html', {'confirmed' : True, 

@@ -64,8 +64,8 @@ WSGI_APPLICATION = 'sunami.wsgi.application'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USERNAME = 'sunamisound@gmail.com'
-EMAIL_PASSWORD = 'mu$icN@ti0n'
+EMAIL_HOST_USER = 'sunamisound@gmail.com'
+EMAIL_HOST_PASSWORD = 'mu$icN@ti0n'
 EMAIL_PORT = 587
 
 # Database
