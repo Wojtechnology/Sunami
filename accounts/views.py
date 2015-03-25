@@ -6,6 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile
 from accounts.forms import UserForm
+from django.core.mail import send_mail
+
+import random
+import string
 
 # Login required wrapper for as_view method for class views
 class LoginRequiredMixin(object):
