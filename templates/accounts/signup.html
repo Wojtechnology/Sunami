@@ -15,26 +15,30 @@
 
             <h1 class="white-label">Sign Up</h1>
 
-            {% for field in user_form %}
+            <div class="login-area">
 
-                {{ field.errors }}
-
-            {% endfor %}
-    
-               <form role="form" method="post">
-                {% csrf_token %}
-                
                 {% for field in user_form %}
 
-                <div class="form-group">
-                    {{ field | add_attributes:'class=form-control,required' }}    
-                </div>
+                    {{ field.errors }}
 
                 {% endfor %}
+        
+                   <form role="form" method="post">
+                    {% csrf_token %}
+                    
+                    {% for field in user_form %}
 
-                <button type="submit" class="btn btn-theme">Sign Up</button>
+                    <div class="form-group">
+                        {{ field | add_attributes:'class=form-control,required' }}    
+                    </div>
 
-            </form>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-theme">Sign Up</button>
+
+                </form>
+
+            </div>
 
         {% endif %}
 

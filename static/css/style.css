@@ -68,6 +68,14 @@ button {
 	outline: none;
 }
 
+.login-area {
+	background-color: rgba(200, 200, 200, 0.5);
+	padding: 20px;
+	min-width: 200px;
+	border-radius: 10px;
+	margin: 0 auto 0;
+}
+
 button:focus {
 	outline: 0 !important;
 }
