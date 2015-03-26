@@ -19,6 +19,10 @@ import string
 #		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
 #		return login_required(view)
 
+###############################
+# WRITE TESTS FOR ALL OF THIS #
+###############################
+
 # Class to login to user profile
 # Write tests for this
 class LoginView(View):
