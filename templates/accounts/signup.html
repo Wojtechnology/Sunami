@@ -17,11 +17,17 @@
 
             <div class="login-area">
 
-                {% for field in user_form %}
+                <a href="#"><div class="fb-button"><h4>Sign up with <i class="fa fa-facebook fa-lg"></i>acebook</h4></div></a>
 
-                    {{ field.errors }}
+                <div class="hline-form"></div>
 
-                {% endfor %}
+                {% if user_form.username.errors %}
+                    {{ user_form.username.errors }}
+                {% elif user_form.email.errors %}
+                    {{ user_form.email.errors }}
+                {% else %}
+                    {{ user_form.password.errors }}
+                {% endif %}
         
                    <form role="form" method="post">
                     {% csrf_token %}
@@ -29,7 +35,7 @@
                     {% for field in user_form %}
 
                     <div class="form-group">
-                        {{ field | add_attributes:'class=form-control,required' }}    
+                        {{ field | add_attributes:'class=form-control,required' }} 
                     </div>
 
                     {% endfor %}
