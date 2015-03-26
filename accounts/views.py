@@ -77,6 +77,10 @@ def generate_code():
 	confirmation_code = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for i in range(33))
 	return confirmation_code
 
+################################
+# Change to Async using Celery #
+################################
+
 # Send Registration Email
 def send_registration_confirmation(user):
 	profile = user.userprofile
