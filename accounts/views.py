@@ -12,11 +12,12 @@ import random
 import string
 
 # Login required wrapper for as_view method for class views
-class LoginRequiredMixin(object):
-	@classmethod
-	def as_view(cls, **initkwargs):
-		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
-		return login_required(view)
+# May be needed later
+#class LoginRequiredMixin(object):
+#	@classmethod
+#	def as_view(cls, **initkwargs):
+#		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
+#		return login_required(view)
 
 # Class to login to user profile
 # Write tests for this
@@ -62,7 +63,7 @@ class LoginView(View):
 
 
 # Class to logout and redirect 
-class LogoutView(LoginRequiredMixin, View):
+class LogoutView(View):
 	def get(self, request):
 		logout(request)
 		return redirect('index')
