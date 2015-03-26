@@ -133,28 +133,62 @@ class IForgotView(View):
 
 			if user.is_active:
 				send_password_reset(user)
-				return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Login', 'sent': True})
+				return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Password Reset', 'sent': True})
 
 			else:
 				errors.append('Account is inactive')
 
-		return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Login'})
+		return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Password Reset'})
 
 # Class to receive password reset
 class PasswordResetView(View):
 	def get(self, request, confirmation_code, username):
 		try:
-			user = User.object.get(username = username)
+			user = User.objects.get(username = username)
 			profile = user.userprofile
 
 			# Check if the confirmation code is correct
 			# Check if the user is active for reset
 			if profile.is_password_reset and profile.confirmation_code == confirmation_code:
-				profile.is_password_reset = False
-				profile.save()
+				password_reset_form = PasswordResetForm()
+
+				return render(request, 'accounts/passreset.html', {'page_title' : 'Sunami - Password Reset', 'reset' : True, 
+					'pass_form' : password_reset_form})
 
 		except:
 			pass
+
+		return render(request, 'accounts/passreset.html', {'page_title' : 'Sunami - Password Reset'})
+
+	def post(self, request, confirmation_code, username):
+		changed = False
+
+		try:
+			user = User.objects.get(username = username)
+			profile = user.userprofile
+
+			# Just in case someone tries to break in
+			if not profile.is_password_reset or profile.confirmation_code != confirmation_code:
+				return render(request, 'accounts/passreset.html', {'page_title' : 'Sunami - Password Reset'})
+
+			password_reset_form = PasswordResetForm(data = request.POST)
+
+			if password_reset_form.is_valid():
+				profile.is_password_reset = False
+				profile.save()
+
+				user.set_password(password_reset_form.cleaned_data.get('password'))
+				user.save()
+
+				changed = True
+
+			return render(request, 'accounts/passreset.html', {'page_title' : 'Sunami - Password Reset', 
+				'pass_form' : password_reset_form, 'changed' : changed, 'reset' : True})
+
+		except:
+			pass
+
+		return render(request, 'accounts/passreset.html', {'page_title' : 'Sunami - Password Reset'})
 
 # Class to register a new user profile
 # Write tests for this

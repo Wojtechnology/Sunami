@@ -8,5 +8,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', LogoutView.as_view(), name = 'logout'),
     url(r'^iforgot/$', IForgotView.as_view(), name = 'iforgot'),
     url(r'^confirm/(?P<confirmation_code>[a-zA-Z0-9]+)/(?P<username>[a-zA-Z0-9]+)/$', ConfirmView.as_view(), name = 'confirm'),
+    url(r'^passreset/(?P<confirmation_code>[a-zA-Z0-9]+)/(?P<username>[a-zA-Z0-9]+)/$', PasswordResetView.as_view(), name = 'passreset'),
 	
 	)
