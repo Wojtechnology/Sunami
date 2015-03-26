@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from accounts.models import UserProfile
-from accounts.forms import UserForm
+from accounts.forms import UserForm, PasswordResetForm
 from django.core.mail import send_mail
 
 import random
@@ -74,10 +74,16 @@ def generate_code():
 
 # Send Registration Email
 def send_registration_confirmation(user):
-	p = user.userprofile
-	print(user.email)
+	profile = user.userprofile
 	title = 'Sunami Account Confirmation'
-	content = 'http://127.0.0.1:8000/profile/confirm/' + p.confirmation_code + '/' + user.username
+	content = 'http://127.0.0.1:8000/profile/confirm/' + profile.confirmation_code + '/' + user.username
+	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
+
+# Send Password Reset Email
+def send_password_reset(user):
+	profile = user.userprofile
+	title = 'Sunami Password Reset'
+	content = 'http://127.0.0.1:8000/profile/passreset/' + profile.confirmation_code + '/' + user.username
 	send_mail(title, content, 'sunamisound@gmail.com', [user.email])
 
 # Class to authenticate user
@@ -86,20 +92,73 @@ class ConfirmView(View):
 		try:
 			user = User.objects.get(username = username)
 			profile = user.userprofile
+
+			# Check if confirmation code is correct
 			if profile.confirmation_code == confirmation_code:
 				user.is_active = True
 				user.save()
 				return render(request, 'accounts/confirm.html', {'confirmed' : True, 
 					'page_title' : 'Sunami - Account Confirmation'})
+
 		except:
 			pass
+
+		# This is what shows up if the confirmation code is wrong
 		return render(request, 'accounts/confirm.html', {'confirmed' : False, 
 			'page_title' : 'Sunami - Accounts Confirmation'})
+
+# Class to reset password
+class IForgotView(View):
+	def get(self, request):
+		return render(request, 'accounts/iforgot.html', {'page_title' : 'Sunami - Password Reset'})
+
+	def post(self, request):
+		errors = []
+
+		email = request.POST.get('email')
+
+		# Find user
+		user = None
+
+		try:
+			user = User.objects.get(email = email)
+		except:
+			errors.append('This Email does not exist')
+
+		if user:
+			profile = user.userprofile
+			profile.confirmation_code = generate_code()
+			profile.is_password_reset = True
+			profile.save()
+
+			if user.is_active:
+				send_password_reset(user)
+				return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Login', 'sent': True})
+
+			else:
+				errors.append('Account is inactive')
+
+		return render(request, 'accounts/iforgot.html', {'errors' : errors[0:1], 'page_title' : 'Sunami - Login'})
+
+# Class to receive password reset
+class PasswordResetView(View):
+	def get(self, request, confirmation_code, username):
+		try:
+			user = User.object.get(username = username)
+			profile = user.userprofile
+
+			# Check if the confirmation code is correct
+			# Check if the user is active for reset
+			if profile.is_password_reset and profile.confirmation_code == confirmation_code:
+				profile.is_password_reset = False
+				profile.save()
+
+		except:
+			pass
 
 # Class to register a new user profile
 # Write tests for this
 class SignUpView(View):
-
 	def get(self, request):
 		user_form = UserForm()
 

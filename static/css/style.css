@@ -40,6 +40,11 @@ a.navbar-brand:hover {
 .errorlist {
 	color: #A52A2A;
 	list-style-type: none;
+	display: inline-block;
+}
+
+.error-mark {
+	color: #A52A2A;
 }
 
 .display-profile {
@@ -98,6 +103,12 @@ button {
 
 .fb-button:active {
 	box-shadow: 0px 0px 10px #3B5998;
+}
+
+.login-tab {
+	text-align: left;
+	text-indent: 35px;
+	margin-top: -13px;
 }
 
 button:focus {

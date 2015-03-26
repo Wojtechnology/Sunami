@@ -2,18 +2,28 @@
 
 {% block header-block %}
 
+<div id="headerwrap">
+<div class="container">
+<div class="row">
+
 <div class="container">
     <div class="row">
         <h1 class="white-label">Login</h1>
 
+
+        <div class="login-area">
+
+
+        <a href="#"><div class="fb-button"><h4>Login with <i class="fa fa-facebook fa-lg"></i>acebook</h4></div></a>
+
+        <div class="hline-form"></div>
+
         <div class="error-area">
-             <ul class="errorlist">
             {% for error in errors %}
 
-                <li>{{ error }}</li>
+            <i class="fa fa-exclamation-circle error-mark"></i> <li class="errorlist">{{ error }}</li>
 
             {% endfor %}
-            </ul>
         </div>
 
         <form role="form" method="post">
@@ -24,10 +34,21 @@
             <div class="form-group">
                 <input type="password" class="form-control" placeholder="Password" name="password" required>
             </div>
+
+            <div class="login-tab"><a href="{% url "accounts:iforgot" %}">Forgot password?</a> | 
+                <a href="{% url "accounts:signup" %}">Sign up</a><br></div>
+
             <button type="submit" class="btn btn-theme">Login</button>
         </form>
+
+    </div>
+
     </div><! --/row -->
- </div><! --/container -->
+</div><! --/container -->
+
+</div>
+</div>
+</div>
 
 {% endblock %}
 

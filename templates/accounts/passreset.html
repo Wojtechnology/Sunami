@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block header-block %}
+
+<div id="headerwrap">
+<div class="container">
+<div class="row">
+
+<div class="container">
+    <div class="row">
+        {% if reset %}
+
+            <h1 class="white-label">Password Reset</h1>
+
+            <div class="login-area">
+                {% if user_form.password.errors %}
+                    <i class="fa fa-exclamation-circle error-mark"></i> {{ user_form.password.errors }}
+                {% endif %}
+        
+                <form role="form" method="post">
+                {% csrf_token %}
+                
+                {% for field in user_form %}
+
+                <div class="form-group">
+                    {{ field | add_attributes:'class=form-control,required' }} 
+                </div>
+
+                {% endfor %}
+
+                <button type="submit" class="btn btn-theme">Reset Password</button>
+
+            	</form>
+            </div>
+        {% else %}
+        <h3>WTF MANNNNNN</h3>
+        {% endif %}
+    </div><! --/row -->
+</div><! --/container -->
+
+</div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block main-block %}{% endblock %}

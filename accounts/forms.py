@@ -25,6 +25,22 @@ class UserForm(forms.ModelForm):
 			raise forms.ValidationError('This Email is already in the system.')
 		return email
 
+class PasswordResetForm(forms.ModelForm):
+	class Meta:
+		model = User
+		fields = ('password',)
+		widgets = {'passwords' : forms.PasswordInput(attrs = {'placeholder' : 'Password'})}
+
+	def clean_password(self):
+		password = self.cleaned_data.get('password')
+		if password_check(password):
+			raise forms.ValidationError('Password eight characters or more.')
+		return password
+
+# Function that checks the password based on certain parameters
+def password_check(password):
+	return len(password) >= 8
+
 class UserProfileForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
