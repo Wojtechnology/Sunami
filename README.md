@@ -37,6 +37,8 @@ pip install psycopg2
 ```
 Install SoundCloud API:
 ```
+pip install soundcloud
+```
 
 ## PostgreSQL Setup Guide
 
