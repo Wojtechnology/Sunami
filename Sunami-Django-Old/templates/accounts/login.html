@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block header-block %}
+
+<div id="headerwrap">
+<div class="container">
+<div class="row">
+
+<div class="container">
+    <div class="row">
+        <h1 class="white-label">Login</h1>
+
+
+        <div class="login-area">
+
+
+        <!--<a href="#"><div class="fb-button"><h4>Login with <i class="fa fa-facebook fa-lg"></i>acebook</h4></div></a>
+
+        <div class="hline-form"></div>-->
+
+        <div class="error-area">
+            {% for error in errors %}
+
+            <i class="fa fa-exclamation-circle error-mark"></i> <li class="errorlist">{{ error }}</li>
+
+            {% endfor %}
+        </div>
+
+        <form role="form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="email" class="form-control" placeholder="Email" name="email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Password" name="password" required>
+            </div>
+
+            <div class="login-tab"><a href="{% url "accounts:iforgot" %}">Forgot password?</a> | 
+                <a href="{% url "accounts:signup" %}">Sign up</a><br></div>
+
+            <button type="submit" class="btn btn-theme">Login</button>
+        </form>
+
+    </div>
+
+    </div><! --/row -->
+</div><! --/container -->
+
+</div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block main-block %}{% endblock %}
