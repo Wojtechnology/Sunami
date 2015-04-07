@@ -1,0 +1,97 @@
+LOG:  could not bind IPv6 socket: Address already in use
+HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+LOG:  could not bind IPv4 socket: Address already in use
+HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+WARNING:  could not create listen socket for "localhost"
+FATAL:  could not create any TCP/IP sockets
+LOG:  database system was shut down at 2015-03-11 14:25:23 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-12 08:35:31 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  autovacuum launcher shutting down
+LOG:  received smart shutdown request
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-15 12:24:25 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  role "wojtechnology" does not exist
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-15 15:01:22 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+ERROR:  column accounts_userprofile.create_date does not exist at character 146
+STATEMENT:  SELECT "accounts_userprofile"."id", "accounts_userprofile"."user_id", "accounts_userprofile"."status", "accounts_userprofile"."display_picture", "accounts_userprofile"."create_date", "accounts_userprofile"."update_date" FROM "accounts_userprofile" ORDER BY "accounts_userprofile"."id" DESC LIMIT 21
+LOG:  database system was interrupted; last known up at 2015-03-19 11:33:54 EDT
+LOG:  database system was not properly shut down; automatic recovery in progress
+LOG:  redo starts at 0/17B07D8
+LOG:  record with zero length at 0/17B4438
+LOG:  redo done at 0/17B4408
+LOG:  last completed transaction was at log time 2015-03-19 11:34:00.923396-04
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-19 11:44:37 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  autovacuum launcher shutting down
+LOG:  received smart shutdown request
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-21 18:32:37 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-22 14:00:44 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-25 01:14:58 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+LOG:  autovacuum launcher shutting down
+LOG:  received smart shutdown request
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2015-03-26 11:05:19 EDT
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  role "wojtechnology" does not exist
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+FATAL:  lock file "postmaster.pid" already exists
+HINT:  Is another postmaster (PID 8761) running in data directory "/Users/wojtekswiderski/Documents/GitHub/Sunami/data"?
