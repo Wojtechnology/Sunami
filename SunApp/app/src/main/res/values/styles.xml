@@ -12,7 +12,6 @@
     </style>
 
     <style name="customToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Light">
-        <item name="android:textColorPrimary">#F00</item>
     </style>
 
 </resources>
