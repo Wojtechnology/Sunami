@@ -25,6 +25,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private boolean mUserLearnedDrawer;
     private boolean mFromSavedInstanceState;
+    private View containerView;
 
     public NavigationDrawerFragment() {
         // Required empty public constructor
@@ -47,24 +48,40 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
 
-    public void setUp(DrawerLayout drawerLayout, Toolbar toolbar) {
+    public void setUp(int fragmentID, DrawerLayout drawerLayout, Toolbar toolbar) {
+        containerView = getActivity().findViewById(fragmentID);
         mDrawerLayout = drawerLayout;
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                if(!mUserLearnedDrawer){
+                    mUserLearnedDrawer = true;
+                    saveToPreferences(getActivity(), KEY_USER_LEARNED_DRAWER, mUserLearnedDrawer + "");
+                }
+                getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                getActivity().invalidateOptionsMenu();
             }
 
 
         };
+        if(!mUserLearnedDrawer && !mFromSavedInstanceState){
+            mDrawerLayout.openDrawer(containerView);
+        }
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
     }
 
     public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {
