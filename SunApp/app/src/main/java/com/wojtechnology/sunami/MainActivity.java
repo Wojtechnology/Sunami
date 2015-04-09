@@ -20,6 +20,7 @@ public class MainActivity extends ActionBarActivity {
         // Setup toolbar at top of app
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
