@@ -10,9 +10,7 @@
         android:layout_height="match_parent"
         tools:context="com.wojtechnology.sunami.MainActivity">
 
-        <include
-            android:id="@+id/app_bar"
-            layout="@layout/app_bar" />
+
 
         <TextView
             android:layout_below="@+id/app_bar"
