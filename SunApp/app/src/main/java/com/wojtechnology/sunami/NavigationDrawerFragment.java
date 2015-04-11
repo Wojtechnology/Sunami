@@ -68,11 +68,6 @@ public class NavigationDrawerFragment extends Fragment {
                 super.onDrawerClosed(drawerView);
                 getActivity().invalidateOptionsMenu();
             }
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                toolbar.setAlpha(1 - slideOffset * 0.6f);
-            }
         };
         if(!mUserLearnedDrawer && !mFromSavedInstanceState){
             mDrawerLayout.openDrawer(containerView);
