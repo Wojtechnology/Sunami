@@ -7,11 +7,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -24,7 +28,7 @@ public class NavigationDrawerFragment extends Fragment {
     public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-
+    private ListAdapter listAdapter;
     private boolean mUserLearnedDrawer;
     private boolean mFromSavedInstanceState;
     private View containerView;
@@ -47,10 +51,24 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         recyclerView = (RecyclerView) layout.findViewById(R.id.drawer_list);
-
+        listAdapter = new ListAdapter(getActivity(), getData());
+        recyclerView.setAdapter(listAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;
     }
 
+    public static List<ListItem> getData(){
+        List<ListItem> data = new ArrayList<>();
+        int[] icons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
+        String[] titles = {"Hey", "What's", "Gucci", "Ma nigga"};
+        for (int i = 0; i < titles.length; i ++){
+            ListItem current = new ListItem();
+            current.iconId = icons[i];
+            current.title = titles[i];
+            data.add(current);
+        }
+        return data;
+    }
 
     public void setUp(int fragmentID, DrawerLayout drawerLayout, final Toolbar toolbar) {
         containerView = getActivity().findViewById(fragmentID);
