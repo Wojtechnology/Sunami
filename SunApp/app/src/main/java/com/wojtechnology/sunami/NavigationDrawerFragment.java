@@ -49,25 +49,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        recyclerView = (RecyclerView) layout.findViewById(R.id.drawer_list);
-        listAdapter = new ListAdapter(getActivity(), getData());
-        recyclerView.setAdapter(listAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        return layout;
-    }
-
-    public static List<ListItem> getData(){
-        List<ListItem> data = new ArrayList<>();
-        int[] icons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
-        String[] titles = {"Hey", "What's", "Gucci", "Ma nigga"};
-        for (int i = 0; i < titles.length; i ++){
-            ListItem current = new ListItem();
-            current.iconId = icons[i];
-            current.title = titles[i];
-            data.add(current);
-        }
-        return data;
+        return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
     }
 
     public void setUp(int fragmentID, DrawerLayout drawerLayout, final Toolbar toolbar) {

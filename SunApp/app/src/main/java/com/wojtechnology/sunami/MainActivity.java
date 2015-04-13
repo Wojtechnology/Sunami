@@ -1,16 +1,26 @@
 package com.wojtechnology.sunami;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
     private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    private ListAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +35,31 @@ public class MainActivity extends ActionBarActivity {
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout)findViewById(R.id.drawer_layout), toolbar);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
+
+        // Setup
+        recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
+        listAdapter = new ListAdapter(this, getData());
+        recyclerView.setAdapter(listAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
+    public static List<ListItem> getData(){
+
+
+
+        List<ListItem> data = new ArrayList<>();
+        int[] icons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
+        String[] titles = {"Hey", "What's", "Gucci", "Ma nigga"};
+        for (int i = 0; i < titles.length; i ++){
+            ListItem current = new ListItem();
+            current.iconId = icons[i];
+            current.title = titles[i];
+            data.add(current);
+        }
+        return data;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
