@@ -78,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
         while(cursor.moveToNext()){
 
             // Create song object
-            FireMixtape current = new FireMixtape();
+            FireMixtape current = new FireMixtape(this);
             current._id = cursor.getString(0);
             current.artist = cursor.getString(1);
             current.title = cursor.getString(2);
@@ -87,35 +87,8 @@ public class MainActivity extends ActionBarActivity {
             current.duration = cursor.getString(5);
             current.album_id = cursor.getString(6);
 
-            String album_selection = MediaStore.Audio.Albums.ALBUM_ID + " == " + current.album_id;
-            String[] album_projection = {
-                MediaStore.Audio.Albums.ALBUM_ART
-            };
-
-            Cursor album_cursor = getContentResolver().query(
-                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    album_projection,
-                    album_selection,
-                    null,
-                    null
-            );
-
-            while(album_cursor.moveToNext()){
-                current.icon_id = album_cursor.getString(0);
-            }
-
-            current.icon_id = Integer.toString(R.mipmap.ic_launcher);
-
             data.add(current);
         }
-
-        Log.e("WTF", data.get(0)._id);
-        Log.e("WTF", data.get(0).artist);
-        Log.e("WTF", data.get(0).title);
-        Log.e("WTF", data.get(0).data);
-        Log.e("WTF", data.get(0).display_name);
-        Log.e("WTF", data.get(0).duration);
-        Log.e("WTF", data.get(0).icon_id);
 
         return data;
 

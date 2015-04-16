@@ -1,6 +1,8 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +37,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(ListViewHolder holder, int position) {
         FireMixtape current = data.get(position);
         holder.title.setText(current.title);
-        holder.icon.setImageResource(Integer.parseInt(current.icon_id));
+        Bitmap icon = current.getAlbumArt();
+        if(icon != null){
+            icon = FireMixtape.scaleBitmap(icon);
+            holder.icon.setImageBitmap(icon);
+        }else{
+            holder.icon.setImageResource(current.icon_id);
+        }
     }
 
     @Override
