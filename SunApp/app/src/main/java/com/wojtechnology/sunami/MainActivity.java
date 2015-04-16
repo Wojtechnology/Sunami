@@ -94,20 +94,6 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    /*public static List<ListItem> getData(){
-
-        List<ListItem> data = new ArrayList<>();
-        int[] icons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
-        String[] titles = {"Hey", "What's", "Gucci", "Ma nigga"};
-        for (int i = 0; i < titles.length; i ++){
-            ListItem current = new ListItem();
-            current.iconId = icons[i];
-            current.title = titles[i];
-            data.add(current);
-        }
-        return data;
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

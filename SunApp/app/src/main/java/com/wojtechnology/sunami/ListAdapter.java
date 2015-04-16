@@ -44,10 +44,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         final FireMixtape current = data.get(position);
         holder.title.setText(current.title);
         if(!current.icon_loaded){
-            new DisplayArtwork(current, holder, this.context).execute("");
+            Bitmap icon = current.getAlbumArt();
+            if(icon != null){
+                holder.icon.setImageBitmap(FireMixtape.scaleBitmap(icon));
+            }else{
+                holder.icon.setImageResource(current.icon_id);
+            }
+            current.icon_loaded = true;
         }
     }
 
+    /* Async Version
     // Display artwork in the background
     private class DisplayArtwork extends AsyncTask<String, Void, String>{
 
@@ -79,7 +86,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 ((Activity)this.context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        holder.icon.setImageResource(send_icon);
+                        send_icon);
                     }
                 });
             }
@@ -93,7 +100,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         protected void onPreExecute() {}
         @Override
         protected void onProgressUpdate(Void... values) {}
-    }
+    } */
 
     @Override
     public int getItemCount() {
@@ -105,7 +112,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         private ImageView icon;
         public ListViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.list_text);
+            title = (TextView) itemView.findViewById(R.id.list_title);
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
         }
     }
