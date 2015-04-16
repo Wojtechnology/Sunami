@@ -35,7 +35,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(ListViewHolder holder, int position) {
         FireMixtape current = data.get(position);
         holder.title.setText(current.title);
-        holder.icon.setImageResource(current.icon_id);
+        holder.icon.setImageResource(Integer.parseInt(current.icon_id));
     }
 
     @Override

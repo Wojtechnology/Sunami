@@ -48,9 +48,6 @@ public class MainActivity extends ActionBarActivity {
         listAdapter = new ListAdapter(this, this.getFire());
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        getFire();
-
     }
 
     protected List<FireMixtape> getFire(){
@@ -66,7 +63,8 @@ public class MainActivity extends ActionBarActivity {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.DISPLAY_NAME,
-                MediaStore.Audio.Media.DURATION
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.ALBUM_ID
         };
 
         Cursor cursor = getContentResolver().query(
@@ -74,11 +72,9 @@ public class MainActivity extends ActionBarActivity {
                 projection,
                 selection,
                 null,
-                null);
+                null
+        );
 
-        Log.e("WTF", "Created Cursor");
-
-        List<String> songs = new ArrayList<String>();
         while(cursor.moveToNext()){
 
             // Create song object
@@ -89,18 +85,37 @@ public class MainActivity extends ActionBarActivity {
             current.data = cursor.getString(3);
             current.display_name = cursor.getString(4);
             current.duration = cursor.getString(5);
+            current.album_id = cursor.getString(6);
 
-            current.icon_id = R.mipmap.ic_launcher;
+            String album_selection = MediaStore.Audio.Albums.ALBUM_ID + " == " + current.album_id;
+            String[] album_projection = {
+                MediaStore.Audio.Albums.ALBUM_ART
+            };
+
+            Cursor album_cursor = getContentResolver().query(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    album_projection,
+                    album_selection,
+                    null,
+                    null
+            );
+
+            while(album_cursor.moveToNext()){
+                current.icon_id = album_cursor.getString(0);
+            }
+
+            current.icon_id = Integer.toString(R.mipmap.ic_launcher);
 
             data.add(current);
-
-            Log.e("WTF", cursor.getString(0));
-            songs.add(cursor.getString(0) + "||" + cursor.getString(1) + "||" +   cursor.getString(2) + "||" +   cursor.getString(3) + "||" +  cursor.getString(4) + "||" +  cursor.getString(5));
         }
 
-        for (String song : songs){
-            Log.e("WTF", song);
-        }
+        Log.e("WTF", data.get(0)._id);
+        Log.e("WTF", data.get(0).artist);
+        Log.e("WTF", data.get(0).title);
+        Log.e("WTF", data.get(0).data);
+        Log.e("WTF", data.get(0).display_name);
+        Log.e("WTF", data.get(0).duration);
+        Log.e("WTF", data.get(0).icon_id);
 
         return data;
 
