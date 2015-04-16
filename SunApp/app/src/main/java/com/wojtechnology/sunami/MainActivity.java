@@ -45,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        listAdapter = new ListAdapter(this, getData());
+        listAdapter = new ListAdapter(this, this.getFire());
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -53,7 +53,9 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    protected void getFire(){
+    protected List<FireMixtape> getFire(){
+
+        List<FireMixtape> data = new ArrayList<>();
 
         //Some audio may be explicitly marked as not being music
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
@@ -78,6 +80,20 @@ public class MainActivity extends ActionBarActivity {
 
         List<String> songs = new ArrayList<String>();
         while(cursor.moveToNext()){
+
+            // Create song object
+            FireMixtape current = new FireMixtape();
+            current._id = cursor.getString(0);
+            current.artist = cursor.getString(1);
+            current.title = cursor.getString(2);
+            current.data = cursor.getString(3);
+            current.display_name = cursor.getString(4);
+            current.duration = cursor.getString(5);
+
+            current.icon_id = R.mipmap.ic_launcher;
+
+            data.add(current);
+
             Log.e("WTF", cursor.getString(0));
             songs.add(cursor.getString(0) + "||" + cursor.getString(1) + "||" +   cursor.getString(2) + "||" +   cursor.getString(3) + "||" +  cursor.getString(4) + "||" +  cursor.getString(5));
         }
@@ -86,9 +102,11 @@ public class MainActivity extends ActionBarActivity {
             Log.e("WTF", song);
         }
 
+        return data;
+
     }
 
-    public static List<ListItem> getData(){
+    /*public static List<ListItem> getData(){
 
         List<ListItem> data = new ArrayList<>();
         int[] icons = {R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
@@ -100,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
             data.add(current);
         }
         return data;
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

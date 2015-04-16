@@ -1,7 +1,6 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,25 +17,25 @@ import java.util.List;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     private LayoutInflater inflater;
-    List<ListItem> data = Collections.emptyList();
+    List<FireMixtape> data = Collections.emptyList();
 
-    public ListAdapter(Context context, List<ListItem> data){
+    public ListAdapter(Context context, List<FireMixtape> data){
         inflater = LayoutInflater.from(context);
         this.data = data;
     }
 
     @Override
     public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.list_item_layout, parent, false);
+        View view = inflater.inflate(R.layout.fire_mixtape, parent, false);
         ListViewHolder holder = new ListViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(ListViewHolder holder, int position) {
-        ListItem current = data.get(position);
+        FireMixtape current = data.get(position);
         holder.title.setText(current.title);
-        holder.icon.setImageResource(current.iconId);
+        holder.icon.setImageResource(current.icon_id);
     }
 
     @Override
