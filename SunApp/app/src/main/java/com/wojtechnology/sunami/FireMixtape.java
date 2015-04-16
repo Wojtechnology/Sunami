@@ -32,6 +32,7 @@ public class FireMixtape {
     private static float display_density;
 
     private Context context;
+    private Bitmap art_bitmap;
 
     public FireMixtape(Context context) {
         this.icon_id = R.mipmap.ic_launcher;
@@ -43,23 +44,27 @@ public class FireMixtape {
         display_density = metrics.density;
     }
 
-    public Bitmap getAlbumArt() {
+    /* public Bitmap getAlbumArt() {
         {
-            Bitmap bm = null;
-            try {
-                Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
-                Uri uri = ContentUris.withAppendedId(sArtworkUri, Long.parseLong(album_id));
-                ContentResolver res = context.getContentResolver();
-                InputStream in = res.openInputStream(uri);
-                bm = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
+            if(!icon_loaded) {
+                Bitmap bm = null;
+                try {
+                    Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                    Uri uri = ContentUris.withAppendedId(sArtworkUri, Long.parseLong(album_id));
+                    ContentResolver res = context.getContentResolver();
+                    InputStream in = res.openInputStream(uri);
+                    bm = BitmapFactory.decodeStream(in);
+                    this.art_bitmap = scaleBitmap(bm);
+                } catch (Exception e) {
+                }
+                this.icon_loaded = true;
             }
-            return bm;
+            return this.art_bitmap;
         }
     }
 
     public static Bitmap scaleBitmap(Bitmap bm){
         return Bitmap.createScaledBitmap(bm, (int) (ICON_WIDTH * display_density),
                 (int) (ICON_HEIGHT * display_density), true);
-    }
+    } */
 }

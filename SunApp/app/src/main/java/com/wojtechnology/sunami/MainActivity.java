@@ -73,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
         while (cursor.moveToNext()) {
 
             // Create song object
-            FireMixtape current = new FireMixtape();
+            FireMixtape current = new FireMixtape(this);
             current._id = cursor.getString(0);
             current.artist = cursor.getString(1);
             current.title = cursor.getString(2);
