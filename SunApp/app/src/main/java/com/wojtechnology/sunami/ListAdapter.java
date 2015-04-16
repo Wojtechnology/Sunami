@@ -44,6 +44,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         final FireMixtape current = data.get(position);
         holder.title.setText(current.title);
         if(!current.icon_loaded){
+            // new DisplayArtwork(current, holder, context).execute("");
             Bitmap icon = current.getAlbumArt();
             if(icon != null){
                 holder.icon.setImageBitmap(FireMixtape.scaleBitmap(icon));
