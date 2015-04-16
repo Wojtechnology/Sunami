@@ -25,9 +25,10 @@ public class FireMixtape {
     public String display_name;
     public String duration;
     public String album_id;
+    public Boolean icon_loaded;
 
-    private static final int ICON_WIDTH = 24;
-    private static final int ICON_HEIGHT = 24;
+    private static final int ICON_WIDTH = 48;
+    private static final int ICON_HEIGHT = 48;
     private static float display_density;
 
     private Context context;
@@ -35,11 +36,11 @@ public class FireMixtape {
     public FireMixtape(Context context) {
         this.icon_id = R.mipmap.ic_launcher;
         this.context = context;
+        this.icon_loaded = false;
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(metrics);
         display_density = metrics.density;
-        Log.e("WTF", display_name + "");
     }
 
     public Bitmap getAlbumArt() {
