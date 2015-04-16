@@ -1,21 +1,16 @@
 package com.wojtechnology.sunami;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    protected List<FireMixtape> getFire(){
+    protected List<FireMixtape> getFire() {
 
         List<FireMixtape> data = new ArrayList<>();
 
@@ -75,10 +70,10 @@ public class MainActivity extends ActionBarActivity {
                 null
         );
 
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
             // Create song object
-            FireMixtape current = new FireMixtape(this);
+            FireMixtape current = new FireMixtape();
             current._id = cursor.getString(0);
             current.artist = cursor.getString(1);
             current.title = cursor.getString(2);

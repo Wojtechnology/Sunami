@@ -1,18 +1,14 @@
 package com.wojtechnology.sunami;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import java.io.InputStream;
 
@@ -35,8 +31,6 @@ public class FireMixtape {
     private static final int ICON_HEIGHT = 48;
     private static float display_density;
 
-    private Bitmap art_bitmap;
-
     private Context context;
 
     public FireMixtape(Context context) {
@@ -46,27 +40,21 @@ public class FireMixtape {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(metrics);
-        this.display_density = metrics.density;
+        display_density = metrics.density;
     }
 
-    public Bitmap getAlbumArt(ImageView imageView) {
+    public Bitmap getAlbumArt() {
         {
-            if(!this.icon_loaded) {
-                Bitmap bm = null;
-                try {
-                    Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
-                    Uri uri = ContentUris.withAppendedId(sArtworkUri,
-                            Long.parseLong(this.album_id));
-                    ContentResolver res = context.getContentResolver();
-                    InputStream in = res.openInputStream(uri);
-                    bm = BitmapFactory.decodeStream(in);
-                    this.art_bitmap = FireMixtape.scaleBitmap(bm);
-
-                } catch (Exception e) {
-                }
-                this.icon_loaded = true;
+            Bitmap bm = null;
+            try {
+                Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                Uri uri = ContentUris.withAppendedId(sArtworkUri, Long.parseLong(album_id));
+                ContentResolver res = context.getContentResolver();
+                InputStream in = res.openInputStream(uri);
+                bm = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
             }
-            return this.art_bitmap;
+            return bm;
         }
     }
 
