@@ -125,6 +125,8 @@ public class MainActivity extends ActionBarActivity {
                 );
             }
 
+            current.printGenres();
+
             data.add(current);
         }
 

@@ -19,6 +19,9 @@ import java.util.List;
  */
 public class FireMixtape {
 
+    // Constants
+    private final String LOG_MESSAGE = "FIREMIXTAPE";
+
     // If no artwork available
     public int default_icon_id;
 
@@ -46,6 +49,7 @@ public class FireMixtape {
     public String size;
     public String title;
 
+    // List of genres for particular song
     private List<Genre> genres;
 
     public FireMixtape(Context context) {
@@ -83,4 +87,12 @@ public class FireMixtape {
         return Bitmap.createScaledBitmap(bm, (int) (ICON_WIDTH * display_density),
                 (int) (ICON_HEIGHT * display_density), true);
     } */
+
+    // Some Testing Functions
+    public void printGenres(){
+        Log.i(LOG_MESSAGE, this.display_name);
+        for(int i = 0; i < this.genres.size(); i++){
+            Log.i(LOG_MESSAGE, "Genre " + i + 1 + ": " + this.genres.get(i));
+        }
+    }
 }
