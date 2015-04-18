@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wojtekswiderski on 15-04-13.
@@ -44,16 +46,18 @@ public class FireMixtape {
     public String size;
     public String title;
 
-    private Genre genre;
+    private List<Genre> genres;
 
     public FireMixtape(Context context) {
         this.default_icon_id = R.mipmap.ic_launcher;
         this.context = context;
         this.icon_loaded = false;
+        this.genres = new ArrayList<Genre>();
     }
 
-    public void setGenre(String _id, String name){
-        this.genre = new Genre(_id, name);
+    public void addGenre(String _id, String name){
+        Genre newGenre = new Genre(_id, name);
+        this.genres.add(newGenre);
     }
 
     /* public Bitmap getAlbumArt() {

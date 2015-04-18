@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.net.Uri;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,11 @@ public class MainActivity extends ActionBarActivity {
                 MediaStore.Audio.Media.TITLE
         };
 
+        String[] genresProjection = {
+                MediaStore.Audio.Genres._ID,
+                MediaStore.Audio.Genres.NAME
+        };
+
         Cursor cursor = getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 projection,
@@ -100,6 +106,24 @@ public class MainActivity extends ActionBarActivity {
             current.mime_type = cursor.getString(13);
             current.size = cursor.getString(14);
             current.title = cursor.getString(15);
+
+            int musicID = Integer.parseInt(cursor.getString(0));
+
+            Uri uri = MediaStore.Audio.Genres.getContentUriForAudioId("external", musicID);
+            Cursor projectionCursor = getContentResolver().query(
+                    uri,
+                    genresProjection,
+                    null,
+                    null,
+                    null
+            );
+
+            while(projectionCursor.moveToNext()){
+                current.addGenre(
+                        projectionCursor.getString(0),
+                        projectionCursor.getString(1)
+                );
+            }
 
             data.add(current);
         }
