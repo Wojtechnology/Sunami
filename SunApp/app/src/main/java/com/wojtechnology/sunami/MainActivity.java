@@ -54,12 +54,21 @@ public class MainActivity extends ActionBarActivity {
 
         String[] projection = {
                 MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media.ARTIST_ID,
+                MediaStore.Audio.Media.BOOKMARK,
+                MediaStore.Audio.Media.COMPOSER,
                 MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.ALBUM_ID
+                MediaStore.Audio.Media.TITLE_KEY,
+                MediaStore.Audio.Media.YEAR,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media.DISPLAY_NAME,
+                MediaStore.Audio.Media.MIME_TYPE,
+                MediaStore.Audio.Media.SIZE,
+                MediaStore.Audio.Media.TITLE
         };
 
         Cursor cursor = getContentResolver().query(
@@ -74,13 +83,23 @@ public class MainActivity extends ActionBarActivity {
 
             // Create song object
             FireMixtape current = new FireMixtape(this);
+
             current._id = cursor.getString(0);
-            current.artist = cursor.getString(1);
-            current.title = cursor.getString(2);
-            current.data = cursor.getString(3);
-            current.display_name = cursor.getString(4);
-            current.duration = cursor.getString(5);
-            current.album_id = cursor.getString(6);
+            current.album = cursor.getString(1);
+            current.album_id = cursor.getString(2);
+            current.artist = cursor.getString(3);
+            current.artist_id = cursor.getString(4);
+            current.bookmark = cursor.getString(5);
+            current.composer = cursor.getString(6);
+            current.duration = cursor.getString(7);
+            current.title_key = cursor.getString(8);
+            current.year = cursor.getString(9);
+            current.data = cursor.getString(10);
+            current.date_added = cursor.getString(11);
+            current.display_name = cursor.getString(12);
+            current.mime_type = cursor.getString(13);
+            current.size = cursor.getString(14);
+            current.title = cursor.getString(15);
 
             data.add(current);
         }
