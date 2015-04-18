@@ -44,10 +44,16 @@ public class FireMixtape {
     public String size;
     public String title;
 
+    private Genre genre;
+
     public FireMixtape(Context context) {
         this.default_icon_id = R.mipmap.ic_launcher;
         this.context = context;
         this.icon_loaded = false;
+    }
+
+    public void setGenre(String _id, String name){
+        this.genre = new Genre(_id, name);
     }
 
     /* public Bitmap getAlbumArt() {
