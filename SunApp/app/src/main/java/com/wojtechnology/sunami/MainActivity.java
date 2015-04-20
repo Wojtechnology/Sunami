@@ -22,6 +22,8 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
 
+    private ShuffleManager shuffleManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,11 +41,16 @@ public class MainActivity extends ActionBarActivity {
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
 
+        // Get music data and send to shuffle manager
+        List<FireMixtape> data = this.getFire();
+        this.shuffleManager = new ShuffleManager(data);
+
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        listAdapter = new ListAdapter(this, this.getFire());
+        listAdapter = new ListAdapter(this, data);
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     protected List<FireMixtape> getFire() {

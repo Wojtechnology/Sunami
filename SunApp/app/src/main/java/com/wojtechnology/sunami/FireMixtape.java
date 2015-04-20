@@ -90,9 +90,11 @@ public class FireMixtape {
 
     // Some Testing Functions
     public void printGenres(){
-        Log.i(LOG_MESSAGE, this.display_name);
-        for(int i = 0; i < this.genres.size(); i++){
-            Log.i(LOG_MESSAGE, "Genre " + i + 1 + ": " + this.genres.get(i));
+        if(this.genres.size() > 0) {
+            Log.i(LOG_MESSAGE, this.display_name);
+            for (int i = 0; i < this.genres.size(); i++) {
+                Log.i(LOG_MESSAGE, "Genre " + i + 1 + ": " + this.genres.get(i).getName());
+            }
         }
     }
 }
