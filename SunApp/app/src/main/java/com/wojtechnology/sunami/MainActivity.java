@@ -16,6 +16,7 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.List;
 
+// This is the beginning of an amazing summer
 public class MainActivity extends ActionBarActivity {
 
     private Toolbar toolbar;
