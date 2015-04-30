@@ -48,20 +48,13 @@ public class FireMixtape {
     public String mime_type;
     public String size;
     public String title;
-
-    // List of genres for particular song
-    private List<Genre> genres;
+    public String genre_id;
+    public String genre;
 
     public FireMixtape(Context context) {
         this.default_icon_id = R.mipmap.ic_launcher;
         this.context = context;
         this.icon_loaded = false;
-        this.genres = new ArrayList<Genre>();
-    }
-
-    public void addGenre(String _id, String name){
-        Genre newGenre = new Genre(_id, name);
-        this.genres.add(newGenre);
     }
 
     /* public Bitmap getAlbumArt() {
@@ -87,14 +80,4 @@ public class FireMixtape {
         return Bitmap.createScaledBitmap(bm, (int) (ICON_WIDTH * display_density),
                 (int) (ICON_HEIGHT * display_density), true);
     } */
-
-    // Some Testing Functions
-    public void printGenres(){
-        if(this.genres.size() > 0) {
-            Log.i(LOG_MESSAGE, this.display_name);
-            for (int i = 0; i < this.genres.size(); i++) {
-                Log.i(LOG_MESSAGE, "Genre " + i + 1 + ": " + this.genres.get(i).getName());
-            }
-        }
-    }
 }

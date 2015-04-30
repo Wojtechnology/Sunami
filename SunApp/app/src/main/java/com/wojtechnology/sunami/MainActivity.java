@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.net.Uri;
@@ -85,61 +86,66 @@ public class MainActivity extends ActionBarActivity {
                 MediaStore.Audio.Genres.NAME
         };
 
-        Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                selection,
+        Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
+        Cursor projectionCursor = getContentResolver().query(
+                uri,
+                genresProjection,
+                null,
                 null,
                 null
         );
 
-        while (cursor.moveToNext()) {
+        int i = 0;
+        int j = 0;
 
-            // Create song object
-            FireMixtape current = new FireMixtape(this);
+        while (projectionCursor.moveToNext()) {
 
-            current._id = cursor.getString(0);
-            current.album = cursor.getString(1);
-            current.album_id = cursor.getString(2);
-            current.artist = cursor.getString(3);
-            current.artist_id = cursor.getString(4);
-            current.bookmark = cursor.getString(5);
-            current.composer = cursor.getString(6);
-            current.duration = cursor.getString(7);
-            current.title_key = cursor.getString(8);
-            current.year = cursor.getString(9);
-            current.data = cursor.getString(10);
-            current.date_added = cursor.getString(11);
-            current.display_name = cursor.getString(12);
-            current.mime_type = cursor.getString(13);
-            current.size = cursor.getString(14);
-            current.title = cursor.getString(15);
+            String genre_id = projectionCursor.getString(0);
+            String genre_name = projectionCursor.getString(1);
 
-            int musicID = Integer.parseInt(cursor.getString(0));
+            uri = MediaStore.Audio.Genres.Members.getContentUri("external", Long.parseLong(genre_id));
 
-            Uri uri = MediaStore.Audio.Genres.getContentUriForAudioId("external", musicID);
-            Cursor projectionCursor = getContentResolver().query(
+            Cursor cursor = getContentResolver().query(
                     uri,
-                    genresProjection,
-                    null,
+                    projection,
+                    selection,
                     null,
                     null
             );
 
-            while(projectionCursor.moveToNext()){
-                current.addGenre(
-                        projectionCursor.getString(0),
-                        projectionCursor.getString(1)
-                );
+            while (cursor.moveToNext()) {
+
+                Log.e("SongNumber", Integer.toString(++i));
+
+                // Create song object
+                FireMixtape current = new FireMixtape(this);
+
+                current._id = cursor.getString(0);
+                current.album = cursor.getString(1);
+                current.album_id = cursor.getString(2);
+                current.artist = cursor.getString(3);
+                current.artist_id = cursor.getString(4);
+                current.bookmark = cursor.getString(5);
+                current.composer = cursor.getString(6);
+                current.duration = cursor.getString(7);
+                current.title_key = cursor.getString(8);
+                current.year = cursor.getString(9);
+                current.data = cursor.getString(10);
+                current.date_added = cursor.getString(11);
+                current.display_name = cursor.getString(12);
+                current.mime_type = cursor.getString(13);
+                current.size = cursor.getString(14);
+                current.title = cursor.getString(15);
+                current.genre_id = genre_id;
+                current.genre = genre_name;
+
+                data.add(current);
             }
 
-            current.printGenres();
+            Log.e("GenreNumber", Integer.toString(++j) + " " + genre_name);
 
-            data.add(current);
         }
-
         return data;
-
     }
 
     @Override
