@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">Sunami</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Your Music</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="next">Next</string>
-    <string name="title_activity_sub">SubActivity</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

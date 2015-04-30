@@ -38,13 +38,13 @@ public class MainActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         getSupportActionBar().setTitle(R.string.title_activity_main);
 
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
+
         // Get music data and send to shuffle manager
         List<FireMixtape> data = this.getFire();
         data = sortFire(data);
@@ -148,9 +148,13 @@ public class MainActivity extends ActionBarActivity {
                 current.genre = genre_name;
 
                 data.add(current);
+
             }
 
+            cursor.close();
+
         }
+        projectionCursor.close();
         return data;
     }
 
@@ -171,10 +175,6 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
-
-        if (id == R.id.navigate) {
-            startActivity(new Intent(this, SubActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

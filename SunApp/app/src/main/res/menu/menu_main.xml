@@ -7,10 +7,4 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/navigate"
-        android:title="@string/next"
-        android:orderInCategory="200"
-        android:icon="@mipmap/ic_launcher"
-        app:showAsAction="always" />
 </menu>
