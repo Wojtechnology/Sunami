@@ -1,5 +1,6 @@
 package com.wojtechnology.sunami;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.view.MenuItem;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 // This is the beginning of an amazing summer
@@ -42,9 +45,9 @@ public class MainActivity extends ActionBarActivity {
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
-
         // Get music data and send to shuffle manager
         List<FireMixtape> data = this.getFire();
+        data = sortFire(data);
         this.shuffleManager = new ShuffleManager(data);
 
         // Setup
@@ -53,6 +56,16 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+    }
+
+    protected List<FireMixtape> sortFire(List<FireMixtape> data) {
+        Collections.sort(data, new Comparator<FireMixtape>() {
+            @Override
+            public int compare(FireMixtape lhs, FireMixtape rhs) {
+                return lhs.title.compareTo(rhs.title);
+            }
+        });
+        return data;
     }
 
     protected List<FireMixtape> getFire() {
@@ -95,9 +108,6 @@ public class MainActivity extends ActionBarActivity {
                 null
         );
 
-        int i = 0;
-        int j = 0;
-
         while (projectionCursor.moveToNext()) {
 
             String genre_id = projectionCursor.getString(0);
@@ -114,8 +124,6 @@ public class MainActivity extends ActionBarActivity {
             );
 
             while (cursor.moveToNext()) {
-
-                Log.e("SongNumber", Integer.toString(++i));
 
                 // Create song object
                 FireMixtape current = new FireMixtape(this);
@@ -141,8 +149,6 @@ public class MainActivity extends ActionBarActivity {
 
                 data.add(current);
             }
-
-            Log.e("GenreNumber", Integer.toString(++j) + " " + genre_name);
 
         }
         return data;

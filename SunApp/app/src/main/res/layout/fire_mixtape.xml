@@ -1,28 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:id="@+id/list_background">
 
     <ImageView
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:id="@+id/list_icon"
         android:layout_width="72dp"
-        android:layout_height="56dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_gravity="center_vertical"/>
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:src="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:paddingRight="16dp">
 
         <TextView
-            android:layout_gravity="center_vertical"
             android:id="@+id/list_title"
-            android:textSize="16sp"
-            android:paddingBottom="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
             android:paddingTop="20dp"
             android:singleLine="true"
-            android:fontFamily="sans-serif"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Dummy Text" />
+            android:text="Dummy Text"
+            android:textSize="16sp"
+            android:textColor="#000"/>
 
+        <TextView
+            android:id="@+id/list_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingTop="0dp"
+            android:singleLine="true"
+            android:text="Dummy Text"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -12,12 +12,13 @@ import android.view.WindowManager;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by wojtekswiderski on 15-04-13.
  */
-public class FireMixtape {
+public class FireMixtape{
 
     // Constants
     private final String LOG_MESSAGE = "FIREMIXTAPE";

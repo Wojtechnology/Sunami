@@ -2,12 +2,16 @@ package com.wojtechnology.sunami;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +43,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(final ListViewHolder holder, int position) {
         final FireMixtape current = data.get(position);
         holder.title.setText(current.title);
+        holder.artist.setText(current.artist);
         holder.icon.setImageResource(R.mipmap.ic_launcher);
+        if(position % 2 == 1){
+            int color = context.getResources().getColor(R.color.listOddColor);
+            holder.background.setBackgroundColor(color);
+        }else{
+            int color = context.getResources().getColor(R.color.listEvenColor);
+            holder.background.setBackgroundColor(color);
+        }
     }
 
     @Override
@@ -49,12 +61,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     class ListViewHolder extends RecyclerView.ViewHolder {
         private TextView title;
+        private TextView artist;
         private ImageView icon;
+        private LinearLayout background;
 
         public ListViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.list_title);
+            artist = (TextView) itemView.findViewById(R.id.list_artist);
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
+            background = (LinearLayout) itemView.findViewById(R.id.list_background);
         }
     }
 }

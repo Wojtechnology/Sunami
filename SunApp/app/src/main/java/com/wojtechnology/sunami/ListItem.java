@@ -6,5 +6,5 @@ package com.wojtechnology.sunami;
 public class ListItem {
     int iconId;
     String title;
-
+    String artist;
 }
