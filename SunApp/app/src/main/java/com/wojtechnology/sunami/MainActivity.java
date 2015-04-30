@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        listAdapter = new ListAdapter(this, data);
+        listAdapter = new ListAdapter(this, data, this.shuffleManager);
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

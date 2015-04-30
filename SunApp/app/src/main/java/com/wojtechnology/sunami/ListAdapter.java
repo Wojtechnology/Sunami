@@ -22,14 +22,16 @@ import java.util.List;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     private Context context;
+    private ShuffleManager shuffleManager;
 
     private LayoutInflater inflater;
     List<FireMixtape> data = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data) {
+    public ListAdapter(Context context, List<FireMixtape> data, ShuffleManager shuffleManager) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.data = data;
+        this.shuffleManager = shuffleManager;
     }
 
     @Override
@@ -45,13 +47,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         holder.title.setText(current.title);
         holder.artist.setText(current.artist);
         holder.icon.setImageResource(R.mipmap.ic_launcher);
-        if(position % 2 == 1){
-            int color = context.getResources().getColor(R.color.listOddColor);
-            holder.background.setBackgroundColor(color);
-        }else{
-            int color = context.getResources().getColor(R.color.listEvenColor);
-            holder.background.setBackgroundColor(color);
-        }
+        holder.background.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                shuffleManager.playSong(current._id);
+            }
+        });
     }
 
     @Override

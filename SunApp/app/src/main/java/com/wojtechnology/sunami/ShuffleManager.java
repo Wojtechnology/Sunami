@@ -1,5 +1,11 @@
 package com.wojtechnology.sunami;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.util.Log;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,13 +19,16 @@ import java.util.Queue;
 // Class that manages the smart shuffle
 public class ShuffleManager {
 
-    private Queue<FireMixtape> fireMixtapes;
+    private List<FireMixtape> fireMixtapes;
+    private FireMixtape playing;
+    private MediaPlayer mediaPlayer;
 
     public ShuffleManager(List<FireMixtape> data){
-        fireMixtapes = new LinkedList<FireMixtape>();
+        fireMixtapes = new ArrayList<FireMixtape>();
         for(FireMixtape item : data){
             fireMixtapes.add(item);
         }
+        mediaPlayer = new MediaPlayer();
     }
 
     // Pseudorandomly shuffles the data
@@ -34,5 +43,25 @@ public class ShuffleManager {
             data.add(item);
         }
         return data;
+    }
+
+    public void playSong(String _id){
+        for(int i = 0; i < fireMixtapes.size(); i++){
+            if(fireMixtapes.get(i)._id == _id){
+                playing = fireMixtapes.get(i);
+                break;
+            }
+        }
+        Log.e("PlaySong", playing.title);
+
+        try{
+            mediaPlayer.reset();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(playing.data);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
