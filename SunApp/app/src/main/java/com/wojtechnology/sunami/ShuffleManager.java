@@ -21,6 +21,7 @@ public class ShuffleManager {
 
     private List<FireMixtape> fireMixtapes;
     private FireMixtape playing;
+    private FireMixtape next;
     private MediaPlayer mediaPlayer;
 
     public ShuffleManager(List<FireMixtape> data){

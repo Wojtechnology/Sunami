@@ -47,7 +47,6 @@ public class MainActivity extends ActionBarActivity {
 
         // Get music data and send to shuffle manager
         List<FireMixtape> data = this.getFire();
-        data = sortFire(data);
         this.shuffleManager = new ShuffleManager(data);
 
         // Setup
@@ -79,6 +78,18 @@ public class MainActivity extends ActionBarActivity {
                 return lTitle.compareTo(rTitle);
             }
         });
+
+        FireMixtape header = new FireMixtape(this);
+        header.title = "#";
+        header.genre = "__header__";
+
+        data.add(0, header);
+
+        int i = 0;
+        for(char headerTitle = 'A'; headerTitle <= 'Z'; i++){
+            
+        }
+
         return data;
     }
 
@@ -169,6 +180,7 @@ public class MainActivity extends ActionBarActivity {
 
         }
         projectionCursor.close();
+        data = sortFire(data);
         return data;
     }
 

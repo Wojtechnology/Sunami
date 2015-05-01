@@ -19,10 +19,13 @@ import java.util.List;
 /**
  * Created by wojtekswiderski on 15-04-12.
  */
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
+public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private ShuffleManager shuffleManager;
+
+    private static int TYPE_HEADER = 1;
+    private static int TYPE_LIST = 0;
 
     private LayoutInflater inflater;
     List<FireMixtape> data = Collections.emptyList();
@@ -35,24 +38,46 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     }
 
     @Override
-    public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.fire_mixtape, parent, false);
-        ListViewHolder holder = new ListViewHolder(view);
-        return holder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == TYPE_HEADER){
+            View view = inflater.inflate(R.layout.fire_header, parent, false);
+            HeaderHolder holder = new HeaderHolder(view);
+            return holder;
+        }else {
+            View view = inflater.inflate(R.layout.fire_mixtape, parent, false);
+            ItemHolder holder = new ItemHolder(view);
+            return holder;
+        }
     }
 
     @Override
-    public void onBindViewHolder(final ListViewHolder holder, int position) {
-        final FireMixtape current = data.get(position);
-        holder.title.setText(current.title);
-        holder.artist.setText(current.artist);
-        holder.icon.setImageResource(R.mipmap.ic_launcher);
-        holder.background.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                shuffleManager.playSong(current._id);
-            }
-        });
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof HeaderHolder){
+            HeaderHolder headerHolder = (HeaderHolder) holder;
+            final FireMixtape current = data.get(position);
+            headerHolder.label.setText(current.title);
+        }else{
+            ItemHolder itemHolder = (ItemHolder) holder;
+            final FireMixtape current = data.get(position);
+            itemHolder.title.setText(current.title);
+            itemHolder.artist.setText(current.artist);
+            itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
+            itemHolder.background.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    shuffleManager.playSong(current._id);
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(data.get(position).genre == "__header__"){
+            return TYPE_HEADER;
+        }else{
+            return TYPE_LIST;
+        }
     }
 
     @Override
@@ -60,18 +85,27 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         return data.size();
     }
 
-    class ListViewHolder extends RecyclerView.ViewHolder {
+    class ItemHolder extends RecyclerView.ViewHolder {
         private TextView title;
         private TextView artist;
         private ImageView icon;
         private LinearLayout background;
 
-        public ListViewHolder(View itemView) {
+        public ItemHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.list_title);
             artist = (TextView) itemView.findViewById(R.id.list_artist);
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
             background = (LinearLayout) itemView.findViewById(R.id.list_background);
+        }
+    }
+
+    class HeaderHolder extends RecyclerView.ViewHolder {
+        private TextView label;
+
+        public HeaderHolder(View itemView) {
+            super(itemView);
+            label = (TextView) itemView.findViewById(R.id.header_label);
         }
     }
 }
