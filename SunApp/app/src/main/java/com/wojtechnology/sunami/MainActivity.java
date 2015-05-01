@@ -62,7 +62,21 @@ public class MainActivity extends ActionBarActivity {
         Collections.sort(data, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
-                return lhs.title.compareTo(rhs.title);
+                String lTitle = lhs.title.toLowerCase();
+                String rTitle = rhs.title.toLowerCase();
+
+                if(lTitle.length() > 4) {
+                    if (lTitle.substring(0, 4).equals("the ")) {
+                        lTitle = lTitle.substring(4);
+                    }
+                }
+                if(rTitle.length() > 4) {
+                    if (rTitle.substring(0, 4).equals("the ")) {
+                        rTitle = rTitle.substring(4);
+                    }
+                }
+
+                return lTitle.compareTo(rTitle);
             }
         });
         return data;
