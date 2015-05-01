@@ -18,7 +18,9 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // This is the beginning of an amazing summer
 public class MainActivity extends ActionBarActivity {
@@ -64,12 +66,12 @@ public class MainActivity extends ActionBarActivity {
                 String lTitle = lhs.title.toLowerCase();
                 String rTitle = rhs.title.toLowerCase();
 
-                if(lTitle.length() > 4) {
+                if (lTitle.length() > 4) {
                     if (lTitle.substring(0, 4).equals("the ")) {
                         lTitle = lTitle.substring(4);
                     }
                 }
-                if(rTitle.length() > 4) {
+                if (rTitle.length() > 4) {
                     if (rTitle.substring(0, 4).equals("the ")) {
                         rTitle = rTitle.substring(4);
                     }
@@ -79,18 +81,46 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        FireMixtape header = new FireMixtape(this);
-        header.title = "#";
-        header.genre = "__header__";
-
-        data.add(0, header);
+        Map<Character, Integer> letters = new HashMap<>();
 
         int i = 0;
-        for(char headerTitle = 'A'; headerTitle <= 'Z'; i++){
-            
+        while(firstLetter(data.get(i).title) != 'A'){
+            i++;
+        }
+        int sum = i;
+        int j = i;
+
+        for(char headerTitle = 'A'; headerTitle <= 'Z' && i < data.size(); i++){
+            if(firstLetter(data.get(i).title) != headerTitle){
+                letters.put(headerTitle, i - j);
+                headerTitle++;
+                j = i;
+                i--;
+            }
+        }
+
+        for(char headerTitle = 'A'; headerTitle <= 'Z' && letters.containsKey(headerTitle); headerTitle++){
+            if(letters.get(headerTitle) != 0) {
+                FireMixtape mixtape = new FireMixtape(this);
+                mixtape.title = Character.toString(headerTitle);
+                mixtape.genre = "__header__";
+                data.add(sum, mixtape);
+                sum++;
+            }
+            sum += letters.get(headerTitle);
         }
 
         return data;
+    }
+
+    private char firstLetter(String word){
+        word = word.toUpperCase();
+        if(word.length() > 4) {
+            if (word.substring(0, 4).equals("THE ")) {
+                word = word.substring(4);
+            }
+        }
+        return word.charAt(0);
     }
 
     protected List<FireMixtape> getFire() {
