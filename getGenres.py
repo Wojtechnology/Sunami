@@ -16,20 +16,32 @@ genres = json.loads(res.content)['response']['genres']
 for genre in genres:
 	genresList.append(genre['name'])
 
+final = dict()
+
 for i in range(len(genresList)):
 	res = requests.get(url + '/similar?api_key=' + api_key + '&format=json&name=' + genresList[i])
 	rateLimit = res.headers['x-ratelimit-remaining']
 
-	while(rateLimit == '0' or res.status_code != 200):
+	while(rateLimit == '0'):
 		res = requests.get(url + '/similar?api_key=' + api_key + '&format=json&name=' + genresList[i])
 		rateLimit = res.headers['x-ratelimit-remaining']
 
-	genres = json.loads(res.content)['response']['genres']
-
-	print 'Genre: ' + genresList[i] + '\nrate-limit: ' + str(rateLimit)
-
 	relatedGenres = []
 
-	for genre in genres:
-		relatedGenres.append(genre['name'])
-		print '    ' + genre['name']
+	if res.status_code == 200:
+		genres = json.loads(res.content)['response']['genres']
+
+		print 'Genre: ' + genresList[i] + '\nrate-limit: ' + str(rateLimit)
+
+		for genre in genres:
+			relatedGenres.append({'name' : genre['name'], 'similarity' : genre['similarity']})
+
+	final[genresList[i]] = relatedGenres
+
+print final
+finalJSON = json.dumps(final)
+print finalJSON
+
+wFile = open('genres.json', 'w')
+wFile.write(finalJSON)
+wFile.close()
