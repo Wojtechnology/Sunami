@@ -1,5 +1,6 @@
 package com.wojtechnology.sunami;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -17,24 +18,21 @@ import java.util.Queue;
  */
 
 // Class that manages the smart shuffle
-public class ShuffleManager {
+public class TheBrain {
 
     private List<FireMixtape> fireMixtapes;
     private FireMixtape playing;
     private FireMixtape next;
     private MediaPlayer mediaPlayer;
+    private GenreContainer genreContainer;
 
-    public ShuffleManager(List<FireMixtape> data){
+    public TheBrain(List<FireMixtape> data, Context context){
         fireMixtapes = new ArrayList<FireMixtape>();
         for(FireMixtape item : data){
             fireMixtapes.add(item);
         }
         mediaPlayer = new MediaPlayer();
-    }
-
-    // Pseudorandomly shuffles the data
-    private void randomShuffle(){
-
+        genreContainer = new GenreContainer(context);
     }
 
     // Returns the current music list in current order

@@ -1,7 +1,5 @@
 package com.wojtechnology.sunami;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,7 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.net.Uri;
@@ -29,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
 
-    private ShuffleManager shuffleManager;
+    private TheBrain shuffleManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
 
         // Get music data and send to shuffle manager
         List<FireMixtape> data = this.getFire();
-        this.shuffleManager = new ShuffleManager(data);
+        this.shuffleManager = new TheBrain(data, this);
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);

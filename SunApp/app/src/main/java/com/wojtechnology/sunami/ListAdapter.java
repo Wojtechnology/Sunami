@@ -1,8 +1,6 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.List;
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private ShuffleManager shuffleManager;
+    private TheBrain shuffleManager;
 
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
@@ -30,7 +26,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater inflater;
     List<FireMixtape> data = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data, ShuffleManager shuffleManager) {
+    public ListAdapter(Context context, List<FireMixtape> data, TheBrain shuffleManager) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.data = data;
