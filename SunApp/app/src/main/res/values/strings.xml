@@ -9,4 +9,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="preference_file_key">JpUc58Z55TjrRjW9zT77tT3r6X6Or7TT</string>
+    <string name="saved_db_status">isPopulated</string>
 </resources>

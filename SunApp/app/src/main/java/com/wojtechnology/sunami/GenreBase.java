@@ -13,7 +13,6 @@ public final class GenreBase {
     /* Inner class that defines the table contents */
     public static abstract class GenreEntry implements BaseColumns {
         public static final String TABLE_NAME = "entry";
-        public static final String COLUMN_NAME_ENTRY_ID = "entryid";
         public static final String COLUMN_NAME_GENRE = "genre";
         public static final String COLUMN_NAME_SHORT_TERM = "shortterm";
         public static final String COLUMN_NAME_LONG_TERM = "longterm";

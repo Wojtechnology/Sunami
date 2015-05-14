@@ -28,7 +28,7 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
 
-    private TheBrain shuffleManager;
+    private TheBrain theBrain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +48,11 @@ public class MainActivity extends ActionBarActivity {
 
         // Get music data and send to shuffle manager
         List<FireMixtape> data = this.getFire();
-        this.shuffleManager = new TheBrain(data, this);
+        this.theBrain = new TheBrain(data, this);
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        listAdapter = new ListAdapter(this, data, this.shuffleManager);
+        listAdapter = new ListAdapter(this, data, this.theBrain);
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

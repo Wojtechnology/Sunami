@@ -14,15 +14,13 @@ public class GenreDBHelper extends SQLiteOpenHelper{
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + GenreBase.GenreEntry.TABLE_NAME + " (" +
                     GenreBase.GenreEntry._ID + " INTEGER PRIMARY KEY," +
-                    GenreBase.GenreEntry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
                     GenreBase.GenreEntry.COLUMN_NAME_GENRE + TEXT_TYPE + COMMA_SEP +
                     GenreBase.GenreEntry.COLUMN_NAME_SHORT_TERM + REAL_TYPE + COMMA_SEP +
-                    GenreBase.GenreEntry.COLUMN_NAME_LONG_TERM + REAL_TYPE + COMMA_SEP +
-                    " )";
+                    GenreBase.GenreEntry.COLUMN_NAME_LONG_TERM + REAL_TYPE + " )";
 
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "FeedReader.db";
+    public static final String DATABASE_NAME = "Genres.db";
 
     public GenreDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
