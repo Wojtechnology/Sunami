@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,14 +11,12 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.*;
 
@@ -81,11 +78,11 @@ public class GenreContainer {
                 " millis.");
     }
 
-    public void saveGenres(){
+    public void saveGenre(GenreBase genre){
 
     }
 
-    public void loadGenres(){
+    public void getGenre(String genre){
 
     }
 }
