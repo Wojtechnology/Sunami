@@ -8,11 +8,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -121,6 +123,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     protected List<FireMixtape> getFire() {
+        long startTime = Calendar.getInstance().getTimeInMillis();
 
         List<FireMixtape> data = new ArrayList<>();
 
@@ -208,6 +211,10 @@ public class MainActivity extends ActionBarActivity {
         }
         projectionCursor.close();
         data = sortFire(data);
+
+        Log.i("MainActivity: ", "Finished getFire() in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
         return data;
     }
 

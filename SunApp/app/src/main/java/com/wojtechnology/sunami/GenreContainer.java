@@ -30,12 +30,9 @@ import org.json.*;
 public class GenreContainer {
 
     private Context context;
-
-    private Map<String, GenreVertex> genreReference;
-    private Map<GenreVertex, List<GenreEdge>> edges;
+    private Map<String, List<GenreEdge>> edges;
 
     public GenreContainer(Context context){
-        genreReference = new HashMap<>();
         edges = new HashMap<>();
         this.context = context;
         populateGraph();
@@ -55,27 +52,22 @@ public class GenreContainer {
             }
             is.close();
             String js = writer.toString();
-            JSONObject jo = null;
-            jo = new JSONObject(js);
+            JSONObject jo = new JSONObject(js);
+            Log.i("GenreContainer: ", "Read populateGraph() in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
+            startTime = Calendar.getInstance().getTimeInMillis();
             Iterator iterator = jo.keys();
             while(iterator.hasNext()){
-                String genre = (String)iterator.next();
-                GenreVertex gv = new GenreVertex(genre);
-                genreReference.put(genre, gv);
-            }
-            Set<String> genres = genreReference.keySet();
-            int num = 0;
-            for(String genre : genres){
+                String genre = (String) iterator.next();
                 List<GenreEdge> edgeList = new ArrayList<>();
                 JSONArray subGenres = jo.getJSONArray(genre);
                 for(int i = 0; i < subGenres.length(); i++){
-                    GenreEdge subGenre = new GenreEdge(genreReference.get(genre),
-                            genreReference.get(subGenres.getJSONObject(i).getString("name")),
+                    GenreEdge subGenre = new GenreEdge(genre,
+                            subGenres.getJSONObject(i).getString("name"),
                             subGenres.getJSONObject(i).getDouble("similarity"));
-                            edgeList.add(subGenre);
-                            num++;
+                    edgeList.add(subGenre);
                 }
-                edges.put(genreReference.get(genre), edgeList);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -87,5 +79,13 @@ public class GenreContainer {
         Log.i("GenreContainer: ", "Finished populateGraph() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
+    }
+
+    public void saveGenres(){
+
+    }
+
+    public void loadGenres(){
+
     }
 }
