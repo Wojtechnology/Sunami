@@ -11,7 +11,9 @@ public class GenreEdge {
     private double similarity;
 
     public GenreEdge(GenreVertex from, GenreVertex to, double similarity){
-
+        this.from = from;
+        this.to = to;
+        this.similarity = similarity;
     }
 
 }
