@@ -40,7 +40,10 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUserLearnedDrawer = Boolean.valueOf(readFromPreferences(getActivity(), KEY_USER_LEARNED_DRAWER, "false"));
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        mUserLearnedDrawer = sharedPref.getBoolean(
+                getString(R.string.user_learn_drawer), false);
         if(savedInstanceState != null){
             mFromSavedInstanceState = true;
         }
@@ -62,7 +65,10 @@ public class NavigationDrawerFragment extends Fragment {
                 super.onDrawerOpened(drawerView);
                 if(!mUserLearnedDrawer){
                     mUserLearnedDrawer = true;
-                    saveToPreferences(getActivity(), KEY_USER_LEARNED_DRAWER, mUserLearnedDrawer + "");
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(
+                            getString(R.string.preference_file_key), Context.MODE_PRIVATE).edit();
+                    editor.putBoolean(getString(R.string.user_learn_drawer), mUserLearnedDrawer);
+                    editor.commit();
                 }
                 getActivity().invalidateOptionsMenu();
             }
