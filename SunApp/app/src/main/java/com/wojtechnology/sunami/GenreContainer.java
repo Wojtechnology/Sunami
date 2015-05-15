@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.json.*;
 
+import javax.xml.transform.sax.TemplatesHandler;
+
 
 /**
  * Created by wojtekswiderski on 15-05-11.
@@ -33,12 +35,14 @@ import org.json.*;
 public class GenreContainer {
 
     private Context context;
-    private Map<String, List<GenreEdge>> mEdges;
+    private Map<String, GenreVertex> mGenreRef;
+    private Map<GenreVertex, List<GenreEdge>> mEdges;
     private GenreDBHelper mDB;
 
     public GenreContainer(Context context){
         this.mDB = new GenreDBHelper(context);
         this.mEdges = new HashMap<>();
+        this.mGenreRef = new HashMap<>();
         this.context = context;
         populateGraph();
     }
@@ -64,17 +68,23 @@ public class GenreContainer {
             startTime = Calendar.getInstance().getTimeInMillis();
             Iterator iterator = jo.keys();
             while(iterator.hasNext()){
-                String genre = (String) iterator.next();
+                String genre = (String)iterator.next();
+                GenreVertex gv = new GenreVertex(genre, 0.0, 0.0);
+                mGenreRef.put(genre, gv);
+            }
+            Set<String> genres = mGenreRef.keySet();
+            for(String genre : genres){
                 List<GenreEdge> edgeList = new ArrayList<>();
                 JSONArray subGenres = jo.getJSONArray(genre);
                 for(int i = 0; i < subGenres.length(); i++){
-                    GenreEdge subGenre = new GenreEdge(genre,
-                            subGenres.getJSONObject(i).getString("name"),
+                    GenreEdge subGenre = new GenreEdge(mGenreRef.get(genre),
+                            mGenreRef.get(subGenres.getJSONObject(i).getString("name")),
                             subGenres.getJSONObject(i).getDouble("similarity"));
                     edgeList.add(subGenre);
                 }
-                mEdges.put(genre, edgeList);
+                mEdges.put(mGenreRef.get(genre), edgeList);
             }
+            Set<GenreVertex> vertSet = mEdges.keySet();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -96,11 +106,11 @@ public class GenreContainer {
         if(!isPopulated) {
             long startTime = Calendar.getInstance().getTimeInMillis();
             SQLiteDatabase db = mDB.getWritableDatabase();
-            Set<String> genres = mEdges.keySet();
+            Set<GenreVertex> genres = mEdges.keySet();
             int numGenres = 0;
-            for (String genre : genres) {
+            for (GenreVertex genre : genres) {
                 ContentValues values = new ContentValues();
-                values.put(GenreBase.GenreEntry.COLUMN_NAME_GENRE, genre);
+                values.put(GenreBase.GenreEntry.COLUMN_NAME_GENRE, genre.genre);
                 values.put(GenreBase.GenreEntry.COLUMN_NAME_SHORT_TERM, 0.0);
                 values.put(GenreBase.GenreEntry.COLUMN_NAME_LONG_TERM, 0.0);
                 db.insert(GenreBase.GenreEntry.TABLE_NAME, null, values);

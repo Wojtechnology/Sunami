@@ -5,12 +5,12 @@ package com.wojtechnology.sunami;
  */
 public class GenreEdge {
 
-    private String from;
-    private String to;
+    public GenreVertex from;
+    public GenreVertex to;
 
     private double similarity;
 
-    public GenreEdge(String from, String to, double similarity){
+    public GenreEdge(GenreVertex from, GenreVertex to, double similarity){
         this.from = from;
         this.to = to;
         this.similarity = similarity;
