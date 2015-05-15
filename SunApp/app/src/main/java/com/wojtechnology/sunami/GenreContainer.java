@@ -138,11 +138,23 @@ public class GenreContainer {
                 " millis.");
     }
 
-    public void updateGenre(String genre){
-
+    // Implement the update value method for a positive change in a genre
+    // Will need more params
+    public void promoteGenre(String genre){
+        // LOL
     }
 
-    public void getGenre(String genre){
+    // Implement the update value method for a negative change in a genre
+    // Will need more params
+    public void demoteGenre(String genre){
+        // LOL
+    }
 
+    public double getGenreST(String genre){
+        return mGenreRef.get(genre).shortTerm;
+    }
+
+    public double getGenreLT(String genre){
+        return mGenreRef.get(genre).longTerm;
     }
 }
