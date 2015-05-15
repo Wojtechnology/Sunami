@@ -1,4 +1,4 @@
-package com.wojtechnology.sunami;
+package com.wojtechnology.sunami.archiveJava;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

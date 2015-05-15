@@ -3,10 +3,11 @@ package com.wojtechnology.sunami;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.MediaStore;
 import android.util.Log;
+
+import com.wojtechnology.sunami.archiveJava.GenreBase;
+import com.wojtechnology.sunami.archiveJava.GenreDBHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.*;
-
-import javax.xml.transform.sax.TemplatesHandler;
 
 
 /**
@@ -97,51 +96,11 @@ public class GenreContainer {
                 " millis.");
     }
 
-    // First time, populate DB with zeroes
-    public void populateDB(){
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        boolean isPopulated = sharedPref.getBoolean(
-                context.getString(R.string.saved_db_status), false);
-        if(!isPopulated) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
-            SQLiteDatabase db = mDB.getWritableDatabase();
-            Set<GenreVertex> genres = mEdges.keySet();
-            int numGenres = 0;
-            for (GenreVertex genre : genres) {
-                ContentValues values = new ContentValues();
-                values.put(GenreBase.GenreEntry.COLUMN_NAME_GENRE, genre.genre);
-                values.put(GenreBase.GenreEntry.COLUMN_NAME_SHORT_TERM, 0.0);
-                values.put(GenreBase.GenreEntry.COLUMN_NAME_LONG_TERM, 0.0);
-                db.insert(GenreBase.GenreEntry.TABLE_NAME, null, values);
-                numGenres++;
-            }
-            Log.i("GenreContainer: ", "Finished populateDB() in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis with numGenres: " + Integer.toString(numGenres) + ".");
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean(context.getString(R.string.saved_db_status), true);
-            editor.commit();
-        }
-    }
-
     public void updateGenre(String genre){
 
     }
 
     public void getGenre(String genre){
 
-    }
-
-    public class Genre{
-        public double shortTerm;
-        public double longTerm;
-        public String genre;
-
-        public Genre(String genre, double shortTerm, double longTerm){
-            this.genre = genre;
-            this.shortTerm = shortTerm;
-            this.longTerm = longTerm;
-        }
     }
 }
