@@ -59,29 +59,29 @@ public class GenreContainer {
                 writer.write(buffer, 0, n);
             }
             is.close();
-            String js = writer.toString();
-            JSONObject jo = new JSONObject(js);
+            String jString = writer.toString();
+            JSONArray ja = new JSONArray(jString);
             Log.i("GenreContainer: ", "Read populateGraph() in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
             startTime = Calendar.getInstance().getTimeInMillis();
-            Iterator iterator = jo.keys();
-            while(iterator.hasNext()){
-                String genre = (String)iterator.next();
-                GenreVertex gv = new GenreVertex(genre, 0.0, 0.0);
+            for(int i = 0; i < ja.length(); i++){
+                JSONObject jo = ja.getJSONObject(i);
+                String genre = jo.getString("genre");
+                GenreVertex gv = new GenreVertex(genre, jo.getDouble("st"), jo.getDouble("lt"));
                 mGenreRef.put(genre, gv);
             }
-            Set<String> genres = mGenreRef.keySet();
-            for(String genre : genres){
+            for(int i = 0; i < ja.length(); i++){
+                GenreVertex gv = mGenreRef.get(ja.getJSONObject(i).getString("genre"));
                 List<GenreEdge> edgeList = new ArrayList<>();
-                JSONArray subGenres = jo.getJSONArray(genre);
-                for(int i = 0; i < subGenres.length(); i++){
-                    GenreEdge subGenre = new GenreEdge(mGenreRef.get(genre),
-                            mGenreRef.get(subGenres.getJSONObject(i).getString("name")),
-                            subGenres.getJSONObject(i).getDouble("similarity"));
+                JSONArray subGenres = ja.getJSONObject(i).getJSONArray("assoc");
+                for(int j = 0; j < subGenres.length(); j++){
+                    GenreEdge subGenre = new GenreEdge(gv,
+                            mGenreRef.get(subGenres.getJSONObject(j).getString("name")),
+                            subGenres.getJSONObject(j).getDouble("similarity"));
                     edgeList.add(subGenre);
                 }
-                mEdges.put(mGenreRef.get(genre), edgeList);
+                mEdges.put(mGenreRef.get(gv), edgeList);
             }
             Set<GenreVertex> vertSet = mEdges.keySet();
         } catch (UnsupportedEncodingException e) {

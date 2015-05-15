@@ -51,7 +51,7 @@ public class TheBrain {
                 break;
             }
         }
-        Log.e("PlaySong", playing.title);
+        Log.e("TheBrain", "Playing song " + playing.title);
 
         try{
             mediaPlayer.reset();

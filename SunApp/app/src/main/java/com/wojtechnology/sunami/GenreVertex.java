@@ -7,25 +7,25 @@ public class GenreVertex{
     public String genre;
 
     // Value that is short term
-    private double shortValue;
+    private double shortTerm;
 
     // Value that is long term
-    private double longValue;
+    private double longTerm;
 
-    public GenreVertex(String genre, double shortValue, double longValue){
+    public GenreVertex(String genre, double shortTerm, double longTerm){
         this.genre = genre;
-        this.shortValue = shortValue;
-        this.longValue = longValue;
+        this.shortTerm = shortTerm;
+        this.longTerm = longTerm;
     }
 
-    public void add_values(double shortValue, double longValue){
-        this.shortValue += shortValue;
-        this.longValue += longValue;
+    public void add_values(double shortTerm, double longTerm){
+        this.shortTerm += shortTerm;
+        this.longTerm += longTerm;
     }
 
     public void reset_values(){
-        this.shortValue = 0.0;
-        this.longValue = 0.0;
+        this.shortTerm = 0.0;
+        this.longTerm = 0.0;
     }
 
 }
