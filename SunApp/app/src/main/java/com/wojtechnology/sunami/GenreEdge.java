@@ -8,7 +8,7 @@ public class GenreEdge {
     public GenreVertex from;
     public GenreVertex to;
 
-    private double similarity;
+    public double similarity;
 
     public GenreEdge(GenreVertex from, GenreVertex to, double similarity){
         this.from = from;

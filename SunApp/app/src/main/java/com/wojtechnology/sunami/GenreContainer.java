@@ -10,6 +10,8 @@ import com.wojtechnology.sunami.archiveJava.GenreBase;
 import com.wojtechnology.sunami.archiveJava.GenreDBHelper;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,22 +51,25 @@ public class GenreContainer {
     // Load data for genres.json resource
     public void populateGraph() {
         long startTime = Calendar.getInstance().getTimeInMillis();
-        InputStream is = context.getResources().openRawResource(R.raw.genres);
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
+        InputStream is;
         try {
-            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            int n;
-            while ((n = reader.read(buffer)) != -1){
-                writer.write(buffer, 0, n);
+            is = context.openFileInput("genresStore.json");
+            Log.e("GenreContainer", "Open existing");
+        } catch (FileNotFoundException e) {
+            is = context.getResources().openRawResource(R.raw.genres);
+            Log.e("GenreContainer", "Open new");
+        }
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line = reader.readLine();
+            String jString = "";
+            while (line != null) {
+                jString += line;
+                line = reader.readLine();
             }
+            reader.close();
             is.close();
-            String jString = writer.toString();
             JSONArray ja = new JSONArray(jString);
-            Log.i("GenreContainer: ", "Read populateGraph() in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
-            startTime = Calendar.getInstance().getTimeInMillis();
             for(int i = 0; i < ja.length(); i++){
                 JSONObject jo = ja.getJSONObject(i);
                 String genre = jo.getString("genre");
@@ -81,9 +86,8 @@ public class GenreContainer {
                             subGenres.getJSONObject(j).getDouble("similarity"));
                     edgeList.add(subGenre);
                 }
-                mEdges.put(mGenreRef.get(gv), edgeList);
+                mEdges.put(gv, edgeList);
             }
-            Set<GenreVertex> vertSet = mEdges.keySet();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -92,6 +96,44 @@ public class GenreContainer {
             e.printStackTrace();
         }
         Log.i("GenreContainer: ", "Finished populateGraph() in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
+    }
+
+    public void saveGraph(){
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        FileOutputStream outputStream;
+        try {
+            FileOutputStream fileOS = context.openFileOutput(
+                    "genresStore.json", Context.MODE_PRIVATE);
+            JSONArray ja = new JSONArray();
+            Set<GenreVertex> vertices = mEdges.keySet();
+            for (GenreVertex vertex : vertices){
+                List<GenreEdge> edgeList = mEdges.get(vertex);
+                JSONObject jo = new JSONObject();
+                jo.put("genre", vertex.genre);
+                jo.put("lt", vertex.longTerm);
+                jo.put("st", vertex.shortTerm);
+                JSONArray assocList = new JSONArray();
+                for(GenreEdge edge : edgeList){
+                    JSONObject assocJO = new JSONObject();
+                    assocJO.put("name", edge.to.genre);
+                    assocJO.put("similarity", edge.similarity);
+                    assocList.put(assocJO);
+                }
+                jo.put("assoc", assocList);
+                ja.put(jo);
+            }
+            fileOS.write(ja.toString().getBytes());
+            fileOS.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.i("GenreContainer: ", "Finished saveGraph() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
     }

@@ -7,10 +7,10 @@ public class GenreVertex{
     public String genre;
 
     // Value that is short term
-    private double shortTerm;
+    public double shortTerm;
 
     // Value that is long term
-    private double longTerm;
+    public double longTerm;
 
     public GenreVertex(String genre, double shortTerm, double longTerm){
         this.genre = genre;
