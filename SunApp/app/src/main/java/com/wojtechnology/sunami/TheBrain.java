@@ -33,7 +33,6 @@ public class TheBrain {
         }
         mediaPlayer = new MediaPlayer();
         genreContainer = new GenreContainer(context);
-        genreContainer.populateDB();
     }
 
     // Returns the current music list in current order
