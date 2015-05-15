@@ -33,14 +33,14 @@ import org.json.*;
 /**
  * Created by wojtekswiderski on 15-05-11.
  */
-public class GenreContainer {
+public class GenreGraph {
 
     private Context context;
     private Map<String, GenreVertex> mGenreRef;
     private Map<GenreVertex, List<GenreEdge>> mEdges;
     private GenreDBHelper mDB;
 
-    public GenreContainer(Context context){
+    public GenreGraph(Context context){
         this.mDB = new GenreDBHelper(context);
         this.mEdges = new HashMap<>();
         this.mGenreRef = new HashMap<>();
@@ -54,10 +54,10 @@ public class GenreContainer {
         InputStream is;
         try {
             is = context.openFileInput("genresStore.json");
-            Log.e("GenreContainer", "Open existing");
+            Log.e("GenreGraph", "Open existing");
         } catch (FileNotFoundException e) {
             is = context.getResources().openRawResource(R.raw.genres);
-            Log.e("GenreContainer", "Open new");
+            Log.e("GenreGraph", "Open new");
         }
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -95,7 +95,7 @@ public class GenreContainer {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("GenreContainer: ", "Finished populateGraph() in " +
+        Log.i("GenreGraph", "Finished populateGraph() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
     }
@@ -133,7 +133,7 @@ public class GenreContainer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.i("GenreContainer: ", "Finished saveGraph() in " +
+        Log.i("GenreGraph", "Finished saveGraph() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
     }

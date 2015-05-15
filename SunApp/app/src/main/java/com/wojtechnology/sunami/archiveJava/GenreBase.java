@@ -19,7 +19,7 @@ public final class GenreBase {
     }
 }
 
-// Used to be included in GenreContainer.java, when databases were used
+// Used to be included in GenreGraph.java, when databases were used
 // No longer required
 /*public class Genre{
         public double shortTerm;
@@ -52,7 +52,7 @@ public final class GenreBase {
                 db.insert(GenreBase.GenreEntry.TABLE_NAME, null, values);
                 numGenres++;
             }
-            Log.i("GenreContainer: ", "Finished populateDB() in " +
+            Log.i("GenreGraph: ", "Finished populateDB() in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis with numGenres: " + Integer.toString(numGenres) + ".");
             SharedPreferences.Editor editor = sharedPref.edit();

@@ -3,15 +3,11 @@ package com.wojtechnology.sunami;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 /**
  * Created by wojtekswiderski on 15-04-19.
@@ -24,19 +20,22 @@ public class TheBrain {
     private FireMixtape playing;
     private FireMixtape next;
     private MediaPlayer mediaPlayer;
-    private GenreContainer genreContainer;
+    private GenreGraph genreGraph;
+    private SongManager songManager;
 
-    public TheBrain(List<FireMixtape> data, Context context){
-        fireMixtapes = new ArrayList<FireMixtape>();
-        for(FireMixtape item : data){
-            fireMixtapes.add(item);
-        }
+    public TheBrain(Context context){
+        songManager = new SongManager(context);
+        fireMixtapes = songManager.getFire();
+        genreGraph = new GenreGraph(context);
+        genreGraph.saveGraph();
         mediaPlayer = new MediaPlayer();
-        genreContainer = new GenreContainer(context);
-        genreContainer.saveGraph();
     }
 
-    // Returns the current music list in current order
+    public List<FireMixtape> getDataByTitle() {
+        return fireMixtapes;
+    }
+
+    /*// Returns the current music list in current order
     public List<FireMixtape> getMusicList(){
         List<FireMixtape> data = new ArrayList<FireMixtape>();
         for(FireMixtape item : this.fireMixtapes){
@@ -63,5 +62,5 @@ public class TheBrain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
