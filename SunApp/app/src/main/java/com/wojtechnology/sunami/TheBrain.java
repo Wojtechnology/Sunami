@@ -16,32 +16,35 @@ import java.util.List;
 // Class that manages the smart shuffle
 public class TheBrain {
 
+    private Context context;
+
+    // List used for the display
     private List<FireMixtape> fireMixtapes;
     private FireMixtape playing;
     private FireMixtape next;
     private MediaPlayer mediaPlayer;
     private GenreGraph genreGraph;
-    private SongManager songManager;
 
     public TheBrain(Context context){
-        songManager = new SongManager(context);
-        fireMixtapes = songManager.getFire();
-        genreGraph = new GenreGraph(context);
+        this.context = context;
+        init();
+    }
+
+    // save all data that needs to persist in between sessions
+    public void kill(){
         genreGraph.saveGraph();
+    }
+
+    private void init(){
+        fireMixtapes = SongManager.getSongs(context);
+        // Sort mixtapes for display
+        fireMixtapes = SongManager.sortByTitle(context, fireMixtapes);
+        genreGraph = new GenreGraph(context);
         mediaPlayer = new MediaPlayer();
     }
 
     public List<FireMixtape> getDataByTitle() {
         return fireMixtapes;
-    }
-
-    /*// Returns the current music list in current order
-    public List<FireMixtape> getMusicList(){
-        List<FireMixtape> data = new ArrayList<FireMixtape>();
-        for(FireMixtape item : this.fireMixtapes){
-            data.add(item);
-        }
-        return data;
     }
 
     public void playSong(String _id){
@@ -62,5 +65,5 @@ public class TheBrain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 }

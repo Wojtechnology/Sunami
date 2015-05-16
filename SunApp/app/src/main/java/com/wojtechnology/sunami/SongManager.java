@@ -19,15 +19,7 @@ import java.util.Map;
  */
 public class SongManager {
 
-    private List<FireMixtape> data;
-    private Context context;
-
-    public SongManager(Context context) {
-        data = new ArrayList<>();
-        this.context = context;
-    }
-
-    protected List<FireMixtape> sortFire() {
+    public static List<FireMixtape> sortByTitle(Context context, List<FireMixtape> data) {
         Collections.sort(data, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
@@ -82,7 +74,7 @@ public class SongManager {
         return data;
     }
 
-    private char firstLetter(String word){
+    private static char firstLetter(String word){
         word = word.toUpperCase();
         if(word.length() > 4) {
             if (word.substring(0, 4).equals("THE ")) {
@@ -92,9 +84,10 @@ public class SongManager {
         return word.charAt(0);
     }
 
-    protected List<FireMixtape> getFire() {
+    public static List<FireMixtape> getSongs(Context context){
         long startTime = Calendar.getInstance().getTimeInMillis();
 
+        List<FireMixtape> data = new ArrayList<>();
         //Some audio may be explicitly marked as not being music
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
@@ -178,7 +171,6 @@ public class SongManager {
 
         }
         projectionCursor.close();
-        data = sortFire();
 
         Log.i("SongManager", "Finished getFire() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
