@@ -17,6 +17,7 @@ import java.util.List;
 public class TheBrain {
 
     private Context context;
+    private boolean changedState;
 
     // List used for the display
     private List<FireMixtape> fireMixtapes;
@@ -27,12 +28,15 @@ public class TheBrain {
 
     public TheBrain(Context context){
         this.context = context;
+        this.changedState = false;
         init();
     }
 
     // save all data that needs to persist in between sessions
-    public void kill(){
-        genreGraph.saveGraph();
+    public void savePersistentState(){
+        if (changedState) {
+            genreGraph.saveGraph();
+        }
     }
 
     private void init(){

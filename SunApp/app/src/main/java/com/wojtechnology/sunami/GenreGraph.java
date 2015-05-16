@@ -38,10 +38,8 @@ public class GenreGraph {
     private Context context;
     private Map<String, GenreVertex> mGenreRef;
     private Map<GenreVertex, List<GenreEdge>> mEdges;
-    private GenreDBHelper mDB;
 
     public GenreGraph(Context context){
-        this.mDB = new GenreDBHelper(context);
         this.mEdges = new HashMap<>();
         this.mGenreRef = new HashMap<>();
         this.context = context;
@@ -102,7 +100,6 @@ public class GenreGraph {
 
     public void saveGraph(){
         long startTime = Calendar.getInstance().getTimeInMillis();
-        FileOutputStream outputStream;
         try {
             FileOutputStream fileOS = context.openFileOutput(
                     "genresStore.json", Context.MODE_PRIVATE);

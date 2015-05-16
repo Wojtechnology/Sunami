@@ -48,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
 
         // Get music data and send to shuffle manager
         theBrain = new TheBrain(this);
+        theBrain.savePersistentState();
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
@@ -55,11 +56,6 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-    }
-
-    @Override
-    protected void onDestroy(){
-        theBrain.kill();
     }
 
     @Override

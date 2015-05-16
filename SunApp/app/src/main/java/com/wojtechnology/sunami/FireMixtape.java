@@ -34,23 +34,15 @@ public class FireMixtape{
 
     // Song data from SQL
     public String _id;
+    public String title;
+    public String display_name;
     public String album;
-    public String album_id;
     public String artist;
-    public String artist_id;
-    public String bookmark;
-    public String composer;
+    public String genre;
     public String duration;
-    public String title_key;
     public String year;
     public String data;
-    public String date_added;
-    public String display_name;
-    public String mime_type;
     public String size;
-    public String title;
-    public String genre_id;
-    public String genre;
 
     public FireMixtape(Context context) {
         this.default_icon_id = R.mipmap.ic_launcher;
