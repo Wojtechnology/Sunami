@@ -20,7 +20,7 @@ public class TheBrain {
     private boolean changedState;
 
     // List used for the display
-    private List<FireMixtape> fireMixtapes;
+    private SongManager songManager;
     private FireMixtape playing;
     private FireMixtape next;
     private MediaPlayer mediaPlayer;
@@ -40,34 +40,33 @@ public class TheBrain {
     }
 
     private void init(){
-        fireMixtapes = SongManager.getSongs(context);
+        songManager = new SongManager(context);
         // Sort mixtapes for display
-        fireMixtapes = SongManager.sortByTitle(context, fireMixtapes);
+        songManager.sortByTitle();
         genreGraph = new GenreGraph(context);
         mediaPlayer = new MediaPlayer();
     }
 
     public List<FireMixtape> getDataByTitle() {
-        return fireMixtapes;
+        return songManager.getFire();
     }
 
     public void playSong(String _id){
-        for(int i = 0; i < fireMixtapes.size(); i++){
-            if(fireMixtapes.get(i)._id == _id){
-                playing = fireMixtapes.get(i);
-                break;
-            }
-        }
-        Log.e("TheBrain", "Playing song " + playing.title);
+        playing = songManager.getSong(_id);
 
-        try{
-            mediaPlayer.reset();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(playing.data);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(playing != null) {
+            Log.e("TheBrain", "Playing song " + playing.title);
+            try{
+                mediaPlayer.reset();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setDataSource(playing.data);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Log.e("TheBrain", "Song with id " + _id + " not found");
         }
     }
 }

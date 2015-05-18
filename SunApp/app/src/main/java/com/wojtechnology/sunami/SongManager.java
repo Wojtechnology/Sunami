@@ -19,8 +19,17 @@ import java.util.Map;
  */
 public class SongManager {
 
-    public static List<FireMixtape> sortByTitle(Context context, List<FireMixtape> data) {
-        Collections.sort(data, new Comparator<FireMixtape>() {
+    private Context context;
+    private List<FireMixtape> fireMixtapes;
+
+    public SongManager(Context context) {
+        this.context = context;
+        fireMixtapes = new ArrayList<>();
+        initSongs();
+    }
+
+    public void sortByTitle() {
+        Collections.sort(fireMixtapes, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
                 String lTitle = lhs.title.toLowerCase();
@@ -44,14 +53,14 @@ public class SongManager {
         Map<Character, Integer> letters = new HashMap<>();
 
         int i = 0;
-        while(firstLetter(data.get(i).title) != 'A'){
+        while(firstLetter(fireMixtapes.get(i).title) != 'A'){
             i++;
         }
         int sum = i;
         int j = i;
 
-        for(char headerTitle = 'A'; headerTitle <= 'Z' && i < data.size(); i++){
-            if(firstLetter(data.get(i).title) != headerTitle){
+        for(char headerTitle = 'A'; headerTitle <= 'Z' && i < fireMixtapes.size(); i++){
+            if(firstLetter(fireMixtapes.get(i).title) != headerTitle){
                 letters.put(headerTitle, i - j);
                 headerTitle++;
                 j = i;
@@ -65,16 +74,14 @@ public class SongManager {
                 FireMixtape mixtape = new FireMixtape(context);
                 mixtape.title = Character.toString(headerTitle);
                 mixtape.genre = "__header__";
-                data.add(sum, mixtape);
+                fireMixtapes.add(sum, mixtape);
                 sum++;
             }
             sum += letters.get(headerTitle);
         }
-
-        return data;
     }
 
-    private static char firstLetter(String word){
+    private char firstLetter(String word){
         word = word.toUpperCase();
         if(word.length() > 4) {
             if (word.substring(0, 4).equals("THE ")) {
@@ -84,10 +91,22 @@ public class SongManager {
         return word.charAt(0);
     }
 
-    public static List<FireMixtape> getSongs(Context context){
+    public List<FireMixtape> getFire() {
+        return fireMixtapes;
+    }
+
+    public FireMixtape getSong(String _id){
+        for(int i = 0; i < fireMixtapes.size(); i++){
+            if(fireMixtapes.get(i)._id == _id){
+                return fireMixtapes.get(i);
+            }
+        }
+        return null;
+    }
+
+    private void initSongs(){
         long startTime = Calendar.getInstance().getTimeInMillis();
 
-        List<FireMixtape> data = new ArrayList<>();
         //Some audio may be explicitly marked as not being music
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
@@ -148,7 +167,7 @@ public class SongManager {
                 current.size = cursor.getString(8);
                 current.genre = genre_name;
 
-                data.add(current);
+                fireMixtapes.add(current);
 
             }
 
@@ -160,6 +179,5 @@ public class SongManager {
         Log.i("SongManager", "Finished getFire() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
-        return data;
     }
 }
