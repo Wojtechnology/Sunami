@@ -42,7 +42,6 @@ public class TheBrain {
     private void init(){
         songManager = new SongManager(context);
         // Sort mixtapes for display
-        songManager.sortByTitle();
         genreGraph = new GenreGraph(context);
         mediaPlayer = new MediaPlayer();
     }

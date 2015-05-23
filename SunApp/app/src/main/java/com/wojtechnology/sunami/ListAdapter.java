@@ -7,7 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextClock;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +61,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final FireMixtape current = data.get(position);
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
+            itemHolder.duration.setText(displayTime(current.duration));
             itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -84,15 +89,17 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class ItemHolder extends RecyclerView.ViewHolder {
         private TextView title;
         private TextView artist;
+        private TextView duration;
         private ImageView icon;
-        private LinearLayout background;
+        private RelativeLayout background;
 
         public ItemHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.list_title);
             artist = (TextView) itemView.findViewById(R.id.list_artist);
+            duration = (TextView) itemView.findViewById(R.id.list_duration);
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
-            background = (LinearLayout) itemView.findViewById(R.id.list_background);
+            background = (RelativeLayout) itemView.findViewById(R.id.list_background);
         }
     }
 
@@ -103,5 +110,24 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             label = (TextView) itemView.findViewById(R.id.header_label);
         }
+    }
+
+    private String displayTime(String time){
+        String newTime = "";
+        int intTime = Integer.parseInt(time);
+        if(intTime < 60000){
+            newTime += "0";
+        }else{
+            newTime += Integer.toString(intTime / 60000);
+            intTime = intTime % 60000;
+        }
+        newTime += ":";
+        String seconds = Integer.toString(intTime / 1000);
+        if(seconds.length() == 1){
+            newTime += "0" + seconds;
+        }else{
+            newTime += seconds;
+        }
+        return newTime;
     }
 }

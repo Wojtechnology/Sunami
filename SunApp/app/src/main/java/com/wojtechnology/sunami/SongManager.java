@@ -183,6 +183,7 @@ public class SongManager {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            sortByTitle();
             ((MainActivity) context).setProgressBar(false);
             ((MainActivity) context).setRecyclerViewData();
         }
