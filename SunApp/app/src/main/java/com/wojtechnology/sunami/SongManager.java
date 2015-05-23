@@ -29,6 +29,10 @@ public class SongManager {
     }
 
     public void sortByTitle() {
+        if (fireMixtapes.size() <= 0){
+            return;
+        }
+
         Collections.sort(fireMixtapes, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
@@ -53,7 +57,8 @@ public class SongManager {
         Map<Character, Integer> letters = new HashMap<>();
 
         int i = 0;
-        while(firstLetter(fireMixtapes.get(i).title) != 'A'){
+        while(firstLetter(fireMixtapes.get(i).title) < 'A' ||
+                firstLetter(fireMixtapes.get(i).title) > 'Z'){
             i++;
         }
         int sum = i;
@@ -122,6 +127,47 @@ public class SongManager {
                 MediaStore.Audio.Media.SIZE,
         };
 
+        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;;
+
+        Cursor cursor = context.getContentResolver().query(
+                uri,
+                projection,
+                selection,
+                null,
+                null
+        );
+
+        if (cursor == null){
+            return;
+        }
+
+        while (cursor.moveToNext()) {
+
+            // Create song object
+            FireMixtape current = new FireMixtape(context);
+
+            current._id = cursor.getString(0);
+            current.title = cursor.getString(1);
+            current.display_name = cursor.getString(2);
+            current.album = cursor.getString(3);
+            current.artist = cursor.getString(4);
+            current.duration = cursor.getString(5);
+            current.year = cursor.getString(6);
+            current.data = cursor.getString(7);
+            current.size = cursor.getString(8);
+
+            fireMixtapes.add(current);
+
+        }
+
+        cursor.close();
+
+        Log.i("SongManager", "Finished getFire() in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
+    }
+
+    private void updateGenres(){
         String[] genresProjection = {
                 MediaStore.Audio.Genres._ID,
                 MediaStore.Audio.Genres.NAME
@@ -136,48 +182,16 @@ public class SongManager {
                 null
         );
 
+        if (projectionCursor == null){
+            return;
+        }
+
         while (projectionCursor.moveToNext()) {
 
             String genre_id = projectionCursor.getString(0);
             String genre_name = projectionCursor.getString(1);
 
-            uri = MediaStore.Audio.Genres.Members.getContentUri("external", Long.parseLong(genre_id));
-
-            Cursor cursor = context.getContentResolver().query(
-                    uri,
-                    projection,
-                    selection,
-                    null,
-                    null
-            );
-
-            while (cursor.moveToNext()) {
-
-                // Create song object
-                FireMixtape current = new FireMixtape(context);
-
-                current._id = cursor.getString(0);
-                current.title = cursor.getString(1);
-                current.display_name = cursor.getString(2);
-                current.album = cursor.getString(3);
-                current.artist = cursor.getString(4);
-                current.duration = cursor.getString(5);
-                current.year = cursor.getString(6);
-                current.data = cursor.getString(7);
-                current.size = cursor.getString(8);
-                current.genre = genre_name;
-
-                fireMixtapes.add(current);
-
-            }
-
-            cursor.close();
-
         }
         projectionCursor.close();
-
-        Log.i("SongManager", "Finished getFire() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
     }
 }

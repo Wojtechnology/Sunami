@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(R.string.title_activity_main);
+        getSupportActionBar().setElevation(25f);
 
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
