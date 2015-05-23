@@ -115,65 +115,81 @@ public class SongManager {
         return null;
     }
 
+    private class InitSongsTask extends AsyncTask<Void, Integer, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
+
+            //Some audio may be explicitly marked as not being music
+            String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+
+            String[] projection = {
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.DISPLAY_NAME,
+                    MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.ARTIST,
+                    MediaStore.Audio.Media.DURATION,
+                    MediaStore.Audio.Media.YEAR,
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media.SIZE,
+            };
+
+            Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;;
+
+            Cursor cursor = context.getContentResolver().query(
+                    uri,
+                    projection,
+                    selection,
+                    null,
+                    null
+            );
+
+            if (cursor == null){
+                return null;
+            }
+
+            while (cursor.moveToNext()) {
+
+                // Create song object
+                FireMixtape current = new FireMixtape(context);
+
+                current._id = cursor.getString(0);
+                current.title = cursor.getString(1);
+                current.display_name = cursor.getString(2);
+                current.album = cursor.getString(3);
+                current.artist = cursor.getString(4);
+                current.duration = cursor.getString(5);
+                current.year = cursor.getString(6);
+                current.data = cursor.getString(7);
+                current.size = cursor.getString(8);
+
+                displayList.add(current);
+                songDict.put(current._id, current);
+
+            }
+
+            cursor.close();
+
+            Log.i("SongManager", "Finished getFire() in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
+
+            new UpdateGenresTask().execute();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            ((MainActivity) context).setProgressBar(false);
+            ((MainActivity) context).setRecyclerViewData();
+        }
+    }
+
     private void initSongs(){
-        long startTime = Calendar.getInstance().getTimeInMillis();
-
-        //Some audio may be explicitly marked as not being music
-        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-
-        String[] projection = {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.DISPLAY_NAME,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.YEAR,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.SIZE,
-        };
-
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;;
-
-        Cursor cursor = context.getContentResolver().query(
-                uri,
-                projection,
-                selection,
-                null,
-                null
-        );
-
-        if (cursor == null){
-            return;
-        }
-
-        while (cursor.moveToNext()) {
-
-            // Create song object
-            FireMixtape current = new FireMixtape(context);
-
-            current._id = cursor.getString(0);
-            current.title = cursor.getString(1);
-            current.display_name = cursor.getString(2);
-            current.album = cursor.getString(3);
-            current.artist = cursor.getString(4);
-            current.duration = cursor.getString(5);
-            current.year = cursor.getString(6);
-            current.data = cursor.getString(7);
-            current.size = cursor.getString(8);
-
-            displayList.add(current);
-            songDict.put(current._id, current);
-
-        }
-
-        cursor.close();
-
-        Log.i("SongManager", "Finished getFire() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
-
-        new UpdateGenresTask().execute();
+        new InitSongsTask().execute();
     }
 
     private class UpdateGenresTask extends AsyncTask<Void, Integer, Void>{

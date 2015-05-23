@@ -11,10 +11,7 @@
         <item name="colorAccent">@color/accentColor</item>
     </style>
 
-    <style name="customToolbarTheme" parent="customToolbarTheme.Base">
-    </style>
-
-    <style name="customToolbarTheme.Base" parent="@style/ThemeOverlay.AppCompat.Dark">
+    <style name="customToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark">
     </style>
 
 </resources>

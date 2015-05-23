@@ -1,6 +1,7 @@
 package com.wojtechnology.sunami;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
@@ -9,9 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.net.Uri;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
+    private ProgressBar progressBar;
 
     private TheBrain theBrain;
 
@@ -42,6 +47,9 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(R.string.title_activity_main);
         getSupportActionBar().setElevation(25f);
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
@@ -53,10 +61,20 @@ public class MainActivity extends ActionBarActivity {
 
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
+    }
+
+    public void setProgressBar(boolean on){
+        if(on){
+            progressBar.setVisibility(View.VISIBLE);
+        }else{
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void setRecyclerViewData(){
         listAdapter = new ListAdapter(this, theBrain.getDataByTitle(), this.theBrain);
         recyclerView.setAdapter(listAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
     }
 
     @Override

@@ -20,6 +20,15 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/app_bar"></android.support.v7.widget.RecyclerView>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"/>
+
     </RelativeLayout>
 
     <fragment
