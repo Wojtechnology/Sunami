@@ -3,6 +3,7 @@
     <color name="primaryColor">#03A9F4</color>
     <color name="primaryColorDark">#0288D1</color>
     <color name="accentColor">#FFAB40</color>
+    <color name="accentColorLight">#FFD180</color>
     <color name="listOddColor">#ECEFF1</color>
     <color name="listEvenColor">#FFFFFF</color>
     <color name="backgroundColor">#F5F5F5</color>

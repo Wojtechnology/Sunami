@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Sunami</string>
     <string name="title_activity_main">Your Music</string>
+    <string name="title_side_fragment">Up Next</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

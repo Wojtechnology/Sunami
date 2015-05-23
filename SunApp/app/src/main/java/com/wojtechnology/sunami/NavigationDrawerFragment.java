@@ -70,12 +70,14 @@ public class NavigationDrawerFragment extends Fragment {
                     editor.putBoolean(getString(R.string.user_learn_drawer), mUserLearnedDrawer);
                     editor.commit();
                 }
+                toolbar.setTitle(R.string.title_side_fragment);
                 getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                toolbar.setTitle(R.string.title_activity_main);
                 getActivity().invalidateOptionsMenu();
             }
         };
