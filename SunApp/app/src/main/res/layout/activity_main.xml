@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--<com.wojtechnology.sunami.OuterLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wojtechnology.sunami.OuterLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/outer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">-->
+    android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -49,21 +49,20 @@
                 android:layout_width="@dimen/nav_drawer_width"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
+                android:clickable="true"
                 app:layout="@layout/fragment_navigation_drawer"
-                tools:layout="@layout/fragment_navigation_drawer" />
+                tools:layout="@layout/fragment_navigation_drawer"/>
 
         </android.support.v4.widget.DrawerLayout>
 
     </LinearLayout>
 
-    <!--<RelativeLayout
+    <RelativeLayout
         android:id="@+id/draggable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="0dp"
         android:background="@color/accentColor"
-        android:clickable="true"
-        android:layout_below="@id/main_layout">
+        android:clickable="true">
 
         <Button
             android:id="@+id/draggable_button"
@@ -73,4 +72,4 @@
 
     </RelativeLayout>
 
-</com.wojtechnology.sunami.OuterLayout>-->
+</com.wojtechnology.sunami.OuterLayout>

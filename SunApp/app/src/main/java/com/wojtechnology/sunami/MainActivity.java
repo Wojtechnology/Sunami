@@ -51,12 +51,12 @@ public class MainActivity extends ActionBarActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
-        //outerLayout = (OuterLayout) findViewById(R.id.outer_layout);
+        outerLayout = (OuterLayout) findViewById(R.id.outer_layout);
 
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar, this);
 
         // Get music data and send to shuffle manager
         theBrain = new TheBrain(this);
@@ -72,6 +72,14 @@ public class MainActivity extends ActionBarActivity {
         }else{
             progressBar.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void displaySong(){
+        outerLayout.displaySong();
+    }
+
+    public void hideSong(){
+        outerLayout.hideDisplay();
     }
 
     public void setRecyclerViewData(){

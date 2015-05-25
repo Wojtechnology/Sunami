@@ -61,11 +61,16 @@ public class TheBrain {
                 mediaPlayer.setDataSource(playing.data);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+                ((MainActivity) context).displaySong();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }else{
             Log.e("TheBrain", "Song with id " + _id + " not found");
         }
+    }
+
+    public boolean isPlaying(){
+        return mediaPlayer.isPlaying();
     }
 }

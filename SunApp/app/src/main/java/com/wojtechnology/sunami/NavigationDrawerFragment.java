@@ -1,6 +1,7 @@
 package com.wojtechnology.sunami;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +57,7 @@ public class NavigationDrawerFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
     }
 
-    public void setUp(int fragmentID, DrawerLayout drawerLayout, final Toolbar toolbar) {
+    public void setUp(int fragmentID, DrawerLayout drawerLayout, final Toolbar toolbar, final Context context) {
         containerView = getActivity().findViewById(fragmentID);
         mDrawerLayout = drawerLayout;
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -79,6 +81,15 @@ public class NavigationDrawerFragment extends Fragment {
                 super.onDrawerClosed(drawerView);
                 toolbar.setTitle(R.string.title_activity_main);
                 getActivity().invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                if(slideOffset > 0.0f){
+                    ((MainActivity) context).hideSong();
+                }else{
+                    ((MainActivity) context).displaySong();
+                }
             }
         };
         if(!mUserLearnedDrawer && !mFromSavedInstanceState){

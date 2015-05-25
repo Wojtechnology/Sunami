@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEE"
+    android:clickable="true"
     tools:context="com.wojtechnology.sunami.NavigationDrawerFragment">
 
     <LinearLayout

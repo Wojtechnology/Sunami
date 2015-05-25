@@ -1,12 +1,18 @@
 package com.wojtechnology.sunami;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -22,11 +28,17 @@ public class OuterLayout extends RelativeLayout {
     private int mDraggingBorder;
     private int mVerticalRange;
     private boolean mIsOpen;
+    private Context context;
+    private boolean mActive;
+    private boolean mIsFirst;
 
     public OuterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         mDraggingState = 0;
         mIsOpen = true;
+        mActive = false;
+        mIsFirst = true;
     }
 
     public class DragHelperCallback extends ViewDragHelper.Callback {
@@ -99,6 +111,7 @@ public class OuterLayout extends RelativeLayout {
             }
 
             final int settleDestY = settleToOpen ? mVerticalRange : 0;
+            mIsOpen = settleToOpen ? true : false;
 
             if(mDragHelper.settleCapturedViewAt(0, settleDestY)){
                 ViewCompat.postInvalidateOnAnimation(OuterLayout.this);
@@ -110,15 +123,62 @@ public class OuterLayout extends RelativeLayout {
     protected void onFinishInflate() {
         mDragHelper = ViewDragHelper.create(this, 1.0f, new DragHelperCallback());
         mIsOpen = true;
+        mActive = false;
+        mIsFirst = true;
         mDraggingState = 0;
-        //mDraggable = (RelativeLayout) findViewById(R.id.draggable);
-        //mDraggableButton = (Button) findViewById(R.id.draggable_button);
+        mDraggable = (RelativeLayout) findViewById(R.id.draggable);
+        mDraggableButton = (Button) findViewById(R.id.draggable_button);
+        updateDefaultLocation();
         super.onFinishInflate();
+    }
+
+    public int updateDefaultLocation(){
+        Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
+        Window window = ((Activity)context).getWindow();
+        Point size = new Point();
+        Rect rectangle = new Rect();
+        display.getSize(size);
+        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        return updateDefaultLocation(size.y - rectangle.top);
+    }
+
+    public int updateDefaultLocation(int screenHeight){
+        int height;
+        if(mActive){
+            height = screenHeight - mDraggableButton.getMeasuredHeight();
+        }else {
+            height = screenHeight;
+        }
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mDraggable.getLayoutParams();
+        params.topMargin = height;
+        params.bottomMargin = -height;
+        mDraggable.setLayoutParams(params);
+
+        if(!mIsFirst){
+            if(mIsOpen) {
+                if (mDragHelper.smoothSlideViewTo(mDraggable, 0, height)) {
+                    mDragHelper.continueSettling(true);
+                }
+            }else{
+                mDraggable.setTop(1);
+                if (mDragHelper.smoothSlideViewTo(mDraggable, 0, 0)) {
+                    mDragHelper.continueSettling(true);
+                }
+            }
+        }
+
+        return height;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mVerticalRange = h - mDraggableButton.getMeasuredHeight();
+        if(!mIsFirst) {
+            updateDefaultLocation(h);
+        }else{
+            mIsFirst = false;
+        }
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -174,7 +234,14 @@ public class OuterLayout extends RelativeLayout {
         return mIsOpen;
     }
 
-    public void showDisplay(){
-        mDragHelper.smoothSlideViewTo(mDraggable, 0, mDraggable.getMeasuredHeight() - mDraggableButton.getMeasuredHeight());
+    public void displaySong(){
+        mActive = true;
+        updateDefaultLocation();
+    }
+
+    public void hideDisplay(){
+        mIsOpen = true;
+        mActive = false;
+        updateDefaultLocation();
     }
 }
