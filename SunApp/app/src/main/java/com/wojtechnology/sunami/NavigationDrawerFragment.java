@@ -34,6 +34,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mUserLearnedDrawer;
     private boolean mFromSavedInstanceState;
     private View containerView;
+    private boolean mOpened;
 
     public NavigationDrawerFragment() {
         // Required empty public constructor
@@ -49,6 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
         if(savedInstanceState != null){
             mFromSavedInstanceState = true;
         }
+        mOpened = false;
     }
 
     @Override
@@ -85,15 +87,23 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
                 if(slideOffset > 0.0f){
-                    ((MainActivity) context).hideSong();
+                    if(!mOpened) {
+                        ((MainActivity) context).hideSong();
+                        mOpened = true;
+                    }
                 }else{
                     ((MainActivity) context).displaySong();
+                    mOpened = false;
                 }
             }
         };
         if(!mUserLearnedDrawer && !mFromSavedInstanceState){
             mDrawerLayout.openDrawer(containerView);
+            mOpened = true;
+        }else{
+            mOpened = false;
         }
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
