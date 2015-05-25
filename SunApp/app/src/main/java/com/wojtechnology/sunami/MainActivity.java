@@ -32,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
     private ProgressBar progressBar;
+    private OuterLayout outerLayout;
 
     private TheBrain theBrain;
 
@@ -49,6 +50,8 @@ public class MainActivity extends ActionBarActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
+
+        //outerLayout = (OuterLayout) findViewById(R.id.outer_layout);
 
         // Setup navigation drawer from left
         NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
