@@ -14,7 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by wojtekswiderski on 15-05-24.
@@ -24,21 +28,21 @@ public class OuterLayout extends RelativeLayout {
     private int mDraggingState;
     private ViewDragHelper mDragHelper;
     private RelativeLayout mDraggable;
-    private Button mDraggableButton;
+    private LinearLayout mSongHint;
+    private Button mPlayHintButton;
+    private TextView mHintTitle;
+    private TextView mHintArtist;
     private int mDraggingBorder;
     private int mVerticalRange;
-    private boolean mIsOpen;
     private Context context;
+    private boolean mIsOpen;
     private boolean mActive;
+    private boolean mPlaying;
     private boolean mIsFirst;
 
     public OuterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        mDraggingState = 0;
-        mIsOpen = true;
-        mActive = false;
-        mIsFirst = true;
     }
 
     public class DragHelperCallback extends ViewDragHelper.Callback {
@@ -123,11 +127,33 @@ public class OuterLayout extends RelativeLayout {
     protected void onFinishInflate() {
         mDragHelper = ViewDragHelper.create(this, 1.0f, new DragHelperCallback());
         mIsOpen = true;
-        mActive = false;
         mIsFirst = true;
         mDraggingState = 0;
+
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
-        mDraggableButton = (Button) findViewById(R.id.draggable_button);
+        mSongHint = (LinearLayout) findViewById(R.id.song_hint);
+        mPlayHintButton = (Button) findViewById(R.id.play_hint_button);
+        mHintTitle = (TextView) findViewById(R.id.hint_title);
+        mHintArtist = (TextView) findViewById(R.id.hint_artist);
+
+        mPlayHintButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((MainActivity) context).isPlaying()){
+                    ((MainActivity) context).pausePlay();
+                    v.setBackgroundResource(R.drawable.ic_play_hint);
+                }else{
+                    ((MainActivity) context).resumePlay();
+                    v.setBackgroundResource(R.drawable.ic_pause_hint);
+                }
+            }
+        });
+
+        if(((MainActivity) context).isPlaying()){
+            playSong(new FireMixtape(context));
+        }else{
+            mActive = false;
+        }
         updateDefaultLocation();
         super.onFinishInflate();
     }
@@ -145,7 +171,7 @@ public class OuterLayout extends RelativeLayout {
     public int updateDefaultLocation(int screenHeight){
         int height;
         if(mActive){
-            height = screenHeight - mDraggableButton.getMeasuredHeight();
+            height = screenHeight - mSongHint.getMeasuredHeight();
         }else {
             height = screenHeight;
         }
@@ -173,7 +199,7 @@ public class OuterLayout extends RelativeLayout {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mVerticalRange = h - mDraggableButton.getMeasuredHeight();
+        mVerticalRange = h - mSongHint.getMeasuredHeight();
         if(!mIsFirst) {
             updateDefaultLocation(h);
         }else{
@@ -192,8 +218,8 @@ public class OuterLayout extends RelativeLayout {
 
     private boolean isDraggableTarget(MotionEvent event){
         int[] draggableLocation = new int[2];
-        mDraggableButton.getLocationOnScreen(draggableLocation);
-        int upperLimit = draggableLocation[1] + mDraggableButton.getMeasuredHeight();
+        mSongHint.getLocationOnScreen(draggableLocation);
+        int upperLimit = draggableLocation[1] + mSongHint.getMeasuredHeight();
         int lowerLimit = draggableLocation[1];
         int y = (int) event.getRawY();
         return (y > lowerLimit && y < upperLimit);
@@ -234,14 +260,23 @@ public class OuterLayout extends RelativeLayout {
         return mIsOpen;
     }
 
-    public void displaySong(){
+    public void playSong(FireMixtape song){
         mActive = true;
+        mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
+        mHintTitle.setText(song.title);
+        mHintArtist.setText(song.artist);
+
         updateDefaultLocation();
     }
 
-    public void hideDisplay(){
+    public void hideSong(){
         mIsOpen = true;
         mActive = false;
+        updateDefaultLocation();
+    }
+
+    public void showSong(){
+        mActive = true;
         updateDefaultLocation();
     }
 }

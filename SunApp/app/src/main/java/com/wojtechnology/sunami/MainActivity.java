@@ -66,22 +66,6 @@ public class MainActivity extends ActionBarActivity {
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
     }
 
-    public void setProgressBar(boolean on){
-        if(on){
-            progressBar.setVisibility(View.VISIBLE);
-        }else{
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    public void displaySong(){
-        outerLayout.displaySong();
-    }
-
-    public void hideSong(){
-        outerLayout.hideDisplay();
-    }
-
     public void setRecyclerViewData(){
         listAdapter = new ListAdapter(this, theBrain.getDataByTitle(), this.theBrain);
         recyclerView.setAdapter(listAdapter);
@@ -108,5 +92,41 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setProgressBar(boolean on){
+        if(on){
+            progressBar.setVisibility(View.VISIBLE);
+        }else{
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void playSong(FireMixtape song){
+        outerLayout.playSong(song);
+    }
+
+    public void hideSong(){
+        outerLayout.hideSong();
+    }
+
+    public void showSong() {
+        outerLayout.showSong();
+    }
+
+    public boolean isPlaying() {
+        try {
+            return theBrain.mediaPlayer.isPlaying();
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public void pausePlay(){
+        theBrain.mediaPlayer.pause();
+    }
+
+    public void resumePlay(){
+        theBrain.mediaPlayer.start();
     }
 }

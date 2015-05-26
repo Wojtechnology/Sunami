@@ -23,8 +23,9 @@ public class TheBrain {
     private SongManager songManager;
     private FireMixtape playing;
     private FireMixtape next;
-    private MediaPlayer mediaPlayer;
     private GenreGraph genreGraph;
+
+    public MediaPlayer mediaPlayer;
 
     public TheBrain(Context context){
         this.context = context;
@@ -61,7 +62,7 @@ public class TheBrain {
                 mediaPlayer.setDataSource(playing.data);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-                ((MainActivity) context).displaySong();
+                ((MainActivity) context).playSong(playing);
             } catch (IOException e) {
                 e.printStackTrace();
             }

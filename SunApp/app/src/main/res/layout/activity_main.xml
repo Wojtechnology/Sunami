@@ -61,14 +61,61 @@
         android:id="@+id/draggable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/accentColor"
+        android:background="#FFF"
         android:clickable="true">
 
-        <Button
-            android:id="@+id/draggable_button"
+        <LinearLayout
+            android:id="@+id/song_hint"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:text="Hey"/>
+            android:layout_height="66dp"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/accentColor"/>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/play_hint_button"
+                    android:layout_margin="8dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/ic_play_hint"/>
+                
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="72dp"
+                    android:orientation="vertical"
+                    android:paddingLeft="8dp">
+
+                    <TextView
+                        android:id="@+id/hint_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="0dp"
+                        android:paddingTop="12dp"
+                        android:singleLine="true"
+                        android:textSize="16sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/hint_artist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="0dp"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                    </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

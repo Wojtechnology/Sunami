@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class NavigationDrawerFragment extends Fragment {
                         mOpened = true;
                     }
                 }else{
-                    ((MainActivity) context).displaySong();
+                    ((MainActivity) context).showSong();
                     mOpened = false;
                 }
             }
