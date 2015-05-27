@@ -86,6 +86,13 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/ic_play_hint"/>
+
+                <Button
+                    android:id="@+id/next_hint_button"
+                    android:layout_margin="8dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/ic_next_hint"/>
                 
                 <LinearLayout
                     android:layout_width="wrap_content"

@@ -129,4 +129,8 @@ public class MainActivity extends ActionBarActivity {
     public void resumePlay(){
         theBrain.mediaPlayer.start();
     }
+
+    public void nextPlay(){
+
+    }
 }
