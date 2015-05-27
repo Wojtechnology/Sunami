@@ -21,7 +21,8 @@ import java.util.Map;
 public class SongManager {
 
     private Context context;
-    private List<FireMixtape> displayList;
+
+    private List<FireMixtape> songList;
     private Map<String, FireMixtape> songDict;
 
     private boolean genresUpdated;
@@ -29,14 +30,15 @@ public class SongManager {
     public SongManager(Context context) {
         this.context = context;
         genresUpdated = false;
-        displayList = new ArrayList<>();
+        songList = new ArrayList<>();
         songDict = new HashMap<>();
         initSongs();
     }
 
-    public void sortByTitle() {
-        if (displayList.size() <= 0){
-            return;
+    public List<FireMixtape> getByTitle() {
+        List<FireMixtape> displayList = songList;
+        if (songList.size() <= 0){
+            return displayList;
         }
 
         Collections.sort(displayList, new Comparator<FireMixtape>() {
@@ -82,7 +84,7 @@ public class SongManager {
         for(char headerTitle = 'A'; headerTitle <= 'Z'
                 && letters.containsKey(headerTitle); headerTitle++){
             if(letters.get(headerTitle) != 0) {
-                FireMixtape mixtape = new FireMixtape(context);
+                FireMixtape mixtape = new FireMixtape(null);
                 mixtape.title = Character.toString(headerTitle);
                 mixtape.genre = "__header__";
                 displayList.add(sum, mixtape);
@@ -90,6 +92,8 @@ public class SongManager {
             }
             sum += letters.get(headerTitle);
         }
+
+        return displayList;
     }
 
     private char firstLetter(String word){
@@ -103,16 +107,24 @@ public class SongManager {
     }
 
     public List<FireMixtape> getFire() {
-        return displayList;
+        return songList;
     }
 
     public FireMixtape getSong(String _id){
-        for(int i = 0; i < displayList.size(); i++){
-            if(displayList.get(i)._id == _id){
-                return displayList.get(i);
+        for(int i = 0; i < songList.size(); i++){
+            if(songList.get(i)._id == _id){
+                return songList.get(i);
             }
         }
         return null;
+    }
+
+    public int size(){
+        return songList.size();
+    }
+
+    public String getSongId(int index){
+        return songList.get(index)._id;
     }
 
     private class InitSongsTask extends AsyncTask<Void, Integer, Void>{
@@ -165,7 +177,7 @@ public class SongManager {
                 current.data = cursor.getString(7);
                 current.size = cursor.getString(8);
 
-                displayList.add(current);
+                songList.add(current);
                 songDict.put(current._id, current);
 
             }
@@ -183,7 +195,6 @@ public class SongManager {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            sortByTitle();
             ((MainActivity) context).setProgressBar(false);
             ((MainActivity) context).setRecyclerViewData();
         }
@@ -266,8 +277,8 @@ public class SongManager {
     }
 
     private void printSongs(){
-        for(int i = 0; i < displayList.size(); i++){
-            Log.i("SongManager", displayList.get(i).title + ": Genre - " + displayList.get(i).genre);
+        for(int i = 0; i < songList.size(); i++){
+            Log.i("SongManager", songList.get(i).title + ": Genre - " + songList.get(i).genre);
         }
     }
 }

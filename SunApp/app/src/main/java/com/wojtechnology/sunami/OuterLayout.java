@@ -30,6 +30,7 @@ public class OuterLayout extends RelativeLayout {
     private RelativeLayout mDraggable;
     private LinearLayout mSongHint;
     private Button mPlayHintButton;
+    private Button mNextHintButton;
     private TextView mHintTitle;
     private TextView mHintArtist;
     private int mDraggingBorder;
@@ -133,6 +134,7 @@ public class OuterLayout extends RelativeLayout {
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
         mSongHint = (LinearLayout) findViewById(R.id.song_hint);
         mPlayHintButton = (Button) findViewById(R.id.play_hint_button);
+        mNextHintButton = (Button) findViewById(R.id.next_hint_button);
         mHintTitle = (TextView) findViewById(R.id.hint_title);
         mHintArtist = (TextView) findViewById(R.id.hint_artist);
 
@@ -146,6 +148,13 @@ public class OuterLayout extends RelativeLayout {
                     ((MainActivity) context).resumePlay();
                     v.setBackgroundResource(R.drawable.ic_pause_hint);
                 }
+            }
+        });
+
+        mNextHintButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) context).nextPlay();
             }
         });
 

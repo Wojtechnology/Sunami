@@ -131,6 +131,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void nextPlay(){
-
+        theBrain.playNext();
     }
 }

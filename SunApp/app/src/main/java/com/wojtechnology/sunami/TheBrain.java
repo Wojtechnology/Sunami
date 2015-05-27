@@ -7,7 +7,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by wojtekswiderski on 15-04-19.
@@ -16,26 +18,32 @@ import java.util.List;
 // Class that manages the smart shuffle
 public class TheBrain {
 
-    private Context context;
-    private boolean changedState;
+    private static final int UP_NEXT_MIN = 10;
 
-    // List used for the display
+    private Context context;
+    private boolean mChangedState;
+
+    // Contains list of songs
     private SongManager songManager;
-    private FireMixtape playing;
-    private FireMixtape next;
+
+    // Contains list of genres
     private GenreGraph genreGraph;
+
+    private Queue<FireMixtape> mUpNext;
+    private FireMixtape playing;
 
     public MediaPlayer mediaPlayer;
 
     public TheBrain(Context context){
         this.context = context;
-        this.changedState = false;
+        mChangedState = false;
+        mUpNext = new LinkedList<>();
         init();
     }
 
     // save all data that needs to persist in between sessions
     public void savePersistentState(){
-        if (changedState) {
+        if (mChangedState) {
             genreGraph.saveGraph();
         }
     }
@@ -48,7 +56,7 @@ public class TheBrain {
     }
 
     public List<FireMixtape> getDataByTitle() {
-        return songManager.getFire();
+        return songManager.getByTitle();
     }
 
     public void playSong(String _id){
@@ -71,7 +79,8 @@ public class TheBrain {
         }
     }
 
-    public boolean isPlaying(){
-        return mediaPlayer.isPlaying();
+    public void playNext(){
+        int random = (int) (Math.random() * songManager.size());
+        playSong(songManager.getSongId(random));
     }
 }
