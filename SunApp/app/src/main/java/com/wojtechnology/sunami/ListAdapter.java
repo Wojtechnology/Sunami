@@ -6,12 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextClock;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.List;
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private TheBrain shuffleManager;
+    private TheBrain theBrain;
 
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
@@ -30,11 +26,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater inflater;
     List<FireMixtape> data = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data, TheBrain shuffleManager) {
+    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.data = data;
-        this.shuffleManager = shuffleManager;
+        this.theBrain = theBrain;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    shuffleManager.playSong(current._id);
+                    theBrain.playSong(current._id);
                 }
             });
         }

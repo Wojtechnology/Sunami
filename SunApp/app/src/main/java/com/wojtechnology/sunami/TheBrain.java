@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,16 @@ public class TheBrain {
         mediaPlayer = new MediaPlayer();
     }
 
+    private void loadQueue(){
+        while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < songManager.size()) {
+            int random = (int) (Math.random() * songManager.size());
+            FireMixtape song = songManager.getSong(songManager.getSongId(random));
+            if(!mUpNext.contains(song)){
+                mUpNext.add(song);
+            }
+        }
+    }
+
     public List<FireMixtape> getDataByTitle() {
         return songManager.getByTitle();
     }
@@ -80,8 +91,8 @@ public class TheBrain {
     }
 
     public void playNext(){
-        int random = (int) (Math.random() * songManager.size());
-        playSong(songManager.getSongId(random));
+        loadQueue();
+        playSong(mUpNext.remove()._id);
     }
 
     public boolean hasSong(){
