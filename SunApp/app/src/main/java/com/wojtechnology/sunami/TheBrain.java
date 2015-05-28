@@ -80,10 +80,11 @@ public class TheBrain {
     }
 
     public void playNext(){
-        for(int i = 0; i < songManager.size(); i++){
-            playSong(songManager.getSongId(i));
-        }
-        /*int random = (int) (Math.random() * songManager.size());
-        playSong(songManager.getSongId(random));*/
+        int random = (int) (Math.random() * songManager.size());
+        playSong(songManager.getSongId(random));
+    }
+
+    public boolean hasSong(){
+        return playing == null ? false : true;
     }
 }

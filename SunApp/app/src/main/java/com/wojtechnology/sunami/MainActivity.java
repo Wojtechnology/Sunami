@@ -127,6 +127,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void resumePlay(){
+        if (!theBrain.hasSong()){
+            theBrain.playNext();
+        }
         theBrain.mediaPlayer.start();
     }
 
