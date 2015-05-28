@@ -36,7 +36,7 @@ public class SongManager {
     }
 
     public List<FireMixtape> getByTitle() {
-        List<FireMixtape> displayList = songList;
+        List<FireMixtape> displayList = new ArrayList<>(songList);
         if (songList.size() <= 0){
             return displayList;
         }
@@ -163,7 +163,6 @@ public class SongManager {
             }
 
             while (cursor.moveToNext()) {
-
                 // Create song object
                 FireMixtape current = new FireMixtape(context);
 
@@ -181,7 +180,6 @@ public class SongManager {
                 songDict.put(current._id, current);
 
             }
-
             cursor.close();
 
             Log.i("SongManager", "Finished getFire() in " +
@@ -236,7 +234,6 @@ public class SongManager {
             }
 
             while (projectionCursor.moveToNext()) {
-
                 String genre_id = projectionCursor.getString(0);
                 String genre_name = projectionCursor.getString(1);
 
@@ -251,14 +248,10 @@ public class SongManager {
                 );
 
                 while (cursor.moveToNext()) {
-
                     String _id = cursor.getString(0);
                     songDict.get(_id).genre = genre_name;
-
                 }
-
                 cursor.close();
-
             }
             projectionCursor.close();
 

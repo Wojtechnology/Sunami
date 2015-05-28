@@ -72,7 +72,7 @@ public class TheBrain {
                 mediaPlayer.start();
                 ((MainActivity) context).playSong(playing);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("TheBrain", "Player broked");
             }
         }else{
             Log.e("TheBrain", "Song with id " + _id + " not found");
@@ -80,7 +80,10 @@ public class TheBrain {
     }
 
     public void playNext(){
-        int random = (int) (Math.random() * songManager.size());
-        playSong(songManager.getSongId(random));
+        for(int i = 0; i < songManager.size(); i++){
+            playSong(songManager.getSongId(i));
+        }
+        /*int random = (int) (Math.random() * songManager.size());
+        playSong(songManager.getSongId(random));*/
     }
 }
