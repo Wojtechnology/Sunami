@@ -175,6 +175,7 @@ public class SongManager {
                 current.year = cursor.getString(6);
                 current.data = cursor.getString(7);
                 current.size = cursor.getString(8);
+                current.genre = "__notfound__";
 
                 songList.add(current);
                 songDict.put(current._id, current);
@@ -185,16 +186,15 @@ public class SongManager {
             Log.i("SongManager", "Finished getFire() in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
-
-            new UpdateGenresTask().execute();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            ((MainActivity) context).setProgressBar(false);
-            ((MainActivity) context).setRecyclerViewData();
+            ((MainActivity) context).doneLoadingSongs();
+
+            new UpdateGenresTask().execute();
         }
     }
 

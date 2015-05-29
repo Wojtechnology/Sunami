@@ -102,6 +102,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    // The following functions call functions in OuterLayout.java
     public void playSong(FireMixtape song){
         outerLayout.playSong(song);
     }
@@ -112,6 +113,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void showSong() {
         outerLayout.showSong();
+    }
+
+    // The following functions call functions in TheBrain.java
+    public void doneLoadingSongs(){
+        theBrain.postInit();
     }
 
     public boolean isPlaying() {

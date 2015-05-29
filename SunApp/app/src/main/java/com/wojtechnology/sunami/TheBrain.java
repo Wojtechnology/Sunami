@@ -3,11 +3,16 @@ package com.wojtechnology.sunami;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ProgressBar;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -19,7 +24,7 @@ import java.util.Queue;
 // Class that manages the smart shuffle
 public class TheBrain {
 
-    private static final int UP_NEXT_MIN = 10;
+    private static final int UP_NEXT_MIN = 1;
 
     private Context context;
     private boolean mChangedState;
@@ -28,14 +33,14 @@ public class TheBrain {
     private SongManager songManager;
 
     // Contains list of genres
-    private GenreGraph genreGraph;
+    private GenreGraph mGenreGraph;
 
     private Queue<FireMixtape> mUpNext;
     private FireMixtape playing;
 
     public MediaPlayer mediaPlayer;
 
-    public TheBrain(Context context){
+    public TheBrain(Context context) {
         this.context = context;
         mChangedState = false;
         mUpNext = new LinkedList<>();
@@ -43,24 +48,92 @@ public class TheBrain {
     }
 
     // save all data that needs to persist in between sessions
-    public void savePersistentState(){
+    public void savePersistentState() {
         if (mChangedState) {
-            genreGraph.saveGraph();
+            saveAppData();
         }
     }
 
-    private void init(){
+    private void init() {
         songManager = new SongManager(context);
         // Sort mixtapes for display
-        genreGraph = new GenreGraph(context);
+        mGenreGraph = new GenreGraph(context);
         mediaPlayer = new MediaPlayer();
     }
 
-    private void loadQueue(){
+    public void postInit() {
+        loadQueue();
+        ((MainActivity) context).setProgressBar(false);
+        ((MainActivity) context).setRecyclerViewData();
+        readAppData();
+    }
+
+    private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            InputStream is;
+            try {
+                is = context.openFileInput("appData.json");
+                Log.e("GenreGraph", "Open existing");
+            } catch (FileNotFoundException e) {
+                is = context.getResources().openRawResource(R.raw.genres);
+                Log.e("GenreGraph", "Open new");
+
+            }
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line = reader.readLine();
+                String jString = "";
+                while (line != null) {
+                    jString += line;
+                    line = reader.readLine();
+                }
+                reader.close();
+                is.close();
+                JSONArray ja = new JSONArray(jString);
+                mGenreGraph.populateGraphJSON(ja);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private void readAppData() {
+        new LoadAppDataTask().execute();
+    }
+
+    private class SaveAppDataTask extends AsyncTask<Void, Integer, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try{
+                FileOutputStream fileOS = context.openFileOutput(
+                        "appData.json", Context.MODE_PRIVATE);
+                JSONArray ja = mGenreGraph.getGraphJSON();
+                fileOS.write(ja.toString().getBytes());
+                fileOS.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private void saveAppData() {
+        new SaveAppDataTask().execute();
+    }
+
+    private void loadQueue() {
         while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < songManager.size()) {
             int random = (int) (Math.random() * songManager.size());
             FireMixtape song = songManager.getSong(songManager.getSongId(random));
-            if(!mUpNext.contains(song)){
+            if (!mUpNext.contains(song)) {
                 mUpNext.add(song);
             }
         }
@@ -70,12 +143,12 @@ public class TheBrain {
         return songManager.getByTitle();
     }
 
-    public void playSong(String _id){
+    public void playSong(String _id) {
         playing = songManager.getSong(_id);
 
-        if(playing != null) {
+        if (playing != null) {
             Log.e("TheBrain", "Playing song " + playing.title);
-            try{
+            try {
                 mediaPlayer.reset();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setDataSource(playing.data);
@@ -83,19 +156,19 @@ public class TheBrain {
                 mediaPlayer.start();
                 ((MainActivity) context).playSong(playing);
             } catch (IOException e) {
-                Log.e("TheBrain", "Player broked");
+                e.printStackTrace();
             }
-        }else{
+        } else {
             Log.e("TheBrain", "Song with id " + _id + " not found");
         }
     }
 
-    public void playNext(){
-        loadQueue();
+    public void playNext() {
         playSong(mUpNext.remove()._id);
+        loadQueue();
     }
 
-    public boolean hasSong(){
-        return playing == null ? false : true;
+    public boolean hasSong() {
+        return playing != null;
     }
 }
