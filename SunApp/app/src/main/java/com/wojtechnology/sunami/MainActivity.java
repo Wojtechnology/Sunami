@@ -128,15 +128,24 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void pausePlay(){
-        theBrain.mediaPlayer.pause();
+    public boolean pausePlay(){
+        if(theBrain.hasSong()){
+            theBrain.mediaPlayer.pause();
+            return true;
+        }
+        return false;
     }
 
-    public void resumePlay(){
+    public boolean resumePlay(){
         if (!theBrain.hasSong()){
             theBrain.playNext();
+            if(!theBrain.hasSong()){
+                return false;
+            }
+        }else {
+            theBrain.mediaPlayer.start();
         }
-        theBrain.mediaPlayer.start();
+        return true;
     }
 
     public void nextPlay(){

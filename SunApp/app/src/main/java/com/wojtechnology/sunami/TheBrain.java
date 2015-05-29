@@ -1,9 +1,12 @@
 package com.wojtechnology.sunami;
 
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -22,7 +26,7 @@ import java.util.Queue;
  */
 
 // Class that manages the smart shuffle
-public class TheBrain {
+public class TheBrain extends Service{
 
     private static final int UP_NEXT_MIN = 1;
 
@@ -45,6 +49,16 @@ public class TheBrain {
         mChangedState = false;
         mUpNext = new LinkedList<>();
         init();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     // save all data that needs to persist in between sessions
@@ -72,6 +86,7 @@ public class TheBrain {
 
         @Override
         protected Void doInBackground(Void... params) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
             InputStream is;
             try {
                 is = context.openFileInput("appData.json");
@@ -91,6 +106,9 @@ public class TheBrain {
                 }
                 reader.close();
                 is.close();
+                Log.i("TheBrain", "Finished reading file in " +
+                        Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                        " millis.");
                 JSONArray ja = new JSONArray(jString);
                 mGenreGraph.populateGraphJSON(ja);
             } catch (JSONException e1) {
@@ -164,7 +182,9 @@ public class TheBrain {
     }
 
     public void playNext() {
-        playSong(mUpNext.remove()._id);
+        if(mUpNext.size() > 0) {
+            playSong(mUpNext.remove()._id);
+        }
         loadQueue();
     }
 

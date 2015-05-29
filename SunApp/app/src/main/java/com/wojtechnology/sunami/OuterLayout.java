@@ -142,11 +142,13 @@ public class OuterLayout extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(((MainActivity) context).isPlaying()){
-                    ((MainActivity) context).pausePlay();
-                    v.setBackgroundResource(R.drawable.ic_play_hint);
+                    if(((MainActivity) context).pausePlay()) {
+                        v.setBackgroundResource(R.drawable.ic_play_hint);
+                    }
                 }else{
-                    ((MainActivity) context).resumePlay();
-                    v.setBackgroundResource(R.drawable.ic_pause_hint);
+                    if(((MainActivity) context).resumePlay()) {
+                        v.setBackgroundResource(R.drawable.ic_pause_hint);
+                    }
                 }
             }
         });

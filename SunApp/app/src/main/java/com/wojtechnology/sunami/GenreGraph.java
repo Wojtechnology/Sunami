@@ -73,7 +73,7 @@ public class GenreGraph {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("GenreGraph", "Finished populateGraph() in " +
+        Log.i("GenreGraph", "Finished populateGraphJSON() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
         isPopulated = true;
@@ -104,7 +104,7 @@ public class GenreGraph {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("GenreGraph", "Finished saveGraph() in " +
+        Log.i("GenreGraph", "Finished getGraphJSON() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                 " millis.");
         return new JSONArray();
