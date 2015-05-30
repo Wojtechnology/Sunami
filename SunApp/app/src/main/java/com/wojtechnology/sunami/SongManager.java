@@ -192,7 +192,7 @@ public class SongManager {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            ((MainActivity) context).doneLoadingSongs();
+            ((TheBrain) context).postInit();
 
             new UpdateGenresTask().execute();
         }

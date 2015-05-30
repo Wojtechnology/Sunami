@@ -37,6 +37,7 @@ public class TheBrain extends Service{
     private MainActivity mContext;
     private boolean mChangedState;
     private boolean mIsInit;
+    private boolean mBound;
 
     // Contains list of songs
     private SongManager mSongManager;
@@ -54,6 +55,7 @@ public class TheBrain extends Service{
         Log.e("TheBrain", "Started service");
         mChangedState = false;
         mIsInit = false;
+        mBound = false;
         mUpNext = new LinkedList<>();
         super.onCreate();
     }
@@ -68,6 +70,12 @@ public class TheBrain extends Service{
         return mBinder;
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mBound = false;
+        return super.onUnbind(intent);
+    }
+
     public class LocalBinder extends Binder {
         public TheBrain getServiceInstance() {
             return TheBrain.this;
@@ -76,20 +84,23 @@ public class TheBrain extends Service{
 
     public void registerClient(MainActivity activity) {
         mContext = activity;
+        mBound = true;
         if (!mIsInit) {
             init();
             mIsInit = true;
         } else {
             loadQueue();
-            mContext.setProgressBar(false);
-            mContext.setRecyclerViewData();
+            if (mBound) {
+                mContext.setProgressBar(false);
+                mContext.setRecyclerViewData();
+            }
         }
     }
 
     private void setForegroundService(){
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        Notification notification = new Notification.Builder(mContext)
+        Notification notification = new Notification.Builder(this)
                 .setContentTitle(mPlaying.title)
                 .setContentText(mPlaying.artist)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -106,16 +117,18 @@ public class TheBrain extends Service{
     }
 
     private void init() {
-        mSongManager = new SongManager(mContext);
+        mSongManager = new SongManager(this);
         // Sort mixtapes for display
-        mGenreGraph = new GenreGraph(mContext);
+        mGenreGraph = new GenreGraph(this);
         mMediaPlayer = new MediaPlayer();
     }
 
     public void postInit() {
         loadQueue();
-        mContext.setProgressBar(false);
-        mContext.setRecyclerViewData();
+        if (mBound) {
+            mContext.setProgressBar(false);
+            mContext.setRecyclerViewData();
+        }
         readAppData();
     }
 
@@ -126,12 +139,11 @@ public class TheBrain extends Service{
             long startTime = Calendar.getInstance().getTimeInMillis();
             InputStream is;
             try {
-                is = mContext.openFileInput("appData.json");
+                is = TheBrain.this.openFileInput("appData.json");
                 Log.e("GenreGraph", "Open existing");
             } catch (FileNotFoundException e) {
-                is = mContext.getResources().openRawResource(R.raw.genres);
+                is = TheBrain.this.getResources().openRawResource(R.raw.genres);
                 Log.e("GenreGraph", "Open new");
-
             }
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -166,7 +178,7 @@ public class TheBrain extends Service{
         @Override
         protected Void doInBackground(Void... params) {
             try{
-                FileOutputStream fileOS = mContext.openFileOutput(
+                FileOutputStream fileOS = TheBrain.this.openFileOutput(
                         "appData.json", Context.MODE_PRIVATE);
                 JSONArray ja = mGenreGraph.getGraphJSON();
                 fileOS.write(ja.toString().getBytes());
@@ -213,7 +225,9 @@ public class TheBrain extends Service{
                 mMediaPlayer.setDataSource(mPlaying.data);
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
-                mContext.playSong(mPlaying);
+                if (mBound) {
+                    mContext.playSong(mPlaying);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

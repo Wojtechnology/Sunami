@@ -140,10 +140,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     // The following functions call functions in TheBrain.java
-    public void doneLoadingSongs(){
-        mTheBrain.postInit();
-    }
-
     public boolean isPlaying() {
         try {
             return mTheBrain.mMediaPlayer.isPlaying();
