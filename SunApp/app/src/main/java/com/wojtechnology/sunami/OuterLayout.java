@@ -35,7 +35,7 @@ public class OuterLayout extends RelativeLayout {
     private TextView mHintArtist;
     private int mDraggingBorder;
     private int mVerticalRange;
-    private Context context;
+    private MainActivity mContext;
     private boolean mIsOpen;
     private boolean mActive;
     private boolean mPlaying;
@@ -43,7 +43,7 @@ public class OuterLayout extends RelativeLayout {
 
     public OuterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
+        mContext = (MainActivity) context;
     }
 
     public class DragHelperCallback extends ViewDragHelper.Callback {
@@ -141,12 +141,12 @@ public class OuterLayout extends RelativeLayout {
         mPlayHintButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(((MainActivity) context).isPlaying()){
-                    if(((MainActivity) context).pausePlay()) {
+                if((mContext.isPlaying())){
+                    if(mContext.pausePlay()) {
                         v.setBackgroundResource(R.drawable.ic_play_hint);
                     }
                 }else{
-                    if(((MainActivity) context).resumePlay()) {
+                    if(mContext.resumePlay()) {
                         v.setBackgroundResource(R.drawable.ic_pause_hint);
                     }
                 }
@@ -156,22 +156,16 @@ public class OuterLayout extends RelativeLayout {
         mNextHintButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) context).nextPlay();
+                mContext.nextPlay();
             }
         });
-
-        if(((MainActivity) context).isPlaying()){
-            playSong(new FireMixtape(context));
-        }else{
-            mActive = false;
-        }
         updateDefaultLocation();
         super.onFinishInflate();
     }
 
     public int updateDefaultLocation(){
-        Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
-        Window window = ((Activity)context).getWindow();
+        Display display = mContext.getWindowManager().getDefaultDisplay();
+        Window window = mContext.getWindow();
         Point size = new Point();
         Rect rectangle = new Rect();
         display.getSize(size);
@@ -272,7 +266,12 @@ public class OuterLayout extends RelativeLayout {
     }
 
     public void playSong(FireMixtape song){
-        mActive = true;
+        if (song == null){
+            mActive = false;
+            return;
+        } else {
+            mActive = true;
+        }
         mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);

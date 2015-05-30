@@ -1,6 +1,7 @@
 package com.wojtechnology.sunami;
 
-import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,15 +36,16 @@ public class TheBrain extends Service{
 
     private MainActivity mContext;
     private boolean mChangedState;
+    private boolean mIsInit;
 
     // Contains list of songs
-    private SongManager songManager;
+    private SongManager mSongManager;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
     private Queue<FireMixtape> mUpNext;
-    private FireMixtape playing;
-    public MediaPlayer mediaPlayer;
+    public FireMixtape mPlaying;
+    public MediaPlayer mMediaPlayer;
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -52,6 +53,7 @@ public class TheBrain extends Service{
     public void onCreate() {
         Log.e("TheBrain", "Started service");
         mChangedState = false;
+        mIsInit = false;
         mUpNext = new LinkedList<>();
         super.onCreate();
     }
@@ -74,7 +76,26 @@ public class TheBrain extends Service{
 
     public void registerClient(MainActivity activity) {
         mContext = activity;
-        init();
+        if (!mIsInit) {
+            init();
+            mIsInit = true;
+        } else {
+            loadQueue();
+            mContext.setProgressBar(false);
+            mContext.setRecyclerViewData();
+        }
+    }
+
+    private void setForegroundService(){
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        Notification notification = new Notification.Builder(mContext)
+                .setContentTitle(mPlaying.title)
+                .setContentText(mPlaying.artist)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
+                .build();
+        startForeground(534, notification);
     }
 
     // save all data that needs to persist in between sessions
@@ -85,10 +106,10 @@ public class TheBrain extends Service{
     }
 
     private void init() {
-        songManager = new SongManager(mContext);
+        mSongManager = new SongManager(mContext);
         // Sort mixtapes for display
         mGenreGraph = new GenreGraph(mContext);
-        mediaPlayer = new MediaPlayer();
+        mMediaPlayer = new MediaPlayer();
     }
 
     public void postInit() {
@@ -164,9 +185,9 @@ public class TheBrain extends Service{
     }
 
     private void loadQueue() {
-        while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < songManager.size()) {
-            int random = (int) (Math.random() * songManager.size());
-            FireMixtape song = songManager.getSong(songManager.getSongId(random));
+        while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
+            int random = (int) (Math.random() * mSongManager.size());
+            FireMixtape song = mSongManager.getSong(mSongManager.getSongId(random));
             if (!mUpNext.contains(song)) {
                 mUpNext.add(song);
             }
@@ -174,21 +195,25 @@ public class TheBrain extends Service{
     }
 
     public List<FireMixtape> getDataByTitle() {
-        return songManager.getByTitle();
+        return mSongManager.getByTitle();
     }
 
     public void playSong(String _id) {
-        playing = songManager.getSong(_id);
+        FireMixtape oldPlaying = mPlaying;
+        mPlaying = mSongManager.getSong(_id);
 
-        if (playing != null) {
-            Log.e("TheBrain", "Playing song " + playing.title);
+        if (mPlaying != null) {
+            if (oldPlaying == null){
+                setForegroundService();
+            }
+            Log.e("TheBrain", "Playing song " + mPlaying.title);
             try {
-                mediaPlayer.reset();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setDataSource(playing.data);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                mContext.playSong(playing);
+                mMediaPlayer.reset();
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mMediaPlayer.setDataSource(mPlaying.data);
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
+                mContext.playSong(mPlaying);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -205,6 +230,6 @@ public class TheBrain extends Service{
     }
 
     public boolean hasSong() {
-        return playing != null;
+        return mPlaying != null;
     }
 }

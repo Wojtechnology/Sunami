@@ -67,7 +67,7 @@
         <LinearLayout
             android:id="@+id/song_hint"
             android:layout_width="match_parent"
-            android:layout_height="66dp"
+            android:layout_height="@dimen/hint_height"
             android:orientation="vertical">
 
             <View
