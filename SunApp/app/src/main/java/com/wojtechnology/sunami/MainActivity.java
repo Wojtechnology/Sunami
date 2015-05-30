@@ -1,8 +1,13 @@
 package com.wojtechnology.sunami;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -50,7 +55,6 @@ public class MainActivity extends ActionBarActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
-
         outerLayout = (OuterLayout) findViewById(R.id.outer_layout);
 
         // Setup navigation drawer from left
@@ -58,13 +62,34 @@ public class MainActivity extends ActionBarActivity {
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbar, this);
 
-        // Get music data and send to shuffle manager
-        theBrain = new TheBrain(this);
-        theBrain.savePersistentState();
-
         // Setup
         recyclerView = (RecyclerView) findViewById(R.id.drawer_list);
+
+        Intent serviceIntent = new Intent(MainActivity.this, TheBrain.class);
+        startService(serviceIntent);
+        bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
     }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(mConnection);
+        super.onDestroy();
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e("MainActivity", "Service connected");
+            TheBrain.LocalBinder binder = (TheBrain.LocalBinder) service;
+            theBrain = binder.getServiceInstance();
+            theBrain.registerClient(MainActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.e("MainActivity", "Service disconnected");
+        }
+    };
 
     public void setRecyclerViewData(){
         listAdapter = new ListAdapter(this, theBrain.getDataByTitle(), this.theBrain);

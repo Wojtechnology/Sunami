@@ -1,13 +1,17 @@
 package com.wojtechnology.sunami;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import java.io.BufferedReader;
@@ -30,7 +34,7 @@ public class TheBrain extends Service{
 
     private static final int UP_NEXT_MIN = 1;
 
-    private Context context;
+    private MainActivity mContext;
     private boolean mChangedState;
 
     // Contains list of songs
@@ -38,27 +42,39 @@ public class TheBrain extends Service{
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
-
     private Queue<FireMixtape> mUpNext;
     private FireMixtape playing;
-
     public MediaPlayer mediaPlayer;
 
-    public TheBrain(Context context) {
-        this.context = context;
+    private final IBinder mBinder = new LocalBinder();
+
+    @Override
+    public void onCreate() {
+        Log.e("TheBrain", "Started service");
         mChangedState = false;
         mUpNext = new LinkedList<>();
-        init();
+        super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
+    }
+
+    public class LocalBinder extends Binder {
+        public TheBrain getServiceInstance() {
+            return TheBrain.this;
+        }
+    }
+
+    public void registerClient(MainActivity activity) {
+        mContext = activity;
+        init();
     }
 
     // save all data that needs to persist in between sessions
@@ -69,16 +85,16 @@ public class TheBrain extends Service{
     }
 
     private void init() {
-        songManager = new SongManager(context);
+        songManager = new SongManager(mContext);
         // Sort mixtapes for display
-        mGenreGraph = new GenreGraph(context);
+        mGenreGraph = new GenreGraph(mContext);
         mediaPlayer = new MediaPlayer();
     }
 
     public void postInit() {
         loadQueue();
-        ((MainActivity) context).setProgressBar(false);
-        ((MainActivity) context).setRecyclerViewData();
+        mContext.setProgressBar(false);
+        mContext.setRecyclerViewData();
         readAppData();
     }
 
@@ -89,10 +105,10 @@ public class TheBrain extends Service{
             long startTime = Calendar.getInstance().getTimeInMillis();
             InputStream is;
             try {
-                is = context.openFileInput("appData.json");
+                is = mContext.openFileInput("appData.json");
                 Log.e("GenreGraph", "Open existing");
             } catch (FileNotFoundException e) {
-                is = context.getResources().openRawResource(R.raw.genres);
+                is = mContext.getResources().openRawResource(R.raw.genres);
                 Log.e("GenreGraph", "Open new");
 
             }
@@ -129,7 +145,7 @@ public class TheBrain extends Service{
         @Override
         protected Void doInBackground(Void... params) {
             try{
-                FileOutputStream fileOS = context.openFileOutput(
+                FileOutputStream fileOS = mContext.openFileOutput(
                         "appData.json", Context.MODE_PRIVATE);
                 JSONArray ja = mGenreGraph.getGraphJSON();
                 fileOS.write(ja.toString().getBytes());
@@ -172,7 +188,7 @@ public class TheBrain extends Service{
                 mediaPlayer.setDataSource(playing.data);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-                ((MainActivity) context).playSong(playing);
+                mContext.playSong(playing);
             } catch (IOException e) {
                 e.printStackTrace();
             }
