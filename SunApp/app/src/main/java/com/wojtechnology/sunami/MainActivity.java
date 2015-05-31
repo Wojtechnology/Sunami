@@ -27,7 +27,8 @@ public class MainActivity extends ActionBarActivity {
     private OuterLayout mOuterLayout;
     private boolean mSongPlayingChecked;
 
-    private TheBrain mTheBrain;
+    public TheBrain mTheBrain;
+    public NavigationDrawerFragment mDrawerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +49,12 @@ public class MainActivity extends ActionBarActivity {
         mOuterLayout = (OuterLayout) findViewById(R.id.outer_layout);
 
         // Setup navigation drawer from left
-        NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment)
+        mDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar, this);
-
-        // Setup
-        mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
+        mDrawerFragment.setUp(R.id.fragment_navigation_drawer
+                ,(DrawerLayout) findViewById(R.id.drawer_layout)
+                ,mToolbar
+                ,this);
 
         Intent serviceIntent = new Intent(MainActivity.this, TheBrain.class);
         startService(serviceIntent);
@@ -91,9 +92,11 @@ public class MainActivity extends ActionBarActivity {
     };
 
     public void setRecyclerViewData(){
+        mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
         mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mDrawerFragment.setUpRecyclerView(mTheBrain);
     }
 
     @Override
@@ -137,38 +140,5 @@ public class MainActivity extends ActionBarActivity {
 
     public void showSong() {
         mOuterLayout.showSong();
-    }
-
-    // The following functions call functions in TheBrain.java
-    public boolean isPlaying() {
-        try {
-            return mTheBrain.mMediaPlayer.isPlaying();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean pausePlay(){
-        if(mTheBrain.hasSong()){
-            mTheBrain.mMediaPlayer.pause();
-            return true;
-        }
-        return false;
-    }
-
-    public boolean resumePlay(){
-        if (!mTheBrain.hasSong()){
-            mTheBrain.playNext();
-            if(!mTheBrain.hasSong()){
-                return false;
-            }
-        }else {
-            mTheBrain.mMediaPlayer.start();
-        }
-        return true;
-    }
-
-    public void nextPlay(){
-        mTheBrain.playNext();
     }
 }

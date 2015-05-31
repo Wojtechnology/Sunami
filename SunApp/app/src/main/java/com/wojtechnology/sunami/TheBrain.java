@@ -44,7 +44,7 @@ public class TheBrain extends Service{
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
-    private Queue<FireMixtape> mUpNext;
+    private LinkedList<FireMixtape> mUpNext;
     public FireMixtape mPlaying;
     public MediaPlayer mMediaPlayer;
 
@@ -118,7 +118,6 @@ public class TheBrain extends Service{
 
     private void init() {
         mSongManager = new SongManager(this);
-        // Sort mixtapes for display
         mGenreGraph = new GenreGraph(this);
         mMediaPlayer = new MediaPlayer();
     }
@@ -210,6 +209,10 @@ public class TheBrain extends Service{
         return mSongManager.getByTitle();
     }
 
+    public List<FireMixtape> getUpNext() {
+        return mUpNext;
+    }
+
     public void playSong(String _id) {
         FireMixtape oldPlaying = mPlaying;
         mPlaying = mSongManager.getSong(_id);
@@ -241,9 +244,30 @@ public class TheBrain extends Service{
             playSong(mUpNext.remove()._id);
         }
         loadQueue();
+        mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
     public boolean hasSong() {
         return mPlaying != null;
+    }
+
+    public void togglePlay(){
+        if(isPlaying()){
+            mMediaPlayer.pause();
+        }else{
+            if (!hasSong()) {
+                playNext();
+            } else {
+                mMediaPlayer.start();
+            }
+        }
+    }
+
+    public boolean isPlaying() {
+        try {
+            return mMediaPlayer.isPlaying();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

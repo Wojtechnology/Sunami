@@ -17,30 +17,30 @@ import java.util.List;
  */
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Context context;
-    private TheBrain theBrain;
+    private Context mContext;
+    private TheBrain mTheBrain;
 
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
 
-    private LayoutInflater inflater;
-    List<FireMixtape> data = Collections.emptyList();
+    private LayoutInflater mInflater;
+    List<FireMixtape> mData = Collections.emptyList();
 
     public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
-        this.context = context;
-        inflater = LayoutInflater.from(context);
-        this.data = data;
-        this.theBrain = theBrain;
+        mContext = context;
+        mInflater = LayoutInflater.from(mContext);
+        mData = data;
+        this.mTheBrain = theBrain;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == TYPE_HEADER){
-            View view = inflater.inflate(R.layout.fire_header, parent, false);
+            View view = mInflater.inflate(R.layout.fire_header, parent, false);
             HeaderHolder holder = new HeaderHolder(view);
             return holder;
-        }else {
-            View view = inflater.inflate(R.layout.fire_mixtape, parent, false);
+        } else {
+            View view = mInflater.inflate(R.layout.fire_mixtape, parent, false);
             ItemHolder holder = new ItemHolder(view);
             return holder;
         }
@@ -50,11 +50,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof HeaderHolder){
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            final FireMixtape current = data.get(position);
+            final FireMixtape current = mData.get(position);
             headerHolder.label.setText(current.title);
         }else{
             ItemHolder itemHolder = (ItemHolder) holder;
-            final FireMixtape current = data.get(position);
+            final FireMixtape current = mData.get(position);
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
             itemHolder.duration.setText(displayTime(current.duration));
@@ -62,7 +62,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    theBrain.playSong(current._id);
+                    mTheBrain.playSong(current._id);
                 }
             });
         }
@@ -70,7 +70,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(data.get(position).genre == "__header__"){
+        if(mData.get(position).genre == "__header__"){
             return TYPE_HEADER;
         }else{
             return TYPE_LIST;
@@ -79,7 +79,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     class ItemHolder extends RecyclerView.ViewHolder {

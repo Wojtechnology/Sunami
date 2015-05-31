@@ -1,24 +1,19 @@
 package com.wojtechnology.sunami;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by wojtekswiderski on 15-05-24.
@@ -38,7 +33,6 @@ public class OuterLayout extends RelativeLayout {
     private MainActivity mContext;
     private boolean mIsOpen;
     private boolean mActive;
-    private boolean mPlaying;
     private boolean mIsFirst;
 
     public OuterLayout(Context context, AttributeSet attrs) {
@@ -116,7 +110,7 @@ public class OuterLayout extends RelativeLayout {
             }
 
             final int settleDestY = settleToOpen ? mVerticalRange : 0;
-            mIsOpen = settleToOpen ? true : false;
+            mIsOpen = settleToOpen;
 
             if(mDragHelper.settleCapturedViewAt(0, settleDestY)){
                 ViewCompat.postInvalidateOnAnimation(OuterLayout.this);
@@ -141,22 +135,15 @@ public class OuterLayout extends RelativeLayout {
         mPlayHintButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if((mContext.isPlaying())){
-                    if(mContext.pausePlay()) {
-                        v.setBackgroundResource(R.drawable.ic_play_hint);
-                    }
-                }else{
-                    if(mContext.resumePlay()) {
-                        v.setBackgroundResource(R.drawable.ic_pause_hint);
-                    }
-                }
+                mContext.mTheBrain.togglePlay();
+                updatePlayIcon();
             }
         });
 
         mNextHintButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.nextPlay();
+                mContext.mTheBrain.playNext();
             }
         });
         updateDefaultLocation();
@@ -200,6 +187,14 @@ public class OuterLayout extends RelativeLayout {
         }
 
         return height;
+    }
+
+    private void updatePlayIcon(){
+        if (mContext.mTheBrain.isPlaying()) {
+            mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
+        } else {
+            mPlayHintButton.setBackgroundResource(R.drawable.ic_play_hint);
+        }
     }
 
     @Override
@@ -272,10 +267,9 @@ public class OuterLayout extends RelativeLayout {
         } else {
             mActive = true;
         }
-        mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
+        updatePlayIcon();
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);
-
         updateDefaultLocation();
     }
 

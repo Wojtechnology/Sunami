@@ -31,7 +31,8 @@ public class NavigationDrawerFragment extends Fragment {
     public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    private ListAdapter listAdapter;
+    private UpNextAdapter mListAdapter;
+    private RecyclerView mRecyclerView;
     private boolean mUserLearnedDrawer;
     private boolean mFromSavedInstanceState;
     private View containerView;
@@ -60,7 +61,10 @@ public class NavigationDrawerFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
     }
 
-    public void setUp(int fragmentID, DrawerLayout drawerLayout, final Toolbar toolbar, final Context context) {
+    public void setUp(int fragmentID
+            ,DrawerLayout drawerLayout
+            ,final Toolbar toolbar
+            ,final Context context) {
         containerView = getActivity().findViewById(fragmentID);
         mDrawerLayout = drawerLayout;
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -114,6 +118,17 @@ public class NavigationDrawerFragment extends Fragment {
                 mDrawerToggle.syncState();
             }
         });
+    }
+
+    public void setUpRecyclerView (TheBrain theBrain) {
+        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.up_next_drawer_list);
+        mListAdapter = new UpNextAdapter(getActivity(), theBrain.getUpNext(), theBrain);
+        mRecyclerView.setAdapter(mListAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    public void updateRecyclerView (TheBrain theBrain) {
+        mListAdapter.updateData(theBrain.getUpNext());
     }
 
     public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {
