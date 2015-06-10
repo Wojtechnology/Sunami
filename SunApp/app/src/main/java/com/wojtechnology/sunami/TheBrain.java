@@ -33,6 +33,7 @@ import java.util.Queue;
 public class TheBrain extends Service{
 
     private static final int UP_NEXT_MIN = 1;
+    private static final int HISTORY_SIZE = 4;
 
     private MainActivity mContext;
     private boolean mChangedState;
@@ -41,6 +42,7 @@ public class TheBrain extends Service{
 
     // Contains list of songs
     private SongManager mSongManager;
+    private SongHistory mSongHistory;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
@@ -119,6 +121,7 @@ public class TheBrain extends Service{
     private void init() {
         mSongManager = new SongManager(this);
         mGenreGraph = new GenreGraph(this);
+        mSongHistory = new SongHistory(HISTORY_SIZE);
         mMediaPlayer = new MediaPlayer();
     }
 
@@ -203,6 +206,7 @@ public class TheBrain extends Service{
                 mUpNext.add(song);
             }
         }
+        mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
     public List<FireMixtape> getDataByTitle() {
@@ -244,6 +248,13 @@ public class TheBrain extends Service{
             playSong(mUpNext.remove()._id);
         }
         loadQueue();
+    }
+
+    public void playLast() {
+        if (mSongHistory.isEmpty()) return;
+        FireMixtape song = mSongHistory.pop();
+        playSong(song._id);
+        mUpNext.addFirst(song);
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
