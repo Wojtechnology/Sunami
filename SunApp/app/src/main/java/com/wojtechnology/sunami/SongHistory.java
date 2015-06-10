@@ -1,5 +1,7 @@
 package com.wojtechnology.sunami;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class SongHistory {
     public void push(FireMixtape song) {
         mIndex = (mIndex + 1) % mSize;
         mLastPlayed[mIndex] = song;
+        Log.e("SongHistory", mIndex + "");
     }
 
     public FireMixtape pop() {
@@ -28,7 +31,8 @@ public class SongHistory {
             return null;
         }
         FireMixtape song = mLastPlayed[mIndex];
-        mIndex = (mIndex - 1) % mSize;
+        mIndex = (mSize + mIndex - 1) % mSize;
+        Log.e("SongHistory", mIndex + "");
         return song;
     }
 
@@ -37,14 +41,14 @@ public class SongHistory {
         int index = mIndex;
         while (mLastPlayed[index] != null) {
             songs.add(mLastPlayed[mIndex]);
-            index = (index - 1) % mSize;
+            index = (mSize + index - 1) % mSize;
             if (index == mIndex) break;
         }
         return songs;
     }
 
     public boolean isEmpty () {
-        return mLastPlayed[mIndex] == null;
+        return mIndex == -1 || mLastPlayed[mIndex] == null;
     }
 
     public void setHistoryList(List<FireMixtape> songs) {

@@ -6,7 +6,9 @@ import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -146,6 +148,34 @@ public class OuterLayout extends RelativeLayout {
                 mContext.mTheBrain.playNext();
             }
         });
+
+        mDraggable.setOnTouchListener(new OnTouchListener() {
+            private int mX;
+            private boolean isDragging;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        isDragging = true;
+                        mX = (int) event.getX();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        if (isDragging && (int) event.getX() - mX > mDraggable.getMeasuredWidth() / 2) {
+                            mContext.mTheBrain.playLast();
+                        }
+                        isDragging = false;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
+
         updateDefaultLocation();
         super.onFinishInflate();
     }

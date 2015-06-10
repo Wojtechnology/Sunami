@@ -206,7 +206,6 @@ public class TheBrain extends Service{
                 mUpNext.add(song);
             }
         }
-        mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
     public List<FireMixtape> getDataByTitle() {
@@ -244,17 +243,25 @@ public class TheBrain extends Service{
     }
 
     public void playNext() {
-        if(mUpNext.size() > 0) {
+        if (mPlaying != null) {
+            mSongHistory.push(mPlaying);
+        }
+        if (mUpNext.size() > 0) {
             playSong(mUpNext.remove()._id);
         }
         loadQueue();
+        mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
     public void playLast() {
-        if (mSongHistory.isEmpty()) return;
+        if (mSongHistory.isEmpty()){
+            return;
+        }
         FireMixtape song = mSongHistory.pop();
+        if (mPlaying != null) {
+            mUpNext.addFirst(mPlaying);
+        }
         playSong(song._id);
-        mUpNext.addFirst(song);
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
