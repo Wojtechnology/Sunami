@@ -8,9 +8,13 @@ import java.util.List;
  */
 public class UpNext {
     private LinkedList<FireMixtape> mUpNext;
+    private int mUserIndexStart;
+    private int mUserIndexFinish;
 
     public UpNext () {
         mUpNext = new LinkedList<>();
+        mUserIndexStart = 0;
+        mUserIndexFinish = 0;
     }
 
     public List<FireMixtape> data () {
@@ -29,14 +33,24 @@ public class UpNext {
         mUpNext.addLast(song);
     }
 
+    public void pushUser (FireMixtape song) {
+        mUpNext.add(mUserIndexFinish++, song);
+    }
+
     public void pushFront (FireMixtape song) {
         mUpNext.addFirst(song);
+        if (mUserIndexFinish > 0) {
+            mUserIndexStart++;
+            mUserIndexFinish++;
+        }
     }
 
     public FireMixtape popFront () {
         if (size() <= 0) {
             return null;
         }
+        if (mUserIndexFinish > 0) mUserIndexFinish--;
+        if (mUserIndexStart > 0) mUserIndexStart--;
         return mUpNext.removeFirst();
     }
 }
