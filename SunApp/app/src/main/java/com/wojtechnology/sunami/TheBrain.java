@@ -46,9 +46,9 @@ public class TheBrain extends Service{
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
-    private LinkedList<FireMixtape> mUpNext;
     public FireMixtape mPlaying;
     public MediaPlayer mMediaPlayer;
+    public UpNext mUpNext;
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -58,7 +58,7 @@ public class TheBrain extends Service{
         mChangedState = false;
         mIsInit = false;
         mBound = false;
-        mUpNext = new LinkedList<>();
+        mUpNext = new UpNext();
         super.onCreate();
     }
 
@@ -203,7 +203,7 @@ public class TheBrain extends Service{
             int random = (int) (Math.random() * mSongManager.size());
             FireMixtape song = mSongManager.getSong(mSongManager.getSongId(random));
             if (!mUpNext.contains(song)) {
-                mUpNext.add(song);
+                mUpNext.pushBack(song);
             }
         }
     }
@@ -213,7 +213,7 @@ public class TheBrain extends Service{
     }
 
     public List<FireMixtape> getUpNext() {
-        return mUpNext;
+        return mUpNext.data();
     }
 
     public void playSong(String _id) {
@@ -247,7 +247,7 @@ public class TheBrain extends Service{
             mSongHistory.push(mPlaying);
         }
         if (mUpNext.size() > 0) {
-            playSong(mUpNext.remove()._id);
+            playSong(mUpNext.popFront()._id);
         }
         loadQueue();
         mContext.mDrawerFragment.updateRecyclerView(this);
@@ -259,7 +259,7 @@ public class TheBrain extends Service{
         }
         FireMixtape song = mSongHistory.pop();
         if (mPlaying != null) {
-            mUpNext.addFirst(mPlaying);
+            mUpNext.pushFront(mPlaying);
         }
         playSong(song._id);
         mContext.mDrawerFragment.updateRecyclerView(this);
