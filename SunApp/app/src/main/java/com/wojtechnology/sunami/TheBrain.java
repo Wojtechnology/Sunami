@@ -14,6 +14,8 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -136,15 +138,25 @@ public class TheBrain extends Service{
 
     private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
 
+        private void readNew(JSONArray ja) {
+            mGenreGraph.populateGraphJSON(ja);
+        }
+
+        private void readOld(JSONArray ja) throws JSONException {
+            mGenreGraph.populateGraphJSON(ja.getJSONArray(0));
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
             long startTime = Calendar.getInstance().getTimeInMillis();
+            boolean isNew = false;
             InputStream is;
             try {
                 is = TheBrain.this.openFileInput("appData.json");
                 Log.e("GenreGraph", "Open existing");
             } catch (FileNotFoundException e) {
                 is = TheBrain.this.getResources().openRawResource(R.raw.genres);
+                isNew = true;
                 Log.e("GenreGraph", "Open new");
             }
             try {
@@ -157,16 +169,17 @@ public class TheBrain extends Service{
                 }
                 reader.close();
                 is.close();
-                Log.i("TheBrain", "Finished reading file in " +
-                        Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                        " millis.");
                 JSONArray ja = new JSONArray(jString);
-                mGenreGraph.populateGraphJSON(ja);
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                if (isNew) readNew(ja);
+                else readOld(ja);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            Log.i("TheBrain", "Finished reading file in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
             return null;
         }
     }
@@ -182,7 +195,9 @@ public class TheBrain extends Service{
             try{
                 FileOutputStream fileOS = TheBrain.this.openFileOutput(
                         "appData.json", Context.MODE_PRIVATE);
-                JSONArray ja = mGenreGraph.getGraphJSON();
+                JSONArray ja = new JSONArray();
+                JSONArray genreArray = mGenreGraph.getGraphJSON();
+                ja.put(genreArray);
                 fileOS.write(ja.toString().getBytes());
                 fileOS.close();
             } catch (FileNotFoundException e) {
