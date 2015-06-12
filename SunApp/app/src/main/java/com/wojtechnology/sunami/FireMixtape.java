@@ -20,9 +20,6 @@ import java.util.List;
  */
 public class FireMixtape{
 
-    // Constants
-    private final String LOG_MESSAGE = "FIREMIXTAPE";
-
     // If no artwork available
     public int default_icon_id;
 
@@ -43,6 +40,9 @@ public class FireMixtape{
     public String year;
     public String data;
     public String size;
+
+    // The genre that is recognized by the app
+    public String actualGenre;
 
     public FireMixtape(Context context) {
         this.default_icon_id = R.mipmap.ic_launcher;

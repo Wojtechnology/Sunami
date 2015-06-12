@@ -48,7 +48,7 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         itemHolder.background.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mTheBrain.playSong(current._id, true);
+                mTheBrain.playSong(current, true);
             }
         });
     }

@@ -7,6 +7,10 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -14,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by wojtekswiderski on 15-05-15.
@@ -22,22 +27,22 @@ public class SongManager {
 
     private Context context;
 
-    private List<FireMixtape> songList;
-    private Map<String, FireMixtape> songDict;
+    private List<FireMixtape> mSongList;
+    private Map<String, FireMixtape> mSongDict;
 
     private boolean genresUpdated;
 
     public SongManager(Context context) {
         this.context = context;
         genresUpdated = false;
-        songList = new ArrayList<>();
-        songDict = new HashMap<>();
+        mSongList = new ArrayList<>();
+        mSongDict = new HashMap<>();
         initSongs();
     }
 
     public List<FireMixtape> getByTitle() {
-        List<FireMixtape> displayList = new ArrayList<>(songList);
-        if (songList.size() <= 0){
+        List<FireMixtape> displayList = new ArrayList<>(mSongList);
+        if (mSongList.size() <= 0){
             return displayList;
         }
 
@@ -68,6 +73,7 @@ public class SongManager {
         while(firstLetter(displayList.get(i).title) < 'A' ||
                 firstLetter(displayList.get(i).title) > 'Z'){
             i++;
+            if (i >= displayList.size()) return displayList;
         }
         int sum = i;
         int j = i;
@@ -99,7 +105,7 @@ public class SongManager {
     private char firstLetter(String word){
         word = word.toLowerCase();
         if(word.length() > 4) {
-            if (word.substring(0, 4).equals("the ")) {
+            if (word.substring(0, 4).equals("THE ")) {
                 word = word.substring(4);
             }
         }
@@ -107,24 +113,24 @@ public class SongManager {
     }
 
     public List<FireMixtape> getFire() {
-        return songList;
+        return mSongList;
     }
 
     public FireMixtape getSong(String _id){
-        for(int i = 0; i < songList.size(); i++){
-            if(songList.get(i)._id == _id){
-                return songList.get(i);
+        for(int i = 0; i < mSongList.size(); i++){
+            if(mSongList.get(i)._id == _id){
+                return mSongList.get(i);
             }
         }
         return null;
     }
 
     public int size(){
-        return songList.size();
+        return mSongList.size();
     }
 
     public String getSongId(int index){
-        return songList.get(index)._id;
+        return mSongList.get(index)._id;
     }
 
     private class InitSongsTask extends AsyncTask<Void, Integer, Void>{
@@ -177,8 +183,8 @@ public class SongManager {
                 current.size = cursor.getString(8);
                 current.genre = "__notfound__";
 
-                songList.add(current);
-                songDict.put(current._id, current);
+                mSongList.add(current);
+                mSongDict.put(current.data, current);
 
             }
             cursor.close();
@@ -193,8 +199,6 @@ public class SongManager {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             ((TheBrain) context).postInit();
-
-            new UpdateGenresTask().execute();
         }
     }
 
@@ -202,17 +206,14 @@ public class SongManager {
         new InitSongsTask().execute();
     }
 
-    private class UpdateGenresTask extends AsyncTask<Void, Integer, Void>{
 
-        @Override
-        protected Void doInBackground(Void... params) {
+        public void genresFromDB (Set<String> genres) {
             long startTime = Calendar.getInstance().getTimeInMillis();
-
             //Some audio may be explicitly marked as not being music
             String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
             String[] projection = {
-                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.DATA
             };
 
             String[] genresProjection = {
@@ -230,7 +231,7 @@ public class SongManager {
             );
 
             if (projectionCursor == null){
-                return null;
+                return;
             }
 
             while (projectionCursor.moveToNext()) {
@@ -248,30 +249,80 @@ public class SongManager {
                 );
 
                 while (cursor.moveToNext()) {
-                    String _id = cursor.getString(0);
-                    songDict.get(_id).genre = genre_name;
+                    FireMixtape song = mSongDict.get(cursor.getString(0));
+                    song.genre = genre_name.toLowerCase();
+                    setActualGenre(song, genres);
+
                 }
                 cursor.close();
             }
             projectionCursor.close();
 
-            Log.i("SongManager", "Finished updateGenres() in " +
+            Log.i("SongManager", "Finished genresFromDB() in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
-
-            return null;
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            genresUpdated = true;
+    private void setActualGenre(FireMixtape song, Set<String> genres) {
+        if (genres.contains(song.genre)) {
+            song.actualGenre = song.genre;
+            return;
         }
+        String[] keyWords = song.genre.split("[\\s./-]+");
+        int max = 0;
+        String bestMatch = song.actualGenre;
+        for (String genre : genres) {
+            int sum = 0;
+            for (String word : keyWords) {
+                if(genre.contains(word)) {
+                    sum += word.length();
+                }
+            }
+            if (sum > max) {
+                max = sum;
+                bestMatch = genre;
+            } else if (sum != 0 && sum == max && genre.length() < bestMatch.length()) {
+                bestMatch = genre;
+            }
+        }
+        song.actualGenre = bestMatch;
+    }
+
+    public void updateGenres(Set<String> genres, JSONArray songs) throws JSONException {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        for (int i = 0; i < songs.length(); i++) {
+            JSONArray ja = (JSONArray) songs.get(i);
+            try {
+                FireMixtape song = mSongDict.get(ja.getString(0));
+                song.genre = ja.getString(1);
+                song.actualGenre = ja.getString(2);
+            } catch (Exception e) {
+                Log.e("Song Wrong", i + ": " + ja.getString(0) + ", " + ja.getString(1));
+                genresFromDB(genres);
+                return;
+            }
+        }
+        Log.i("SongManager", "Finished updateGenres() in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
+    }
+
+    public JSONArray getSongJSON () throws JSONException {
+        JSONArray ja = new JSONArray();
+        for (int i = 0; i < mSongList.size(); i++) {
+            JSONArray song = new JSONArray();
+            song.put(0, mSongList.get(i).data);
+            song.put(1, mSongList.get(i).genre);
+            song.put(2, mSongList.get(i).actualGenre);
+            ja.put(song);
+        }
+        return ja;
     }
 
     private void printSongs(){
-        for(int i = 0; i < songList.size(); i++){
-            Log.i("SongManager", songList.get(i).title + ": Genre - " + songList.get(i).genre);
+        for(int i = 0; i < mSongList.size(); i++){
+            Log.i("SongManager", mSongList.get(i).title + ": Genre - " +
+                    mSongList.get(i).genre + ", Best Match - " + mSongList.get(i).actualGenre);
         }
     }
 }

@@ -14,7 +14,6 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -23,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by wojtekswiderski on 15-04-19.
@@ -140,10 +137,12 @@ public class TheBrain extends Service{
 
         private void readNew(JSONArray ja) {
             mGenreGraph.populateGraphJSON(ja);
+            mSongManager.genresFromDB(mGenreGraph.getGenreSet());
         }
 
         private void readOld(JSONArray ja) throws JSONException {
-            mGenreGraph.populateGraphJSON(ja.getJSONArray(0));
+            mGenreGraph.populateGraphJSON(ja.getJSONArray(1));
+            mSongManager.updateGenres(mGenreGraph.getGenreSet(), ja.getJSONArray(2));
         }
 
         @Override
@@ -182,6 +181,12 @@ public class TheBrain extends Service{
                     " millis.");
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new SaveAppDataTask().execute();
+        }
     }
 
     private void readAppData() {
@@ -192,19 +197,26 @@ public class TheBrain extends Service{
 
         @Override
         protected Void doInBackground(Void... params) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
             try{
                 FileOutputStream fileOS = TheBrain.this.openFileOutput(
                         "appData.json", Context.MODE_PRIVATE);
                 JSONArray ja = new JSONArray();
-                JSONArray genreArray = mGenreGraph.getGraphJSON();
-                ja.put(genreArray);
+                ja.put(0, 1);
+                ja.put(1, mGenreGraph.getGraphJSON());
+                ja.put(2, mSongManager.getSongJSON());
                 fileOS.write(ja.toString().getBytes());
                 fileOS.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            Log.i("TheBrain", "Finished saving file in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
             return null;
         }
     }
@@ -231,9 +243,9 @@ public class TheBrain extends Service{
         return mUpNext.data();
     }
 
-    public void playSong(String _id, boolean saveLast) {
+    public void playSong(FireMixtape song, boolean saveLast) {
         FireMixtape oldPlaying = mPlaying;
-        mPlaying = mSongManager.getSong(_id);
+        mPlaying = song;
 
         if (mPlaying != null) {
             if (oldPlaying == null){
@@ -255,13 +267,13 @@ public class TheBrain extends Service{
                 e.printStackTrace();
             }
         } else {
-            Log.e("TheBrain", "Song with id " + _id + " not found");
+            Log.e("TheBrain", "No song provided");
         }
     }
 
     public void playNext() {
         if (mUpNext.size() > 0) {
-            playSong(mUpNext.popFront()._id, true);
+            playSong(mUpNext.popFront(), true);
         }
         loadQueue();
         mContext.mDrawerFragment.updateRecyclerView(this);
@@ -275,7 +287,7 @@ public class TheBrain extends Service{
         if (mPlaying != null) {
             mUpNext.pushFront(mPlaying);
         }
-        playSong(song._id, false);
+        playSong(song, false);
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 

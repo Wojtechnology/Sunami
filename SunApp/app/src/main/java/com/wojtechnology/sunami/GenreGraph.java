@@ -1,29 +1,10 @@
 package com.wojtechnology.sunami;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.util.Log;
-
-import com.wojtechnology.sunami.archiveJava.GenreBase;
-import com.wojtechnology.sunami.archiveJava.GenreDBHelper;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +35,7 @@ public class GenreGraph {
         try {
             for (int i = 0; i < ja.length(); i++) {
                 JSONObject jo = ja.getJSONObject(i);
-                String genre = jo.getString("genre");
+                String genre = jo.getString("genre").toLowerCase();
                 GenreVertex gv = new GenreVertex(genre, jo.getDouble("st"), jo.getDouble("lt"));
                 mGenreRef.put(genre, gv);
             }
@@ -64,7 +45,7 @@ public class GenreGraph {
                 JSONArray subGenres = ja.getJSONObject(i).getJSONArray("assoc");
                 for (int j = 0; j < subGenres.length(); j++) {
                     GenreEdge subGenre = new GenreEdge(gv,
-                            mGenreRef.get(subGenres.getJSONObject(j).getString("name")),
+                            mGenreRef.get(subGenres.getJSONObject(j).getString("name").toLowerCase()),
                             subGenres.getJSONObject(j).getDouble("similarity"));
                     edgeList.add(subGenre);
                 }
@@ -110,6 +91,9 @@ public class GenreGraph {
         return new JSONArray();
     }
 
+    public Set<String> getGenreSet () {
+        return mGenreRef.keySet();
+    }
 
     // Implement the update value method for a positive change in a genre
     // Will need more params
