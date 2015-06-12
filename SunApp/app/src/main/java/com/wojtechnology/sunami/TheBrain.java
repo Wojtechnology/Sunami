@@ -216,13 +216,15 @@ public class TheBrain extends Service{
         return mUpNext.data();
     }
 
-    public void playSong(String _id) {
+    public void playSong(String _id, boolean saveLast) {
         FireMixtape oldPlaying = mPlaying;
         mPlaying = mSongManager.getSong(_id);
 
         if (mPlaying != null) {
             if (oldPlaying == null){
                 setForegroundService();
+            } else if (saveLast) {
+                mSongHistory.push(oldPlaying);
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
             try {
@@ -243,11 +245,8 @@ public class TheBrain extends Service{
     }
 
     public void playNext() {
-        if (mPlaying != null) {
-            mSongHistory.push(mPlaying);
-        }
         if (mUpNext.size() > 0) {
-            playSong(mUpNext.popFront()._id);
+            playSong(mUpNext.popFront()._id, true);
         }
         loadQueue();
         mContext.mDrawerFragment.updateRecyclerView(this);
@@ -261,7 +260,7 @@ public class TheBrain extends Service{
         if (mPlaying != null) {
             mUpNext.pushFront(mPlaying);
         }
-        playSong(song._id);
+        playSong(song._id, false);
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 

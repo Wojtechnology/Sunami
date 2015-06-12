@@ -62,7 +62,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    mTheBrain.playSong(current._id);
+                    mTheBrain.playSong(current._id, true);
                 }
             });
         }
