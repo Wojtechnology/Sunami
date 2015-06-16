@@ -33,7 +33,6 @@ public class SongHistory {
         FireMixtape song = mLastPlayed[mIndex];
         mLastPlayed[mIndex] = null;
         mIndex = (mSize + mIndex - 1) % mSize;
-        Log.e("SongHistory", mIndex + "");
         return song;
     }
 

@@ -42,6 +42,7 @@ public class TheBrain extends Service{
     // Contains list of songs
     private SongManager mSongManager;
     private SongHistory mSongHistory;
+    private PlayTimer mPlayTimer;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
@@ -58,6 +59,7 @@ public class TheBrain extends Service{
         mIsInit = false;
         mBound = false;
         mUpNext = new UpNext();
+        mPlayTimer = new PlayTimer();
         super.onCreate();
     }
 
@@ -250,8 +252,11 @@ public class TheBrain extends Service{
         if (mPlaying != null) {
             if (oldPlaying == null){
                 setForegroundService();
-            } else if (saveLast) {
-                mSongHistory.push(oldPlaying);
+            } else {
+                mPlayTimer.reset();
+                if (saveLast) {
+                    mSongHistory.push(oldPlaying);
+                }
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
             try {
@@ -259,6 +264,7 @@ public class TheBrain extends Service{
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setDataSource(mPlaying.data);
                 mMediaPlayer.prepare();
+                mPlayTimer.start();
                 mMediaPlayer.start();
                 if (mBound) {
                     mContext.playSong(mPlaying);
@@ -297,8 +303,10 @@ public class TheBrain extends Service{
 
     public void togglePlay(){
         if(isPlaying()){
+            mPlayTimer.stop();
             mMediaPlayer.pause();
         }else{
+            mPlayTimer.start();
             if (!hasSong()) {
                 playNext();
             } else {
