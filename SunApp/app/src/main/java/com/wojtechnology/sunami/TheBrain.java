@@ -38,6 +38,7 @@ public class TheBrain extends Service{
     private boolean mChangedState;
     private boolean mIsInit;
     private boolean mBound;
+    private boolean mHasAudioFocus;
 
     // Contains list of songs
     private SongManager mSongManager;
@@ -48,6 +49,7 @@ public class TheBrain extends Service{
     private GenreGraph mGenreGraph;
     public FireMixtape mPlaying;
     public MediaPlayer mMediaPlayer;
+    private AudioManager mAudioManager;
     public UpNext mUpNext;
 
     private final IBinder mBinder = new LocalBinder();
@@ -58,6 +60,7 @@ public class TheBrain extends Service{
         mChangedState = false;
         mIsInit = false;
         mBound = false;
+        mHasAudioFocus = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         super.onCreate();
@@ -124,6 +127,15 @@ public class TheBrain extends Service{
         mGenreGraph = new GenreGraph(this);
         mSongHistory = new SongHistory(HISTORY_SIZE);
         mMediaPlayer = new MediaPlayer();
+        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playNext();
+            }
+        });
+        mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
     }
 
     public void postInit() {
@@ -250,6 +262,7 @@ public class TheBrain extends Service{
         mPlaying = song;
 
         if (mPlaying != null) {
+            requestAudioFocus();
             if (oldPlaying == null){
                 setForegroundService();
             } else {
@@ -275,6 +288,32 @@ public class TheBrain extends Service{
         } else {
             Log.e("TheBrain", "No song provided");
         }
+    }
+
+    private void requestAudioFocus() {
+        if (mHasAudioFocus) {
+            return;
+        }
+        mHasAudioFocus = true;
+
+        AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            public void onAudioFocusChange(int focusChange) {
+                if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                    mPlayTimer.stop();
+                    mMediaPlayer.pause();
+                } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                    mPlayTimer.start();
+                    mMediaPlayer.start();
+                } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                    mAudioManager.abandonAudioFocus(this);
+                    mHasAudioFocus = false;
+                    mPlayTimer.stop();
+                    mMediaPlayer.stop();
+                }
+            }
+        };
+
+        mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
     }
 
     public void playNext() {

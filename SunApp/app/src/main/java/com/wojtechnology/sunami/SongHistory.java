@@ -23,7 +23,6 @@ public class SongHistory {
     public void push(FireMixtape song) {
         mIndex = (mIndex + 1) % mSize;
         mLastPlayed[mIndex] = song;
-        Log.e("SongHistory", mIndex + "");
     }
 
     public FireMixtape pop() {
