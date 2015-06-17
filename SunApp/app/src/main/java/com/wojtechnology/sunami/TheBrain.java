@@ -62,6 +62,7 @@ public class TheBrain extends Service{
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 mPlayTimer.stop();
                 mMediaPlayer.pause();
+                mContext.updateSongView();
             }
         }
     }
@@ -326,6 +327,7 @@ public class TheBrain extends Service{
                     mMediaPlayer.stop();
                     mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
                 }
+                mContext.updateSongView();
             }
         };
 

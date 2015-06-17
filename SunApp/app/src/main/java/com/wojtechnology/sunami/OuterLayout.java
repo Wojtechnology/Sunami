@@ -219,7 +219,7 @@ public class OuterLayout extends RelativeLayout {
         return height;
     }
 
-    private void updatePlayIcon(){
+    public void updatePlayIcon(){
         if (mContext.mTheBrain.isPlaying()) {
             mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
         } else {

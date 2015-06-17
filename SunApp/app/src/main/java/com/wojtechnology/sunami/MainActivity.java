@@ -134,6 +134,10 @@ public class MainActivity extends ActionBarActivity {
         mOuterLayout.playSong(song);
     }
 
+    public void updateSongView() {
+        mOuterLayout.updatePlayIcon();
+    }
+
     public void hideSong(){
         mOuterLayout.hideSong();
     }
