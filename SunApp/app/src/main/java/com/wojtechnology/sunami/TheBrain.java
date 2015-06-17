@@ -3,8 +3,10 @@ package com.wojtechnology.sunami;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -54,6 +56,18 @@ public class TheBrain extends Service{
 
     private final IBinder mBinder = new LocalBinder();
 
+    private class NoisyAudioStreamReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                mPlayTimer.stop();
+                mMediaPlayer.pause();
+            }
+        }
+    }
+
+    private NoisyAudioStreamReceiver mNoisyAudioStreamReceiver;
+
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -63,6 +77,7 @@ public class TheBrain extends Service{
         mHasAudioFocus = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
+        mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
         super.onCreate();
     }
 
@@ -135,7 +150,6 @@ public class TheBrain extends Service{
             }
         });
         mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
     }
 
     public void postInit() {
@@ -295,6 +309,7 @@ public class TheBrain extends Service{
             return;
         }
         mHasAudioFocus = true;
+        mContext.registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
@@ -309,6 +324,7 @@ public class TheBrain extends Service{
                     mHasAudioFocus = false;
                     mPlayTimer.stop();
                     mMediaPlayer.stop();
+                    mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
                 }
             }
         };
