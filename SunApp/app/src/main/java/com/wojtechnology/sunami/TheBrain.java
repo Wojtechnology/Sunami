@@ -324,7 +324,7 @@ public class TheBrain extends Service{
                     mAudioManager.abandonAudioFocus(this);
                     mHasAudioFocus = false;
                     mPlayTimer.stop();
-                    mMediaPlayer.stop();
+                    mMediaPlayer.pause();
                     mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
                 }
                 mContext.updateSongView();
@@ -368,6 +368,7 @@ public class TheBrain extends Service{
                 playNext();
             } else {
                 mMediaPlayer.start();
+                requestAudioFocus();
             }
         }
     }
