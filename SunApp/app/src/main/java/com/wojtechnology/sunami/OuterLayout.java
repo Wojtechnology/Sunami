@@ -15,6 +15,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 /**
@@ -30,6 +31,7 @@ public class OuterLayout extends RelativeLayout {
     private Button mNextHintButton;
     private TextView mHintTitle;
     private TextView mHintArtist;
+    private SeekBar mSeekBar;
     private int mDraggingBorder;
     private int mVerticalRange;
     private MainActivity mContext;
@@ -133,6 +135,7 @@ public class OuterLayout extends RelativeLayout {
         mNextHintButton = (Button) findViewById(R.id.next_hint_button);
         mHintTitle = (TextView) findViewById(R.id.hint_title);
         mHintArtist = (TextView) findViewById(R.id.hint_artist);
+        mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
 
         mPlayHintButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -178,6 +181,14 @@ public class OuterLayout extends RelativeLayout {
 
         updateDefaultLocation();
         super.onFinishInflate();
+    }
+
+    public void setMaxProgress(int max) {
+        mSeekBar.setMax(max);
+    }
+
+    public void setProgress(int progress) {
+        mSeekBar.setProgress(progress);
     }
 
     public int updateDefaultLocation(){

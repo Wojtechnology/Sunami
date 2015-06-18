@@ -130,8 +130,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     // The following functions call functions in OuterLayout.java
-    public void playSong(FireMixtape song){
+    public void playSong(FireMixtape song, int duration){
         mOuterLayout.playSong(song);
+        mOuterLayout.setMaxProgress(duration);
     }
 
     public void updateSongView() {
