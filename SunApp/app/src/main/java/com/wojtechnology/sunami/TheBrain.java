@@ -295,7 +295,7 @@ public class TheBrain extends Service{
                 mPlayTimer.start();
                 mMediaPlayer.start();
                 if (mBound) {
-                    mContext.playSong(mPlaying);
+                    mContext.playSong(mPlaying, Integer.parseInt(mPlaying.duration));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

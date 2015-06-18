@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -25,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
     private ListAdapter mListAdapter;
     private ProgressBar mProgressBar;
     private OuterLayout mOuterLayout;
+    private Handler mHandler;
     private boolean mSongPlayingChecked;
 
     public TheBrain mTheBrain;
@@ -47,6 +49,7 @@ public class MainActivity extends ActionBarActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.VISIBLE);
         mOuterLayout = (OuterLayout) findViewById(R.id.outer_layout);
+        mHandler = new Handler();
 
         // Setup navigation drawer from left
         mDrawerFragment = (NavigationDrawerFragment)
@@ -83,6 +86,16 @@ public class MainActivity extends ActionBarActivity {
             TheBrain.LocalBinder binder = (TheBrain.LocalBinder) service;
             mTheBrain = binder.getServiceInstance();
             mTheBrain.registerClient(MainActivity.this);
+
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mTheBrain.mMediaPlayer != null && mTheBrain.mMediaPlayer.isPlaying()) {
+                        mOuterLayout.setProgress(mTheBrain.mMediaPlayer.getCurrentPosition());
+                    }
+                    mHandler.postDelayed(this, 1000);
+                }
+            });
         }
 
         @Override
