@@ -152,6 +152,25 @@ public class OuterLayout extends RelativeLayout {
             }
         });
 
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private boolean blockProgressChange = false;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mContext.updateMediaPlayerProgress(seekBar.getProgress());
+            }
+        });
+
         mDraggable.setOnTouchListener(new OnTouchListener() {
             private int mX;
             private boolean isDragging;

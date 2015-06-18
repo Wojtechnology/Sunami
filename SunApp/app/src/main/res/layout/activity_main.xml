@@ -64,6 +64,15 @@
         android:background="#FFF"
         android:clickable="true">
 
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+
         <LinearLayout
             android:id="@+id/song_hint"
             android:layout_width="match_parent"
@@ -123,15 +132,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
 
     </RelativeLayout>
 

@@ -148,6 +148,13 @@ public class MainActivity extends ActionBarActivity {
         mOuterLayout.setMaxProgress(duration);
     }
 
+    public void updateMediaPlayerProgress(int progress) {
+        if (mTheBrain == null) return;
+        if (mTheBrain.mMediaPlayer != null) {
+            mTheBrain.mMediaPlayer.seekTo(progress);
+        }
+    }
+
     public void updateSongView() {
         mOuterLayout.updatePlayIcon();
     }
