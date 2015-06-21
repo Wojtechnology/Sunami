@@ -318,8 +318,7 @@ public class TheBrain extends Service{
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                    mPlayTimer.start();
-                    mMediaPlayer.start();
+                    // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                     mAudioManager.abandonAudioFocus(this);
                     mHasAudioFocus = false;
