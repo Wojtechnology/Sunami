@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
-import android.media.RemoteControlClient;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
@@ -38,6 +37,10 @@ import java.util.List;
 
 // Class that manages the smart shuffle
 public class TheBrain extends Service{
+
+    public static final String TOGGLE_PLAY = "toggle_play";
+    public static final String PLAY_NEXT = "play_next";
+    public static final String PLAY_LAST = "play_last";
 
     private static final int UP_NEXT_MIN = 1;
     private static final int HISTORY_SIZE = 4;
@@ -95,6 +98,25 @@ public class TheBrain extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (mIsInit) {
+            switch (intent.getAction()) {
+                case TOGGLE_PLAY:
+                    togglePlay();
+                    break;
+
+                case PLAY_NEXT:
+                    playNext();
+                    break;
+
+                case PLAY_LAST:
+                    playLast();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        Log.e("TheBrain", "Message: " + intent.getAction());
         return START_NOT_STICKY;
     }
 
@@ -322,52 +344,43 @@ public class TheBrain extends Service{
         if (mHasAudioFocus || !mIsInit) {
             return;
         }
-        mHasAudioFocus = true;
-        registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        registerAudio();
 
         AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
-                    mHasAudioFocus = false;
-                    unregisterReceiver(mNoisyAudioStreamReceiver);
+                    unregisterAudio();
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                     mAudioManager.abandonAudioFocus(this);
-                    mHasAudioFocus = false;
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
-                    unregisterReceiver(mNoisyAudioStreamReceiver);
+                    unregisterAudio();
                 }
                 mContext.updateSongView();
             }
         };
 
         mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        registerMediaSession();
     }
 
-    private void registerMediaSession() {
+    private void registerAudio() {
+        mHasAudioFocus = true;
+        registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+
         ComponentName eventReceiver = new ComponentName(getPackageName(), RemoteControlEventReceiver.class.getName());
         mSession = new MediaSessionCompat(this, "FireSession", eventReceiver, null);
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
         mSession.setPlaybackToLocal(AudioManager.STREAM_MUSIC);
-        // Got NPEs if didn't set this
         mSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "")
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, "")
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
                 .build());
-        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1)
-                .build();
-        MediaSessionCompatHelper.applyState(mSession, state);
+        setProgress(0, true);
 
         mSession.setCallback(new MediaSessionCompat.Callback() {
 
@@ -375,12 +388,18 @@ public class TheBrain extends Service{
             public void onSeekTo(long pos) {
                 super.onSeekTo(pos);
                 Log.e("TAG", "SeekTo");
-                setProgress((int) pos);
+                setProgress((int) pos, isPlaying());
             }
         });
         mSession.setActive(true);
 
         Log.e("TheBrain", "registerMediaSession");
+    }
+
+    private void unregisterAudio() {
+        mHasAudioFocus = false;
+        unregisterReceiver(mNoisyAudioStreamReceiver);
+        mSession.release();
     }
 
     private void setMetaData(FireMixtape song) {
@@ -389,19 +408,35 @@ public class TheBrain extends Service{
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
                 .build());
-        setProgress(0);
+        setProgress(0, true);
     }
 
-    private void setProgress(int pos) {
+    private void setProgress(int pos, boolean isPlaying) {
         mMediaPlayer.seekTo(pos);
+        int speed = isPlaying ? 1 : 0;
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
                                 PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackStateCompat.STATE_PLAYING, pos, 1)
+                .setState(PlaybackStateCompat.STATE_PLAYING, pos, speed)
                 .build();
         MediaSessionCompatHelper.applyState(mSession, state);
+    }
+
+    public void togglePlay(){
+        if(isPlaying()){
+            mPlayTimer.stop();
+            mMediaPlayer.pause();
+        }else{
+            mPlayTimer.start();
+            if (!hasSong()) {
+                playNext();
+            } else {
+                mMediaPlayer.start();
+                requestAudioFocus();
+            }
+        }
     }
 
     public void playNext() {
@@ -434,21 +469,6 @@ public class TheBrain extends Service{
 
     public boolean hasSong() {
         return mPlaying != null;
-    }
-
-    public void togglePlay(){
-        if(isPlaying()){
-            mPlayTimer.stop();
-            mMediaPlayer.pause();
-        }else{
-            mPlayTimer.start();
-            if (!hasSong()) {
-                playNext();
-            } else {
-                mMediaPlayer.start();
-                requestAudioFocus();
-            }
-        }
     }
 
     public boolean isPlaying() {
