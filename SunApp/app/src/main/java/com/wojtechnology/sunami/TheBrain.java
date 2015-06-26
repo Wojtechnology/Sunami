@@ -4,14 +4,19 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.RemoteControlClient;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -32,6 +37,12 @@ import java.util.List;
 
 // Class that manages the smart shuffle
 public class TheBrain extends Service{
+
+    public static final String ACTION_PLAY = "action_play";
+    public static final String ACTION_PAUSE = "action_pause";
+    public static final String ACTION_NEXT = "action_next";
+    public static final String ACTION_PREVIOUS = "action_previous";
+    public static final String ACTION_STOP = "action_stop";
 
     private static final int UP_NEXT_MIN = 1;
     private static final int HISTORY_SIZE = 4;
@@ -54,8 +65,13 @@ public class TheBrain extends Service{
     private AudioManager mAudioManager;
     public UpNext mUpNext;
 
+    // Sessions and Notifications
+    private MediaSessionCompat mSession;
+
+
     private final IBinder mBinder = new LocalBinder();
 
+    // Receiver for plugging out earphones
     private class NoisyAudioStreamReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -68,6 +84,16 @@ public class TheBrain extends Service{
     }
 
     private NoisyAudioStreamReceiver mNoisyAudioStreamReceiver;
+
+    private class RemoteControlEventListener extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+                Log.e("TheBrain", "Got the shit");
+            }
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -305,18 +331,22 @@ public class TheBrain extends Service{
         }
     }
 
+    // Gets audio focus and registers remote controller
     private void requestAudioFocus() {
-        if (mHasAudioFocus) {
+        if (mHasAudioFocus || !mIsInit) {
             return;
         }
         mHasAudioFocus = true;
-        mContext.registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        registerMediaSession();
 
         AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
+                    mHasAudioFocus = false;
+                    unregisterReceiver(mNoisyAudioStreamReceiver);
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
@@ -324,13 +354,30 @@ public class TheBrain extends Service{
                     mHasAudioFocus = false;
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
-                    mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
+                    unregisterReceiver(mNoisyAudioStreamReceiver);
                 }
                 mContext.updateSongView();
             }
         };
 
         mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    }
+
+    private void registerMediaSession() {
+        ComponentName eventReceiver = new ComponentName(getPackageName(), RemoteControlEventListener.class.getName());
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setComponent(eventReceiver);
+        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
+        mSession = new MediaSessionCompat(mContext, "FireSession", eventReceiver, mediaPendingIntent);
+        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mSession.setPlaybackToLocal(AudioManager.STREAM_MUSIC);
+        mSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Test")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Wojtechnology")
+                .build());
+        mSession.setActive(true);
+
+        Log.e("TheBrain", "registerMediaSession");
     }
 
     public void playNext() {
@@ -351,6 +398,13 @@ public class TheBrain extends Service{
         }
         playSong(song, false);
         mContext.mDrawerFragment.updateRecyclerView(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mHasAudioFocus = false;
+        unregisterReceiver(mNoisyAudioStreamReceiver);
     }
 
     public boolean hasSong() {
