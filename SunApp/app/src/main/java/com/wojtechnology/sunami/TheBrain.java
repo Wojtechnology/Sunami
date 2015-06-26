@@ -324,6 +324,7 @@ public class TheBrain extends Service{
                 if (mBound) {
                     mContext.playSong(mPlaying, Integer.parseInt(mPlaying.duration));
                 }
+                setMetaData(mPlaying);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -370,24 +371,33 @@ public class TheBrain extends Service{
         mediaButtonIntent.setComponent(eventReceiver);
         PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
         mSession = new MediaSessionCompat(mContext, "FireSession", eventReceiver, mediaPendingIntent);
-        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
         mSession.setPlaybackToLocal(AudioManager.STREAM_MUSIC);
+        // Got NPEs if didn't set this
         mSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Test")
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Wojtechnology")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "")
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, "")
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
                 .build());
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE |
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
                 .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1, 0)
                 .build();
-        MediaSessionCompatHelper mSessionHelper = new MediaSessionCompatHelper();
-        mSessionHelper.applyState(mSession, state);
+        MediaSessionCompatHelper.applyState(mSession, state);
         mSession.setActive(true);
 
         Log.e("TheBrain", "registerMediaSession");
+    }
+
+    private void setMetaData(FireMixtape song) {
+        mSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
+                .build());
     }
 
     public void playNext() {
@@ -415,6 +425,7 @@ public class TheBrain extends Service{
         super.onDestroy();
         mHasAudioFocus = false;
         unregisterReceiver(mNoisyAudioStreamReceiver);
+        mSession.release();
     }
 
     public boolean hasSong() {
