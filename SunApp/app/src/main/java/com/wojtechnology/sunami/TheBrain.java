@@ -17,6 +17,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -89,8 +90,8 @@ public class TheBrain extends Service{
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.e("TheBrain", "Got the shit");
             if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-                Log.e("TheBrain", "Got the shit");
             }
         }
     }
@@ -375,6 +376,15 @@ public class TheBrain extends Service{
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Test")
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Wojtechnology")
                 .build());
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1, 0)
+                .build();
+        MediaSessionCompatHelper mSessionHelper = new MediaSessionCompatHelper();
+        mSessionHelper.applyState(mSession, state);
         mSession.setActive(true);
 
         Log.e("TheBrain", "registerMediaSession");
