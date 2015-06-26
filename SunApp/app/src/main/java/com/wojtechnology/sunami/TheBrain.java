@@ -39,12 +39,6 @@ import java.util.List;
 // Class that manages the smart shuffle
 public class TheBrain extends Service{
 
-    public static final String ACTION_PLAY = "action_play";
-    public static final String ACTION_PAUSE = "action_pause";
-    public static final String ACTION_NEXT = "action_next";
-    public static final String ACTION_PREVIOUS = "action_previous";
-    public static final String ACTION_STOP = "action_stop";
-
     private static final int UP_NEXT_MIN = 1;
     private static final int HISTORY_SIZE = 4;
 
@@ -85,16 +79,6 @@ public class TheBrain extends Service{
     }
 
     private NoisyAudioStreamReceiver mNoisyAudioStreamReceiver;
-
-    private class RemoteControlEventListener extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.e("TheBrain", "Got the shit");
-            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-            }
-        }
-    }
 
     @Override
     public void onCreate() {
@@ -170,7 +154,7 @@ public class TheBrain extends Service{
         mGenreGraph = new GenreGraph(this);
         mSongHistory = new SongHistory(HISTORY_SIZE);
         mMediaPlayer = new MediaPlayer();
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -340,7 +324,6 @@ public class TheBrain extends Service{
         }
         mHasAudioFocus = true;
         registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-        registerMediaSession();
 
         AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
@@ -363,14 +346,12 @@ public class TheBrain extends Service{
         };
 
         mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        registerMediaSession();
     }
 
     private void registerMediaSession() {
-        ComponentName eventReceiver = new ComponentName(getPackageName(), RemoteControlEventListener.class.getName());
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        mediaButtonIntent.setComponent(eventReceiver);
-        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
-        mSession = new MediaSessionCompat(mContext, "FireSession", eventReceiver, mediaPendingIntent);
+        ComponentName eventReceiver = new ComponentName(getPackageName(), RemoteControlEventReceiver.class.getName());
+        mSession = new MediaSessionCompat(this, "FireSession", eventReceiver, null);
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
         mSession.setPlaybackToLocal(AudioManager.STREAM_MUSIC);
         // Got NPEs if didn't set this
@@ -382,11 +363,21 @@ public class TheBrain extends Service{
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1, 0)
+                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1)
                 .build();
         MediaSessionCompatHelper.applyState(mSession, state);
+
+        mSession.setCallback(new MediaSessionCompat.Callback() {
+
+            @Override
+            public void onSeekTo(long pos) {
+                super.onSeekTo(pos);
+                Log.e("TAG", "SeekTo");
+                setProgress((int) pos);
+            }
+        });
         mSession.setActive(true);
 
         Log.e("TheBrain", "registerMediaSession");
@@ -398,6 +389,19 @@ public class TheBrain extends Service{
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
                 .build());
+        setProgress(0);
+    }
+
+    private void setProgress(int pos) {
+        mMediaPlayer.seekTo(pos);
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
+                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .setState(PlaybackStateCompat.STATE_PLAYING, pos, 1)
+                .build();
+        MediaSessionCompatHelper.applyState(mSession, state);
     }
 
     public void playNext() {
@@ -425,7 +429,7 @@ public class TheBrain extends Service{
         super.onDestroy();
         mHasAudioFocus = false;
         unregisterReceiver(mNoisyAudioStreamReceiver);
-        mSession.release();
+        //mSession.release();
     }
 
     public boolean hasSong() {

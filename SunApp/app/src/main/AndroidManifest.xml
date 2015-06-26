@@ -18,6 +18,11 @@
             </intent-filter>
         </activity>
         <service android:name=".TheBrain"/>
+        <receiver android:name="RemoteControlEventReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
     </application>
 
     <uses-permission
