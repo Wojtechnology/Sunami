@@ -124,7 +124,7 @@ public class OuterLayout extends RelativeLayout {
 
     @Override
     protected void onFinishInflate() {
-        mDragHelper = ViewDragHelper.create(this, 1.0f, new DragHelperCallback());
+        mDragHelper = ViewDragHelper.create(this, 5.0f, new DragHelperCallback());
         mIsOpen = true;
         mIsFirst = true;
         mDraggingState = 0;

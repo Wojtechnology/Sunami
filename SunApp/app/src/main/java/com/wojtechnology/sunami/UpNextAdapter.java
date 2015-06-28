@@ -32,7 +32,7 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.fire_mixtape, parent, false);
+        View view = mInflater.inflate(R.layout.up_next_mixtape, parent, false);
         ItemHolder holder = new ItemHolder(view);
         return holder;
     }
@@ -44,7 +44,6 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         itemHolder.title.setText(current.title);
         itemHolder.artist.setText(current.artist);
         itemHolder.duration.setText(displayTime(current.duration));
-        itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
         itemHolder.background.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -67,7 +66,6 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         private TextView title;
         private TextView artist;
         private TextView duration;
-        private ImageView icon;
         private RelativeLayout background;
 
         public ItemHolder(View itemView) {
@@ -75,7 +73,6 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             title = (TextView) itemView.findViewById(R.id.list_title);
             artist = (TextView) itemView.findViewById(R.id.list_artist);
             duration = (TextView) itemView.findViewById(R.id.list_duration);
-            icon = (ImageView) itemView.findViewById(R.id.list_icon);
             background = (RelativeLayout) itemView.findViewById(R.id.list_background);
         }
     }

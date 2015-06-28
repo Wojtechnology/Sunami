@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:id="@+id/list_background"
+    android:background="@drawable/fire_mixtape_background"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp">
+
+    <LinearLayout
+        android:id="@+id/song_display_left"
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_toRightOf="@+id/list_icon">
+
+        <TextView
+            android:id="@+id/list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingTop="20dp"
+            android:singleLine="true"
+            android:text="Dummy Text"
+            android:textSize="16sp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:id="@+id/list_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:singleLine="true"
+            android:text="Dummy Text"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/song_display_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="right"
+        android:paddingRight="16dp"
+        android:layout_alignParentRight="true"
+        android:paddingTop="2dp">
+        <TextView
+            android:id="@+id/list_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primaryColorDark"
+            android:text="Dummy Text"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
