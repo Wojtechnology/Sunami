@@ -202,8 +202,8 @@ public class OuterLayout extends RelativeLayout {
         super.onFinishInflate();
     }
 
+    // Only happens when playing new song
     public void setMaxProgress(int max) {
-        mSeekBar.setMax(max);
     }
 
     public void setProgress(int progress) {
@@ -327,6 +327,8 @@ public class OuterLayout extends RelativeLayout {
         } else {
             mActive = true;
         }
+        mSeekBar.setProgress(0);
+        mSeekBar.setMax(Integer.parseInt(song.duration));
         updatePlayIcon();
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);

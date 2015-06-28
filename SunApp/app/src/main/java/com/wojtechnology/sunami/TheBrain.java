@@ -98,7 +98,8 @@ public class TheBrain extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (mIsInit) {
+        String action = intent.getAction();
+        if (mIsInit && action != null) {
             switch (intent.getAction()) {
                 case TOGGLE_PLAY:
                     togglePlay();
@@ -305,11 +306,13 @@ public class TheBrain extends Service{
         return mUpNext.data();
     }
 
+    // Main functions that starts playback of a song
     public void playSong(FireMixtape song, boolean saveLast) {
         FireMixtape oldPlaying = mPlaying;
         mPlaying = song;
 
         if (mPlaying != null) {
+            // request audio focus if already doesn't have it
             requestAudioFocus();
             if (oldPlaying == null){
                 setForegroundService();
@@ -327,10 +330,10 @@ public class TheBrain extends Service{
                 mMediaPlayer.prepare();
                 mPlayTimer.start();
                 mMediaPlayer.start();
-                if (mBound) {
-                    mContext.playSong(mPlaying, Integer.parseInt(mPlaying.duration));
-                }
                 setMetaData(mPlaying);
+                if (mBound) {
+                    mContext.playSong(mPlaying);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -367,6 +370,7 @@ public class TheBrain extends Service{
         mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
     }
 
+    // Registers audio and media session
     private void registerAudio() {
         mHasAudioFocus = true;
         registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
@@ -392,8 +396,6 @@ public class TheBrain extends Service{
             }
         });
         mSession.setActive(true);
-
-        Log.e("TheBrain", "registerMediaSession");
     }
 
     private void unregisterAudio() {
@@ -403,12 +405,12 @@ public class TheBrain extends Service{
     }
 
     private void setMetaData(FireMixtape song) {
+        setProgress(0, true);
         mSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
                 .build());
-        setProgress(0, true);
     }
 
     private void setProgress(int pos, boolean isPlaying) {
