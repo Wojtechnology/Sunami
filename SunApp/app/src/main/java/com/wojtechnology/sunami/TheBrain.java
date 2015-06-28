@@ -153,7 +153,8 @@ public class TheBrain extends Service{
         }
     }
 
-    private void setForegroundService(){
+    // This is needed to keep the background service running
+    private void setNotification(){
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new Notification.Builder(this)
@@ -314,9 +315,8 @@ public class TheBrain extends Service{
         if (mPlaying != null) {
             // request audio focus if already doesn't have it
             requestAudioFocus();
-            if (oldPlaying == null){
-                setForegroundService();
-            } else {
+            setNotification();
+            if (oldPlaying != null) {
                 mPlayTimer.reset();
                 if (saveLast) {
                     mSongHistory.push(oldPlaying);
@@ -354,7 +354,6 @@ public class TheBrain extends Service{
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
-                    unregisterAudio();
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
@@ -466,7 +465,7 @@ public class TheBrain extends Service{
         super.onDestroy();
         mHasAudioFocus = false;
         unregisterReceiver(mNoisyAudioStreamReceiver);
-        //mSession.release();
+        mSession.release();
     }
 
     public boolean hasSong() {
