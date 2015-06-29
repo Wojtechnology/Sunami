@@ -141,7 +141,6 @@ public class OuterLayout extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 mContext.mTheBrain.togglePlay();
-                updatePlayIcon();
             }
         });
 
@@ -324,7 +323,6 @@ public class OuterLayout extends RelativeLayout {
         }
         mSeekBar.setProgress(0);
         mSeekBar.setMax(Integer.parseInt(song.duration));
-        updatePlayIcon();
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);
         updateDefaultLocation();

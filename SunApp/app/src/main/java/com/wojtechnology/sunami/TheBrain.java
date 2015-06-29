@@ -18,6 +18,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +42,7 @@ public class TheBrain extends Service{
     public static final String TOGGLE_PLAY = "toggle_play";
     public static final String PLAY_NEXT = "play_next";
     public static final String PLAY_LAST = "play_last";
+    public static final String PLAY_STOP = "play_stop";
 
     private static final int UP_NEXT_MIN = 1;
     private static final int HISTORY_SIZE = 4;
@@ -65,7 +67,8 @@ public class TheBrain extends Service{
 
     // Sessions and Notifications
     private MediaSessionCompat mSession;
-
+    private Notification mNotification;
+    private RemoteViews mNotificationView;
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -76,7 +79,7 @@ public class TheBrain extends Service{
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 mPlayTimer.stop();
                 mMediaPlayer.pause();
-                mContext.updateSongView();
+                setUI(false);
             }
         }
     }
@@ -111,6 +114,10 @@ public class TheBrain extends Service{
 
                 case PLAY_LAST:
                     playLast();
+                    break;
+
+                case PLAY_STOP:
+
                     break;
 
                 default:
@@ -154,16 +161,44 @@ public class TheBrain extends Service{
     }
 
     // This is needed to keep the background service running
-    private void setNotification(){
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        Notification notification = new Notification.Builder(this)
-                .setContentTitle(mPlaying.title)
-                .setContentText(mPlaying.artist)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pendingIntent)
-                .build();
-        startForeground(534, notification);
+    private void setNotification(boolean isPlaying){
+        if(mPlaying == null){
+            stopForeground(true);
+            return;
+        }
+
+        if (mNotification == null || mNotificationView == null) {
+            mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
+
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+
+            mNotification = new Notification.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContent(mNotificationView)
+                    .setContentIntent(pendingIntent)
+                    .build();
+        }
+
+        Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
+        servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
+        Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
+        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+
+        if (isPlaying) {
+            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
+        } else {
+            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_play_hint);
+        }
+
+        mNotificationView.setTextViewText(R.id.notif_title, mPlaying.title);
+        mNotificationView.setTextViewText(R.id.notif_artist, mPlaying.artist);
+        mNotificationView.setOnClickPendingIntent(R.id.play_notif_button, pendingPlayIntent);
+        mNotificationView.setOnClickPendingIntent(R.id.next_notif_button, pendingNextIntent);
+
+        startForeground(534, mNotification);
     }
 
     // save all data that needs to persist in between sessions
@@ -315,7 +350,6 @@ public class TheBrain extends Service{
         if (mPlaying != null) {
             // request audio focus if already doesn't have it
             requestAudioFocus();
-            setNotification();
             if (oldPlaying != null) {
                 mPlayTimer.reset();
                 if (saveLast) {
@@ -334,6 +368,7 @@ public class TheBrain extends Service{
                 if (mBound) {
                     mContext.playSong(mPlaying);
                 }
+                setUI(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -354,6 +389,7 @@ public class TheBrain extends Service{
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
+                    setUI(false);
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
@@ -361,8 +397,8 @@ public class TheBrain extends Service{
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
                     unregisterAudio();
+                    setUI(false);
                 }
-                mContext.updateSongView();
             }
         };
 
@@ -383,7 +419,6 @@ public class TheBrain extends Service{
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, "")
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, -1)
                 .build());
-        setProgress(0, true);
 
         mSession.setCallback(new MediaSessionCompat.Callback() {
 
@@ -404,7 +439,6 @@ public class TheBrain extends Service{
     }
 
     private void setMetaData(FireMixtape song) {
-        setProgress(0, true);
         mSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
@@ -415,12 +449,13 @@ public class TheBrain extends Service{
     private void setProgress(int pos, boolean isPlaying) {
         mMediaPlayer.seekTo(pos);
         int speed = isPlaying ? 1 : 0;
+        int playState = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
                                 PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackStateCompat.STATE_PLAYING, pos, speed)
+                .setState(playState, pos, speed)
                 .build();
         MediaSessionCompatHelper.applyState(mSession, state);
     }
@@ -429,6 +464,7 @@ public class TheBrain extends Service{
         if(isPlaying()){
             mPlayTimer.stop();
             mMediaPlayer.pause();
+            setUI(false);
         }else{
             mPlayTimer.start();
             if (!hasSong()) {
@@ -436,7 +472,17 @@ public class TheBrain extends Service{
             } else {
                 mMediaPlayer.start();
                 requestAudioFocus();
+                setUI(true);
             }
+        }
+    }
+
+    // Changes UI as required
+    private void setUI(boolean isPlaying) {
+        setProgress(mMediaPlayer.getCurrentPosition(), isPlaying);
+        setNotification(isPlaying);
+        if (mBound) {
+            mContext.updateSongView();
         }
     }
 

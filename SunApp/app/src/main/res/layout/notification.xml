@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/fire_mixtape_background">
+
+    <Button
+        android:id="@+id/play_notif_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_play_hint" />
+
+    <Button
+        android:id="@+id/next_notif_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_toRightOf="@id/play_notif_button"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_next_hint" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/next_notif_button"
+        android:paddingLeft="8dp"
+        android:paddingRight="48dp">
+
+        <TextView
+            android:id="@+id/notif_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:paddingTop="14dp"
+            android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:id="@+id/notif_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:textColor="@color/primaryColorDark"/>
+
+    </LinearLayout>
+    
+    <Button
+        android:id="@+id/close_notif_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/ic_stop_notif"/>
+
+</RelativeLayout>
