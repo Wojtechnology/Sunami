@@ -64,6 +64,7 @@ public class TheBrain extends Service{
     public MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
     public UpNext mUpNext;
+    AudioManager.OnAudioFocusChangeListener mAFChangeListener;
 
     // Sessions and Notifications
     private MediaSessionCompat mSession;
@@ -117,14 +118,20 @@ public class TheBrain extends Service{
                     break;
 
                 case PLAY_STOP:
-
+                    stopForeground(true);
+                    mPlayTimer.stop();
+                    mMediaPlayer.pause();
+                    unregisterAudio();
+                    mAudioManager.abandonAudioFocus(mAFChangeListener);
+                    if (mBound) {
+                        mContext.updateSongView();
+                    }
                     break;
 
                 default:
                     break;
             }
         }
-        Log.e("TheBrain", "Message: " + intent.getAction());
         return START_NOT_STICKY;
     }
 
@@ -186,6 +193,9 @@ public class TheBrain extends Service{
         Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
         PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+        Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceStopIntent.setAction(TheBrain.PLAY_STOP);
+        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
 
         if (isPlaying) {
             mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
@@ -197,6 +207,7 @@ public class TheBrain extends Service{
         mNotificationView.setTextViewText(R.id.notif_artist, mPlaying.artist);
         mNotificationView.setOnClickPendingIntent(R.id.play_notif_button, pendingPlayIntent);
         mNotificationView.setOnClickPendingIntent(R.id.next_notif_button, pendingNextIntent);
+        mNotificationView.setOnClickPendingIntent(R.id.close_notif_button, pendingStopIntent);
 
         startForeground(534, mNotification);
     }
@@ -384,7 +395,7 @@ public class TheBrain extends Service{
         }
         registerAudio();
 
-        AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        mAFChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                     mPlayTimer.stop();
@@ -402,7 +413,7 @@ public class TheBrain extends Service{
             }
         };
 
-        mAudioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        mAudioManager.requestAudioFocus(mAFChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
     }
 
     // Registers audio and media session
@@ -466,10 +477,10 @@ public class TheBrain extends Service{
             mMediaPlayer.pause();
             setUI(false);
         }else{
-            mPlayTimer.start();
             if (!hasSong()) {
                 playNext();
             } else {
+                mPlayTimer.start();
                 mMediaPlayer.start();
                 requestAudioFocus();
                 setUI(true);
