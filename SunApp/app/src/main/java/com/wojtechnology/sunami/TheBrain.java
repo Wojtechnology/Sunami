@@ -118,13 +118,17 @@ public class TheBrain extends Service{
                     break;
 
                 case PLAY_STOP:
-                    stopForeground(true);
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
                     unregisterAudio();
                     mAudioManager.abandonAudioFocus(mAFChangeListener);
+                    stopForeground(true);
                     if (mBound) {
                         mContext.updateSongView();
+                    } else {
+                        mContext.serviceFinished();
+                        mMediaPlayer.release();
+                        stopSelf();
                     }
                     break;
 
@@ -375,11 +379,11 @@ public class TheBrain extends Service{
                 mMediaPlayer.prepare();
                 mPlayTimer.start();
                 mMediaPlayer.start();
+                setUI(true);
                 setMetaData(mPlaying);
                 if (mBound) {
                     mContext.playSong(mPlaying);
                 }
-                setUI(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -483,6 +487,7 @@ public class TheBrain extends Service{
                 mPlayTimer.start();
                 mMediaPlayer.start();
                 requestAudioFocus();
+                setMetaData(mPlaying);
                 setUI(true);
             }
         }
@@ -520,8 +525,7 @@ public class TheBrain extends Service{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mHasAudioFocus = false;
-        unregisterReceiver(mNoisyAudioStreamReceiver);
+        mMediaPlayer.release();
         mSession.release();
     }
 

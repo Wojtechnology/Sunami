@@ -66,8 +66,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
-        unbindService(mConnection);
         super.onDestroy();
+        unbindService(mConnection);
     }
 
     @Override
@@ -86,14 +86,17 @@ public class MainActivity extends ActionBarActivity {
             TheBrain.LocalBinder binder = (TheBrain.LocalBinder) service;
             mTheBrain = binder.getServiceInstance();
             mTheBrain.registerClient(MainActivity.this);
+            mOuterLayout.updatePlayIcon();
 
             MainActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (mTheBrain.mMediaPlayer != null && mTheBrain.mMediaPlayer.isPlaying()) {
-                        mOuterLayout.setProgress(mTheBrain.mMediaPlayer.getCurrentPosition());
+                    if (mTheBrain != null) {
+                        if (mTheBrain.mMediaPlayer != null && mTheBrain.mMediaPlayer.isPlaying()) {
+                            mOuterLayout.setProgress(mTheBrain.mMediaPlayer.getCurrentPosition());
+                        }
+                        mHandler.postDelayed(this, 1000);
                     }
-                    mHandler.postDelayed(this, 1000);
                 }
             });
         }
@@ -101,8 +104,13 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.e("MainActivity", "Service disconnected");
+            serviceFinished();
         }
     };
+
+    public void serviceFinished() {
+        mTheBrain = null;
+    }
 
     public void setRecyclerViewData(){
         mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
