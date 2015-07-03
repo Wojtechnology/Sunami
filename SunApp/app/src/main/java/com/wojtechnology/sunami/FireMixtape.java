@@ -42,7 +42,9 @@ public class FireMixtape{
     public String data;
     public String size;
 
+    // Values that are used to calculate popularity of song
     public Calendar lastPlayed;
+    public double multiplier;
 
     // The genre that is recognized by the app
     public String actualGenre;
@@ -51,6 +53,7 @@ public class FireMixtape{
         default_icon_id = R.mipmap.ic_launcher;
         mContext = context;
         icon_loaded = false;
+        multiplier = 0.0;
         lastPlayed = Calendar.getInstance();
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
     }

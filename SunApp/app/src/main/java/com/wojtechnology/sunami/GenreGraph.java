@@ -114,4 +114,11 @@ public class GenreGraph {
     public double getGenreLT(String genre) {
         return mGenreRef.get(genre).longTerm;
     }
+
+    private void printGenres() {
+        Set<GenreVertex> vertices = mEdges.keySet();
+        for (GenreVertex vertex : vertices) {
+            Log.i("GenreGraph", vertex.genre);
+        }
+    }
 }

@@ -57,6 +57,7 @@ public class TheBrain extends Service{
     private SongManager mSongManager;
     private SongHistory mSongHistory;
     private PlayTimer mPlayTimer;
+    private ShuffleController mShuffleController;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
@@ -163,7 +164,7 @@ public class TheBrain extends Service{
             init();
             mIsInit = true;
         } else {
-            loadQueue();
+            mShuffleController.loadNext(mUpNext);
             if (mBound) {
                 mContext.setProgressBar(false);
                 mContext.setRecyclerViewData();
@@ -227,6 +228,7 @@ public class TheBrain extends Service{
         mSongManager = new SongManager(this);
         mGenreGraph = new GenreGraph(this);
         mSongHistory = new SongHistory(HISTORY_SIZE);
+        mShuffleController = new ShuffleController(this, mGenreGraph, mSongManager, UP_NEXT_MIN);
         mMediaPlayer = new MediaPlayer();
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -239,7 +241,7 @@ public class TheBrain extends Service{
     }
 
     public void postInit() {
-        loadQueue();
+        mShuffleController.loadNext(mUpNext);
         if (mBound) {
             mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
@@ -299,6 +301,7 @@ public class TheBrain extends Service{
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mShuffleController.setLoadCompleted();
             new SaveAppDataTask().execute();
         }
     }
@@ -343,16 +346,6 @@ public class TheBrain extends Service{
 
     private void saveAppData() {
         new SaveAppDataTask().execute();
-    }
-
-    private void loadQueue() {
-        while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
-            int random = (int) (Math.random() * mSongManager.size());
-            FireMixtape song = mSongManager.getSongAtIndex(random);
-            if (!mUpNext.contains(song)) {
-                mUpNext.pushBack(song);
-            }
-        }
     }
 
     public List<FireMixtape> getDataByTitle() {
@@ -401,7 +394,6 @@ public class TheBrain extends Service{
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mChangedState = true;
-        savePersistentState();
     }
 
     // Gets audio focus and registers remote controller
@@ -518,7 +510,7 @@ public class TheBrain extends Service{
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
-        loadQueue();
+        mShuffleController.loadNext(mUpNext);
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 
