@@ -76,6 +76,7 @@ public class TheBrain extends Service{
 
     // Receiver for plugging out earphones
     private class NoisyAudioStreamReceiver extends BroadcastReceiver {
+
         @Override
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
@@ -122,7 +123,6 @@ public class TheBrain extends Service{
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
                     unregisterAudio();
-                    mAudioManager.abandonAudioFocus(mAFChangeListener);
                     stopForeground(true);
                     if (mBound) {
                         mContext.updateSongView();
@@ -363,7 +363,7 @@ public class TheBrain extends Service{
 
         if (mPlaying != null) {
             // request audio focus if already doesn't have it
-            requestAudioFocus();
+            registerAudio();
             if (oldPlaying != null) {
                 donePlayback(oldPlaying, mPlayTimer.reset());
                 if (saveLast) {
@@ -396,13 +396,14 @@ public class TheBrain extends Service{
         mChangedState = true;
     }
 
-    // Gets audio focus and registers remote controller
-    private void requestAudioFocus() {
+    // Registers audio and media session
+    private void registerAudio() {
         if (mHasAudioFocus || !mIsInit) {
             return;
         }
-        registerAudio();
+        mHasAudioFocus = true;
 
+        // Add audio focus change listener
         mAFChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
@@ -412,7 +413,6 @@ public class TheBrain extends Service{
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                    mAudioManager.abandonAudioFocus(this);
                     mPlayTimer.stop();
                     mMediaPlayer.pause();
                     unregisterAudio();
@@ -422,13 +422,11 @@ public class TheBrain extends Service{
         };
 
         mAudioManager.requestAudioFocus(mAFChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-    }
 
-    // Registers audio and media session
-    private void registerAudio() {
-        mHasAudioFocus = true;
+        // Add headphone out listener
         registerReceiver(mNoisyAudioStreamReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
+        // Add notification and transport controls
         ComponentName eventReceiver = new ComponentName(getPackageName(), RemoteControlEventReceiver.class.getName());
         mSession = new MediaSessionCompat(this, "FireSession", eventReceiver, null);
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
@@ -452,8 +450,10 @@ public class TheBrain extends Service{
     }
 
     private void unregisterAudio() {
+        if (!mHasAudioFocus) return;
         mHasAudioFocus = false;
         unregisterReceiver(mNoisyAudioStreamReceiver);
+        mAudioManager.abandonAudioFocus(mAFChangeListener);
         mSession.release();
     }
 
@@ -490,7 +490,7 @@ public class TheBrain extends Service{
             } else {
                 mPlayTimer.start();
                 mMediaPlayer.start();
-                requestAudioFocus();
+                registerAudio();
                 setMetaData(mPlaying);
                 setUI(true);
             }
