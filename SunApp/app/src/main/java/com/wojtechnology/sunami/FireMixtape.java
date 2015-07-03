@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class FireMixtape{
     public int default_icon_id;
 
     // Some required variables for Android functions
-    private Context context;
+    private Context mContext;
 
     // Helpful booollllssss
     public Boolean icon_loaded;
@@ -41,13 +42,17 @@ public class FireMixtape{
     public String data;
     public String size;
 
+    public Calendar lastPlayed;
+
     // The genre that is recognized by the app
     public String actualGenre;
 
     public FireMixtape(Context context) {
-        this.default_icon_id = R.mipmap.ic_launcher;
-        this.context = context;
-        this.icon_loaded = false;
+        default_icon_id = R.mipmap.ic_launcher;
+        mContext = context;
+        icon_loaded = false;
+        lastPlayed = Calendar.getInstance();
+        lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
     }
 
     /* public Bitmap getAlbumArt() {

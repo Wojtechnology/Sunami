@@ -11,12 +11,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -287,6 +289,10 @@ public class SongManager {
                 FireMixtape song = mSongDict.get(ja.getString(0));
                 song.genre = ja.getString(1);
                 song.actualGenre = ja.getString(2);
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+                cal.setTime(sdf.parse(ja.getString(3)));
+                song.lastPlayed = cal;
             } catch (Exception e) {
                 Log.e("Song Wrong", i + ": " + ja.getString(0) + ", " + ja.getString(1));
                 genresFromDB(genres);
@@ -305,13 +311,10 @@ public class SongManager {
             song.put(0, mSongList.get(i).data);
             song.put(1, mSongList.get(i).genre);
             song.put(2, mSongList.get(i).actualGenre);
+            song.put(3, mSongList.get(i).lastPlayed.getTime().toString());
             ja.put(song);
         }
         return ja;
-    }
-
-    public void addPlay(float sec, FireMixtape song){
-
     }
 
     private void printSongs(){

@@ -17,9 +17,16 @@ public class PlayInstance {
         mSong = song;
         mDuration = duration;
         mDateTime = Calendar.getInstance();
+        song.lastPlayed = mDateTime;
 
-        Log.e("PlayInstance", "Received " + song.title + " played for " + duration + "ms at " + mDateTime.toString());
+        Log.e("PlayInstance", "Received " + song.title + " played for " + duration + "ms at " + mDateTime.getTime().toString());
+    }
 
+    // Returns the fraction of the length of the song that the song was played for
+    public double getFractionPlayed(){
+        int songDuration = Integer.parseInt(mSong.duration);
+        if (songDuration == 0) return 0.0;
+        return ((double) mDuration) / ((double) songDuration);
     }
 
 }

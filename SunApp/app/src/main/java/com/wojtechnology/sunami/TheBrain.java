@@ -333,6 +333,12 @@ public class TheBrain extends Service{
                     " millis.");
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mChangedState = false;
+        }
     }
 
     private void saveAppData() {
@@ -394,6 +400,8 @@ public class TheBrain extends Service{
 
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
+        mChangedState = true;
+        savePersistentState();
     }
 
     // Gets audio focus and registers remote controller
