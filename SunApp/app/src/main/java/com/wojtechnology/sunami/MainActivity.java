@@ -160,6 +160,7 @@ public class MainActivity extends ActionBarActivity {
         if (mTheBrain == null) return;
         if (mTheBrain.mMediaPlayer != null) {
             mTheBrain.mMediaPlayer.seekTo(progress);
+            mTheBrain.setProgress(progress, mTheBrain.isPlaying());
         }
     }
 

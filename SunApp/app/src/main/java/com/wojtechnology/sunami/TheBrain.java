@@ -465,7 +465,7 @@ public class TheBrain extends Service{
                 .build());
     }
 
-    private void setProgress(int pos, boolean isPlaying) {
+    public void setProgress(int pos, boolean isPlaying) {
         mMediaPlayer.seekTo(pos);
         int speed = isPlaying ? 1 : 0;
         int playState = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
