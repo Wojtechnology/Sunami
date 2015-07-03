@@ -116,21 +116,12 @@ public class SongManager {
         return mSongList;
     }
 
-    public FireMixtape getSong(String _id){
-        for(int i = 0; i < mSongList.size(); i++){
-            if(mSongList.get(i)._id == _id){
-                return mSongList.get(i);
-            }
-        }
-        return null;
-    }
-
     public int size(){
         return mSongList.size();
     }
 
-    public String getSongId(int index){
-        return mSongList.get(index)._id;
+    public FireMixtape getSongAtIndex(int index){
+        return mSongList.get(index);
     }
 
     private class InitSongsTask extends AsyncTask<Void, Integer, Void>{
@@ -317,6 +308,10 @@ public class SongManager {
             ja.put(song);
         }
         return ja;
+    }
+
+    public void addPlay(float sec, FireMixtape song){
+
     }
 
     private void printSongs(){

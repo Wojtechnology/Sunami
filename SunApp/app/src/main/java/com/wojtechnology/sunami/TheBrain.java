@@ -342,7 +342,7 @@ public class TheBrain extends Service{
     private void loadQueue() {
         while (mUpNext.size() < UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
             int random = (int) (Math.random() * mSongManager.size());
-            FireMixtape song = mSongManager.getSong(mSongManager.getSongId(random));
+            FireMixtape song = mSongManager.getSongAtIndex(random);
             if (!mUpNext.contains(song)) {
                 mUpNext.pushBack(song);
             }
@@ -366,7 +366,7 @@ public class TheBrain extends Service{
             // request audio focus if already doesn't have it
             requestAudioFocus();
             if (oldPlaying != null) {
-                mPlayTimer.reset();
+                donePlayback(oldPlaying, mPlayTimer.reset());
                 if (saveLast) {
                     mSongHistory.push(oldPlaying);
                 }
@@ -390,6 +390,10 @@ public class TheBrain extends Service{
         } else {
             Log.e("TheBrain", "No song provided");
         }
+    }
+
+    private void donePlayback(FireMixtape song, int duration) {
+        PlayInstance playInstance = new PlayInstance(song, duration);
     }
 
     // Gets audio focus and registers remote controller
