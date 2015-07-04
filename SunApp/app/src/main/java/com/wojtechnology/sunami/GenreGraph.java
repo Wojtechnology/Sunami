@@ -95,15 +95,9 @@ public class GenreGraph {
         return mGenreRef.keySet();
     }
 
-    // Implement the update value method for a positive change in a genre
+    // Implement the update value method for a change in a genre
     // Will need more params
-    public void promoteGenre(String genre) {
-        // LOL
-    }
-
-    // Implement the update value method for a negative change in a genre
-    // Will need more params
-    public void demoteGenre(String genre) {
+    public void modifyGenre(PlayInstance playInstance) {
         // LOL
     }
 

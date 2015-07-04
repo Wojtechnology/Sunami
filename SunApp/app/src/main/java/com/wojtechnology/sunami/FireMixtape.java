@@ -58,6 +58,15 @@ public class FireMixtape{
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
     }
 
+    public long getMillisSinceLastPlay() {
+        long now = Calendar.getInstance().getTimeInMillis();
+        long delta = now - lastPlayed.getTimeInMillis();
+        if (delta < 0) {
+             return 0;
+        }
+        return delta;
+    }
+
     /* public Bitmap getAlbumArt() {
         {
             if(!icon_loaded) {

@@ -319,6 +319,11 @@ public class SongManager {
         return ja;
     }
 
+    // Function to change certain values of a song based on time played
+    public void modifySong(PlayInstance playInstance) {
+
+    }
+
     private void printSongs(){
         for(int i = 0; i < mSongList.size(); i++){
             Log.i("SongManager", mSongList.get(i).title + ": Genre - " +

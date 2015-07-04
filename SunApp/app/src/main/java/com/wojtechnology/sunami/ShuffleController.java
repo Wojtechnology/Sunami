@@ -35,8 +35,23 @@ public class ShuffleController {
         }
     }
 
-    public void loadNext(UpNext upNext) {
+    private void calculatedLoadQueue(UpNext upNext) {
         randomLoadQueue(upNext);
+    }
+
+    public void loadNext(UpNext upNext) {
+        if (!mIsLoaded) {
+            // If file not yet read, RNJesus
+            randomLoadQueue(upNext);
+        } else {
+            calculatedLoadQueue(upNext);
+        }
+    }
+
+    // Pass in the play instance and modify genre and song values based on play duration
+    public void addPlayInstance(PlayInstance playInstance) {
+        mGenreGraph.modifyGenre(playInstance);
+        mSongManager.modifySong(playInstance);
     }
 
 }
