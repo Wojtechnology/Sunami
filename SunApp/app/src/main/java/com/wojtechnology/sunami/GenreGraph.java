@@ -99,8 +99,12 @@ public class GenreGraph {
     }
 
     // Implement the update value method for a change in a genre
-    public void modifyGenre(PlayInstance playInstance) {
-        // LOL
+    public void modifyGenre(String genre, double newVal) {
+        try {
+            mGenreRef.get(genre).shortTerm = newVal;
+        } catch (Exception e) {
+            Log.e("GenreGraph", "Could not find genre " + genre);
+        }
     }
 
     public double getGenreST(String genre) {
@@ -116,5 +120,14 @@ public class GenreGraph {
         for (GenreVertex vertex : vertices) {
             Log.i("GenreGraph", vertex.genre);
         }
+    }
+
+    // Checks if genre exists
+    public boolean isGenre(String genre) {
+        Set<GenreVertex> vertices = mEdges.keySet();
+        for (GenreVertex vertex : vertices) {
+            if(vertex.genre.equals(genre)) return true;
+        }
+        return false;
     }
 }
