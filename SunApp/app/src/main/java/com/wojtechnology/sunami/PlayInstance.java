@@ -29,4 +29,8 @@ public class PlayInstance {
         return ((double) mDuration) / ((double) songDuration);
     }
 
+    public String getGenre(){
+        return mSong.actualGenre;
+    }
+
 }
