@@ -63,9 +63,11 @@ public class GenreGraph {
     public JSONArray getGraphJSON() {
         long startTime = Calendar.getInstance().getTimeInMillis();
         try {
+            int numGenres = 0;
             JSONArray ja = new JSONArray();
             Set<GenreVertex> vertices = mEdges.keySet();
             for (GenreVertex vertex : vertices) {
+                numGenres++;
                 List<GenreEdge> edgeList = mEdges.get(vertex);
                 JSONObject jo = new JSONObject();
                 jo.put("genre", vertex.genre);
@@ -81,6 +83,7 @@ public class GenreGraph {
                 jo.put("assoc", assocList);
                 ja.put(jo);
             }
+            Log.i("GenreGraph", "Saved " + numGenres + " genres.");
             return ja;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -96,7 +99,6 @@ public class GenreGraph {
     }
 
     // Implement the update value method for a change in a genre
-    // Will need more params
     public void modifyGenre(PlayInstance playInstance) {
         // LOL
     }
