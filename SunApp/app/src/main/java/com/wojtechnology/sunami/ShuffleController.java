@@ -3,6 +3,12 @@ package com.wojtechnology.sunami;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Created by wojtekswiderski on 15-07-02.
  */
@@ -11,6 +17,7 @@ public class ShuffleController {
     private GenreGraph mGenreGraph;
     private SongManager mSongManager;
     private TheBrain mTheBrain;
+    private List<FireMixtape> mSongList;
 
     private final int UP_NEXT_MIN;
     private final double SONG_DURATION_OFFSET = 0.1;
@@ -41,14 +48,47 @@ public class ShuffleController {
         mTheBrain = theBrain;
         mIsLoaded = false;
         UP_NEXT_MIN = min;
-
-        /*for (double i = 0.0; i <= 1.0; i += 0.01) {
-            Log.e("ShuffleController", "i: " + i + " and j: " + getPlayMultiplier(i, 0.1, 0.05));
-        }*/
     }
 
     public void setLoadCompleted() {
+        updateList();
         mIsLoaded = true;
+    }
+
+    public void updateList() {
+        mSongList = new ArrayList<>(mSongManager.getFire());
+        sortList();
+    }
+
+    public void sortList() {
+        if (mSongList == null) {
+            return;
+        }
+        Collections.sort(mSongList, new Comparator<FireMixtape>() {
+            @Override
+            public int compare(FireMixtape lhs, FireMixtape rhs) {
+                double l = calculateSongValue(lhs);
+                double r = calculateSongValue(rhs);
+                if (l == r) {
+                    return 0;
+                } else if (l > r) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+    }
+
+    // Calculates the song value which ranks songs on fire level
+    private double calculateSongValue(FireMixtape song) {
+        double val = 1.0;
+        if (mGenreGraph.isGenre(song.genre)) {
+            val *= mGenreGraph.getGenreLT(song.genre);
+            val *= mGenreGraph.getGenreST(song.genre);
+        }
+        val *= song.multiplier;
+        return val;
     }
 
     private void randomLoadQueue(UpNext upNext) {
@@ -62,7 +102,14 @@ public class ShuffleController {
     }
 
     private void calculatedLoadQueue(UpNext upNext) {
-        randomLoadQueue(upNext);
+        int i = 0;
+        while (upNext.size() < UP_NEXT_MIN && i < mSongList.size() && upNext.size() < mSongManager.size()) {
+            FireMixtape song = mSongList.get(i);
+            if (!upNext.contains(song)) {
+                upNext.pushBack(song);
+            }
+            i++;
+        }
     }
 
     public void loadNext(UpNext upNext) {
@@ -76,6 +123,7 @@ public class ShuffleController {
 
     // Pass in the play instance and modify genre and song values based on play duration
     public void addPlayInstance(PlayInstance playInstance) {
+        if (!mIsLoaded) return;
         double r = getPlayMultiplier(playInstance.getFractionPlayed(), SONG_DURATION_OFFSET, SONG_DURATION_SPREAD);
         double songDelta = songChange(playInstance.getMulti(), r);
         playInstance.setMulti(songDelta);
@@ -83,12 +131,14 @@ public class ShuffleController {
         String genre = playInstance.getGenre();
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
+            sortList();
             return;
         }
         double stDelta = shortTermGenreChange(genre, r);
         double ltDelta = longTermGenreChange(genre, r);
         mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
         Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
+        sortList();
     }
 
     // Determines whether the play counts as a skip or other and calculates multiplier
@@ -125,7 +175,7 @@ public class ShuffleController {
     }
 
     private double longTermGenreChange(String genre, double r) {
-        double genreVal = mGenreGraph.getGenreST(genre);
+        double genreVal = mGenreGraph.getGenreLT(genre);
         double y = genreVal;
         double med = 0.5 * (LONG_GENRE_MIN + LONG_GENRE_MAX);
         double spread = 0.5 * (LONG_GENRE_MAX - LONG_GENRE_MIN);

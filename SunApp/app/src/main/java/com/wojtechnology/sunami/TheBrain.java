@@ -394,6 +394,7 @@ public class TheBrain extends Service{
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mShuffleController.addPlayInstance(playInstance);
+        mShuffleController.sortList();
         mChangedState = true;
         savePersistentState();
     }
