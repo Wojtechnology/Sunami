@@ -99,9 +99,10 @@ public class GenreGraph {
     }
 
     // Implement the update value method for a change in a genre
-    public void modifyGenre(String genre, double newVal) {
+    public void modifyGenre(String genre, double stVal, double ltVal) {
         try {
-            mGenreRef.get(genre).shortTerm = newVal;
+            mGenreRef.get(genre).shortTerm = stVal;
+            mGenreRef.get(genre).longTerm = ltVal;
         } catch (Exception e) {
             Log.e("GenreGraph", "Could not find genre " + genre);
         }

@@ -33,4 +33,12 @@ public class PlayInstance {
         return mSong.actualGenre;
     }
 
+    public double getMulti() {
+        return mSong.multiplier;
+    }
+
+    public void setMulti(double newMulti) {
+        mSong.multiplier = newMulti;
+    }
+
 }

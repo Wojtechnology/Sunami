@@ -52,6 +52,7 @@ public class TheBrain extends Service{
     private boolean mIsInit;
     private boolean mBound;
     private boolean mHasAudioFocus;
+    private boolean mLoaded;
 
     // Contains list of songs
     private SongManager mSongManager;
@@ -92,10 +93,11 @@ public class TheBrain extends Service{
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
-        mChangedState = false;
-        mIsInit = false;
-        mBound = false;
+        mChangedState  = false;
+        mIsInit        = false;
+        mBound         = false;
         mHasAudioFocus = false;
+        mLoaded        = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
@@ -219,7 +221,7 @@ public class TheBrain extends Service{
 
     // save all data that needs to persist in between sessions
     public void savePersistentState() {
-        if (mChangedState) {
+        if (mChangedState && mLoaded) {
             saveAppData();
         }
     }
@@ -302,7 +304,7 @@ public class TheBrain extends Service{
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mShuffleController.setLoadCompleted();
-            new SaveAppDataTask().execute();
+            mLoaded = true;
         }
     }
 
@@ -344,9 +346,7 @@ public class TheBrain extends Service{
         }
     }
 
-    private void saveAppData() {
-        new SaveAppDataTask().execute();
-    }
+    private void saveAppData() {new SaveAppDataTask().execute();}
 
     public List<FireMixtape> getDataByTitle() {
         return mSongManager.getByTitle();
@@ -393,7 +393,9 @@ public class TheBrain extends Service{
 
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
+        mShuffleController.addPlayInstance(playInstance);
         mChangedState = true;
+        savePersistentState();
     }
 
     // Registers audio and media session

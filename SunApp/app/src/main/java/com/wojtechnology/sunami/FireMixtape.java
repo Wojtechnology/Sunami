@@ -53,7 +53,7 @@ public class FireMixtape{
         default_icon_id = R.mipmap.ic_launcher;
         mContext = context;
         icon_loaded = false;
-        multiplier = 0.0;
+        multiplier = 1.0;
         lastPlayed = Calendar.getInstance();
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
     }

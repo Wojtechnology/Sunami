@@ -31,8 +31,8 @@ public class ShuffleController {
     private final double SONG_MAX = 2.0;
     private final double SONG_MED_MULTI = 0.1;
     private final double SONG_OFF_MULTI = 1.0;
-    private final double SONG_POS_MULTI = 0.25;
-    private final double SONG_NEG_MULTI = 0.25;
+    private final double SONG_POS_MULTI = 0.4;
+    private final double SONG_NEG_MULTI = 0.4;
     private boolean mIsLoaded;
 
     public ShuffleController(TheBrain theBrain, GenreGraph genreGraph, SongManager songManager, int min) {
@@ -49,20 +49,6 @@ public class ShuffleController {
 
     public void setLoadCompleted() {
         mIsLoaded = true;
-        for (int i = 0; i < 25; i++){
-            double genreVal = mGenreGraph.getGenreST("rock");
-            double newVal = shortTermGenreChange("rock", -0.6);
-            double delta = newVal - genreVal;
-            mGenreGraph.modifyGenre("rock", newVal);
-            Log.e("ShuffleController", "Value = " + newVal + " with delta " + delta);
-        }
-        for (int i = 0; i < 25; i++){
-            double genreVal = mGenreGraph.getGenreST("rock");
-            double newVal = shortTermGenreChange("rock", 0.75);
-            double delta = newVal - genreVal;
-            mGenreGraph.modifyGenre("rock", newVal);
-            Log.e("ShuffleController", "Value = " + newVal + " with delta " + delta);
-        }
     }
 
     private void randomLoadQueue(UpNext upNext) {
@@ -91,14 +77,18 @@ public class ShuffleController {
     // Pass in the play instance and modify genre and song values based on play duration
     public void addPlayInstance(PlayInstance playInstance) {
         double r = getPlayMultiplier(playInstance.getFractionPlayed(), SONG_DURATION_OFFSET, SONG_DURATION_SPREAD);
+        double songDelta = songChange(playInstance.getMulti(), r);
+        playInstance.setMulti(songDelta);
+        Log.i("ShuffleController", "Modified song value to " + songDelta);
         String genre = playInstance.getGenre();
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
             return;
         }
-        shortTermGenreChange(genre, r);
-        /*mGenreGraph.modifyGenre(playInstance);
-        mSongManager.modifySong(playInstance);*/
+        double stDelta = shortTermGenreChange(genre, r);
+        double ltDelta = longTermGenreChange(genre, r);
+        mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
+        Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
     }
 
     // Determines whether the play counts as a skip or other and calculates multiplier
@@ -152,6 +142,27 @@ public class ShuffleController {
             y = LONG_GENRE_MAX;
         } else if (y < LONG_GENRE_MIN) {
             y = LONG_GENRE_MIN;
+        }
+        return y;
+    }
+
+    private double songChange(double songVal, double r) {
+        double y = songVal;
+        double med = 0.5 * (SONG_MIN + SONG_MAX);
+        double spread = 0.5 * (SONG_MAX - SONG_MIN);
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
+        double multi = r < 0.0 ? SONG_NEG_MULTI : SONG_POS_MULTI;
+        double offset = offsetRatio * (SONG_MAX - SONG_MIN) + SONG_MIN;
+        double medVal = getBellValue(songVal, med, 1.0);
+        double offVal = getBellValue(songVal, offset, spread);
+        double fullVal = SONG_MED_MULTI * medVal +
+                SONG_OFF_MULTI * offVal;
+        y += multi * fullVal * r;
+
+        if (y > SONG_MAX) {
+            y = SONG_MAX;
+        } else if (y < SONG_MIN) {
+            y = SONG_MIN;
         }
         return y;
     }
