@@ -84,7 +84,8 @@ public class ShuffleController {
                 return null;
             }
             mSortingState = true;
-            Collections.sort(mSongList, new Comparator<FireMixtape>() {
+            List<FireMixtape> songList = new ArrayList<>(mSongList);
+            Collections.sort(songList, new Comparator<FireMixtape>() {
                 @Override
                 public int compare(FireMixtape lhs, FireMixtape rhs) {
                     double l = calculateSongValue(lhs);
@@ -99,6 +100,7 @@ public class ShuffleController {
                 }
             });
 
+            mSongList = songList;
             return null;
         }
 
@@ -162,6 +164,7 @@ public class ShuffleController {
             FireMixtape song = mSongList.get(i);
             if (!isContained(upNext, song)) {
                 mSongBuffer.offer(song);
+                printSongValues(song);
             }
             i++;
         }
@@ -204,7 +207,7 @@ public class ShuffleController {
         double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - TIME_OFFSET)));
         if (denominator == 0.0) return 0.0;
         double sigmoid = 1.0 / denominator;
-        return sigmoid * 0.5 + 0.5;
+        return sigmoid * 0.75 + 0.25;
     }
 
     private double shortTermGenreChange(String genre, double r) {
@@ -281,14 +284,19 @@ public class ShuffleController {
 
     private void printCurrentValues() {
         for (int i = 0; i < mSongList.size(); i++) {
-            FireMixtape song = mSongList.get(i);
-            String message = song.title + " - " + song.getMillisSinceLastPlay() + " - " + song.multiplier;
-            if (mGenreGraph.isGenre(song.actualGenre)) {
-                message += " - " + mGenreGraph.getGenreLT(song.actualGenre);
-                message += " - " + mGenreGraph.getGenreST(song.actualGenre);
-            }
-
-            Log.e("ShuffleController", message);
+            printSongValues(mSongList.get(i));
         }
+    }
+
+    private void printSongValues(FireMixtape song) {
+        String message = song.title + " - " + song.getMillisSinceLastPlay() + " - " + song.multiplier;
+        if (mGenreGraph.isGenre(song.actualGenre)) {
+            message += " - " + mGenreGraph.getGenreLT(song.actualGenre);
+            message += " - " + mGenreGraph.getGenreST(song.actualGenre);
+        }
+        message += " - " + getLastPlayedMultiplier(song);
+        message += " = " + calculateSongValue(song);
+
+        Log.e("ShuffleController", message);
     }
 }
