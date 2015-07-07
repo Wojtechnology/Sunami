@@ -129,13 +129,12 @@ public class ShuffleController {
     }
 
     private void calculatedLoadQueue(UpNext upNext) {
-        int i = 0;
-        while (upNext.size() < UP_NEXT_MIN && i < mSongList.size() && upNext.size() < mSongManager.size()) {
-            FireMixtape song = mSongList.get(i);
+        if (mSongBuffer.size() < BUFFER_SIZE) loadBuffer(upNext);
+        while (upNext.size() < UP_NEXT_MIN && upNext.size() < mSongManager.size()) {
+            FireMixtape song = mSongBuffer.poll();
             if (!upNext.contains(song)) {
                 upNext.pushBack(song);
             }
-            i++;
         }
     }
 
@@ -152,6 +151,17 @@ public class ShuffleController {
         return upNext.contains(song) ||
                 mSongBuffer.contains(song) ||
                 mTheBrain.getSongPlaying() == song;
+    }
+
+    private void loadBuffer(UpNext upNext) {
+        int i = 0;
+        while(mSongBuffer.size() < BUFFER_SIZE && i < mSongList.size()) {
+            FireMixtape song = mSongList.get(i);
+            if (!isContained(upNext, song)) {
+                mSongBuffer.offer(song);
+            }
+            i++;
+        }
     }
 
     // Pass in the play instance and modify genre and song values based on play duration
