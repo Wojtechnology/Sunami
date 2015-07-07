@@ -45,6 +45,8 @@ public class ShuffleController {
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
     private final double SONG_NEG_MULTI = 0.4;
+    private final long TIME_SPREAD = 1800000;
+    private final long TIME_OFFSET = 3600000;
 
     private boolean mSortingState;
     private boolean mIsLoaded;
@@ -58,6 +60,10 @@ public class ShuffleController {
         UP_NEXT_MIN = min;
 
         mSongBuffer = new LinkedList<>();
+
+        for (long i = 0; i < 7200000; i += 60000) {
+            Log.e("ShuffleController", "I: " + i + " LOL: " + getLastPlayedMultiplier(i));
+        }
     }
 
     public void setLoadCompleted() {
@@ -193,6 +199,15 @@ public class ShuffleController {
         if (denominator == 0.0) return 0.0;
         double sigmoid = 1.0 / denominator;
         return sigmoid * 2.0 - 1.0;
+    }
+
+    private double getLastPlayedMultiplier(long delta) {
+        //long delta = song.getMillisSinceLastPlay();
+        double k = -1.0 / ((double) TIME_SPREAD);
+        double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - TIME_OFFSET)));
+        if (denominator == 0.0) return 0.0;
+        double sigmoid = 1.0 / denominator;
+        return sigmoid * 0.5 + 0.5;
     }
 
     private double shortTermGenreChange(String genre, double r) {
