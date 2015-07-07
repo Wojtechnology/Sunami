@@ -45,7 +45,7 @@ public class TheBrain extends Service{
     public static final String PLAY_STOP = "play_stop";
 
     private static final int UP_NEXT_MIN = 1;
-    private static final int HISTORY_SIZE = 4;
+    private static final int HISTORY_SIZE = 10;
 
     private MainActivity mContext;
     private boolean mChangedState;

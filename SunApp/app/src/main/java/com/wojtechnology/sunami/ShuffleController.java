@@ -60,10 +60,6 @@ public class ShuffleController {
         UP_NEXT_MIN = min;
 
         mSongBuffer = new LinkedList<>();
-
-        for (long i = 0; i < 7200000; i += 60000) {
-            Log.e("ShuffleController", "I: " + i + " LOL: " + getLastPlayedMultiplier(i));
-        }
     }
 
     public void setLoadCompleted() {
@@ -116,11 +112,12 @@ public class ShuffleController {
     // Calculates the song value which ranks songs on fire level
     private double calculateSongValue(FireMixtape song) {
         double val = 1.0;
-        if (mGenreGraph.isGenre(song.genre)) {
-            val *= mGenreGraph.getGenreLT(song.genre);
-            val *= mGenreGraph.getGenreST(song.genre);
+        if (mGenreGraph.isGenre(song.actualGenre)) {
+            val *= mGenreGraph.getGenreLT(song.actualGenre);
+            val *= mGenreGraph.getGenreST(song.actualGenre);
         }
         val *= song.multiplier;
+        val *= getLastPlayedMultiplier(song);
         return val;
     }
 
@@ -201,8 +198,8 @@ public class ShuffleController {
         return sigmoid * 2.0 - 1.0;
     }
 
-    private double getLastPlayedMultiplier(long delta) {
-        //long delta = song.getMillisSinceLastPlay();
+    private double getLastPlayedMultiplier(FireMixtape song) {
+        long delta = song.getMillisSinceLastPlay();
         double k = -1.0 / ((double) TIME_SPREAD);
         double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - TIME_OFFSET)));
         if (denominator == 0.0) return 0.0;
@@ -282,4 +279,16 @@ public class ShuffleController {
         return Math.pow(Math.E, -1.0 * x * x);
     }
 
+    private void printCurrentValues() {
+        for (int i = 0; i < mSongList.size(); i++) {
+            FireMixtape song = mSongList.get(i);
+            String message = song.title + " - " + song.getMillisSinceLastPlay() + " - " + song.multiplier;
+            if (mGenreGraph.isGenre(song.actualGenre)) {
+                message += " - " + mGenreGraph.getGenreLT(song.actualGenre);
+                message += " - " + mGenreGraph.getGenreST(song.actualGenre);
+            }
+
+            Log.e("ShuffleController", message);
+        }
+    }
 }
