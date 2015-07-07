@@ -1,5 +1,6 @@
 package com.wojtechnology.sunami;
 
+import android.os.AsyncTask;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
@@ -7,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by wojtekswiderski on 15-07-02.
@@ -18,8 +21,10 @@ public class ShuffleController {
     private SongManager mSongManager;
     private TheBrain mTheBrain;
     private List<FireMixtape> mSongList;
+    private Queue<FireMixtape> mSongBuffer;
 
     private final int UP_NEXT_MIN;
+    private final int BUFFER_SIZE = 4;
     private final double SONG_DURATION_OFFSET = 0.1;
     private final double SONG_DURATION_SPREAD = 0.05;
     private final double SHORT_GENRE_MIN = 0.5;
@@ -40,6 +45,8 @@ public class ShuffleController {
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
     private final double SONG_NEG_MULTI = 0.4;
+
+    private boolean mSortingState;
     private boolean mIsLoaded;
 
     public ShuffleController(TheBrain theBrain, GenreGraph genreGraph, SongManager songManager, int min) {
@@ -47,7 +54,10 @@ public class ShuffleController {
         mSongManager = songManager;
         mTheBrain = theBrain;
         mIsLoaded = false;
+        mSortingState = false;
         UP_NEXT_MIN = min;
+
+        mSongBuffer = new LinkedList<>();
     }
 
     public void setLoadCompleted() {
@@ -61,23 +71,40 @@ public class ShuffleController {
     }
 
     public void sortList() {
-        if (mSongList == null) {
-            return;
-        }
-        Collections.sort(mSongList, new Comparator<FireMixtape>() {
-            @Override
-            public int compare(FireMixtape lhs, FireMixtape rhs) {
-                double l = calculateSongValue(lhs);
-                double r = calculateSongValue(rhs);
-                if (l == r) {
-                    return 0;
-                } else if (l > r) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+        new SortListTask().execute();
+    }
+
+    private class SortListTask extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (mSongList == null && mSortingState) {
+                return null;
             }
-        });
+            mSortingState = true;
+            Collections.sort(mSongList, new Comparator<FireMixtape>() {
+                @Override
+                public int compare(FireMixtape lhs, FireMixtape rhs) {
+                    double l = calculateSongValue(lhs);
+                    double r = calculateSongValue(rhs);
+                    if (l == r) {
+                        return 0;
+                    } else if (l > r) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mSortingState = false;
+        }
     }
 
     // Calculates the song value which ranks songs on fire level
@@ -119,6 +146,12 @@ public class ShuffleController {
         } else {
             calculatedLoadQueue(upNext);
         }
+    }
+
+    private boolean isContained(UpNext upNext, FireMixtape song) {
+        return upNext.contains(song) ||
+                mSongBuffer.contains(song) ||
+                mTheBrain.getSongPlaying() == song;
     }
 
     // Pass in the play instance and modify genre and song values based on play duration

@@ -251,6 +251,10 @@ public class TheBrain extends Service{
         readAppData();
     }
 
+    public FireMixtape getSongPlaying() {
+        return mPlaying;
+    }
+
     private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
 
         private void readNew(JSONArray ja) {
