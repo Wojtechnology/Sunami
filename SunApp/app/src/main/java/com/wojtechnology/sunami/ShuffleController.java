@@ -50,9 +50,28 @@ public class ShuffleController {
 
     private boolean mIsLoaded;
 
+    // Async wrapper for setSongValues function
     private class SetSongValuesTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            setSongValues();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            loadNextAsync();
+            // If this is ran by setLoadCompleted, we want to notify that the controller is loaded
+            mIsLoaded = true;
+        }
+    }
+
+    // Async wrapper for loadNext function
+    private class LoadNextTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            loadNext();
             return null;
         }
     }
@@ -67,18 +86,22 @@ public class ShuffleController {
 
     public void setLoadCompleted() {
         updateList();
-        mIsLoaded = true;
     }
 
     public void updateList() {
         mSongList = new ArrayList<>(mSongManager.getFire());
-        setSongValues();
+        setSongValuesAsync();
     }
 
     private void setSongValues() {
         for (int i = 0; i < mSongList.size(); i++) {
             mSongList.get(i).calculatedValue = calculateSongValue(mSongList.get(i));
         }
+    }
+
+    // Runs setSongValues in a separate thread and then loads the UpNext
+    private void setSongValuesAsync() {
+        new SetSongValuesTask().execute();
     }
 
     // Calculates the song value which ranks songs on fire level
@@ -94,35 +117,51 @@ public class ShuffleController {
         return val;
     }
 
-    private void randomLoadQueue() {
-        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
-            int random = (int) (Math.random() * mSongManager.size());
-            FireMixtape song = mSongManager.getSongAtIndex(random);
-            if (!mUpNext.contains(song)) {
-                mUpNext.pushBack(song);
-            }
+    // Randomly load a song that isn't currently playing or in upnext
+    private void randomLoadOne() {
+        int random = (int) (Math.random() * mSongManager.size());
+        FireMixtape song = mSongManager.getSongAtIndex(random);
+        if (isContained(song)) {
+            mUpNext.pushBack(song);
         }
     }
 
-    private void calculatedLoadQueue() {
-        int i = 0;
-        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && i < mSongList.size() && mUpNext.size() < mSongList.size()) {
+    // Find the highest valued song that isn't in the upnext or currently playing
+    private boolean calculatedLoadOne() {
+        double max = 0.0;
+        FireMixtape highestSong = null;
+
+        // Find the highest `calculatedValue`
+        for (int i = 0; i < mSongList.size(); i++){
             FireMixtape song = mSongList.get(i);
-            if (!isContained(song)) {
-                mUpNext.pushBack(song);
-                printSongValues(song);
+            if (!isContained(song) && song.calculatedValue > max) {
+                max = song.calculatedValue;
+                highestSong = song;
             }
-            i++;
         }
+
+        if (highestSong == null) {
+            return false;
+        }
+
+        mUpNext.pushBack(highestSong);
+        return true;
     }
 
     public void loadNext() {
-        if (!mIsLoaded) {
-            // If file not yet read, RNJesus
-            randomLoadQueue();
-        } else {
-            calculatedLoadQueue();
+        // `mSongList.size() - 1` to account for the song that is currently playing
+        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongList.size() - 1) {
+            if (!mIsLoaded) {
+                // If file not yet read, RNJesus
+                randomLoadOne();
+            } else {
+                if(!calculatedLoadOne()) return;
+            }
         }
+    }
+
+    private void loadNextAsync() {
+        new LoadNextTask().execute();
     }
 
     private boolean isContained(FireMixtape song) {
@@ -140,12 +179,13 @@ public class ShuffleController {
         String genre = playInstance.getGenre();
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
-            return;
+        } else {
+            double stDelta = shortTermGenreChange(genre, r);
+            double ltDelta = longTermGenreChange(genre, r);
+            mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
+            Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
         }
-        double stDelta = shortTermGenreChange(genre, r);
-        double ltDelta = longTermGenreChange(genre, r);
-        mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
-        Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
+        setSongValuesAsync();
     }
 
     // Determines whether the play counts as a skip or other and calculates multiplier
@@ -258,7 +298,7 @@ public class ShuffleController {
             message += " - " + mGenreGraph.getGenreST(song.actualGenre);
         }
         message += " - " + getLastPlayedMultiplier(song);
-        message += " = " + calculateSongValue(song);
+        message += " = " + song.calculatedValue;
 
         Log.e("ShuffleController", message);
     }

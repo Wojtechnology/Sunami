@@ -256,7 +256,6 @@ public class TheBrain extends Service{
             init();
             mIsInit = true;
         } else {
-            mShuffleController.loadNext();
             if (mBound) {
                 mContext.setProgressBar(false);
                 mContext.setRecyclerViewData();
@@ -333,7 +332,6 @@ public class TheBrain extends Service{
     }
 
     public void postInit() {
-        mShuffleController.loadNext();
         if (mBound) {
             mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
@@ -512,6 +510,7 @@ public class TheBrain extends Service{
     }
 
     public void playNext() {
+        mShuffleController.loadNext();
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
