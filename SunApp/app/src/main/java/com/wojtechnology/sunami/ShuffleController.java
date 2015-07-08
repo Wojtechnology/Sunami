@@ -23,21 +23,8 @@ public class ShuffleController {
     private UpNext mUpNext;
     private List<FireMixtape> mSongList;
 
-    private final int BUFFER_SIZE = 4;
     private final double SONG_DURATION_OFFSET = 0.1;
     private final double SONG_DURATION_SPREAD = 0.05;
-    private final double SHORT_GENRE_MIN = 0.5;
-    private final double SHORT_GENRE_MAX = 2.0;
-    private final double SHORT_GENRE_MED_MULTI = 0.1;
-    private final double SHORT_GENRE_OFF_MULTI = 1.0;
-    private final double SHORT_GENRE_POS_MULTI = 0.25;
-    private final double SHORT_GENRE_NEG_MULTI = 0.25;
-    private final double LONG_GENRE_MIN = 0.5;
-    private final double LONG_GENRE_MAX = 2.0;
-    private final double LONG_GENRE_MED_MULTI = 0.1;
-    private final double LONG_GENRE_OFF_MULTI = 1.0;
-    private final double LONG_GENRE_POS_MULTI = 0.05;
-    private final double LONG_GENRE_NEG_MULTI = 0.05;
     private final double SONG_MIN = 0.5;
     private final double SONG_MAX = 2.0;
     private final double SONG_MED_MULTI = 0.1;
@@ -142,13 +129,13 @@ public class ShuffleController {
             if (!isContained(song) && song.calculatedValue > max) {
                 max = song.calculatedValue;
                 highestSong = song;
-                printSongValues(song);
             }
         }
 
         if (highestSong == null) {
             return false;
         }
+        printSongValues(highestSong);
 
         mUpNext.pushBack(highestSong);
         return true;
@@ -192,10 +179,7 @@ public class ShuffleController {
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
         } else {
-            double stDelta = shortTermGenreChange(genre, r);
-            double ltDelta = longTermGenreChange(genre, r);
-            mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
-            Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
+            mGenreGraph.modifyGenre(genre, r, this);
         }
         setSongValuesAsync();
     }
@@ -225,50 +209,6 @@ public class ShuffleController {
         return random * RANDOM_SPREAD + 1 - (RANDOM_SPREAD / 2.0);
     }
 
-    private double shortTermGenreChange(String genre, double r) {
-        double genreVal = mGenreGraph.getGenreST(genre);
-        double y = genreVal;
-        double med = 0.5 * (SHORT_GENRE_MIN + SHORT_GENRE_MAX);
-        double spread = 0.5 * (SHORT_GENRE_MAX - SHORT_GENRE_MIN);
-        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
-        double multi = r < 0.0 ? SHORT_GENRE_NEG_MULTI : SHORT_GENRE_POS_MULTI;
-        double offset = offsetRatio * (SHORT_GENRE_MAX - SHORT_GENRE_MIN) + SHORT_GENRE_MIN;
-        double medVal = getBellValue(genreVal, med, 1.0);
-        double offVal = getBellValue(genreVal, offset, spread);
-        double fullVal = SHORT_GENRE_MED_MULTI * medVal +
-                SHORT_GENRE_OFF_MULTI * offVal;
-        y += multi * fullVal * r;
-
-        if (y > SHORT_GENRE_MAX) {
-            y = SHORT_GENRE_MAX;
-        } else if (y < SHORT_GENRE_MIN) {
-            y = SHORT_GENRE_MIN;
-        }
-        return y;
-    }
-
-    private double longTermGenreChange(String genre, double r) {
-        double genreVal = mGenreGraph.getGenreLT(genre);
-        double y = genreVal;
-        double med = 0.5 * (LONG_GENRE_MIN + LONG_GENRE_MAX);
-        double spread = 0.5 * (LONG_GENRE_MAX - LONG_GENRE_MIN);
-        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
-        double multi = r < 0.0 ? LONG_GENRE_NEG_MULTI : LONG_GENRE_POS_MULTI;
-        double offset = offsetRatio * (LONG_GENRE_MAX - LONG_GENRE_MIN) + LONG_GENRE_MIN;
-        double medVal = getBellValue(genreVal, med, 1.0);
-        double offVal = getBellValue(genreVal, offset, spread);
-        double fullVal = LONG_GENRE_MED_MULTI * medVal +
-                LONG_GENRE_OFF_MULTI * offVal;
-        y += multi * fullVal * r;
-
-        if (y > LONG_GENRE_MAX) {
-            y = LONG_GENRE_MAX;
-        } else if (y < LONG_GENRE_MIN) {
-            y = LONG_GENRE_MIN;
-        }
-        return y;
-    }
-
     private double songChange(double songVal, double r) {
         double y = songVal;
         double med = 0.5 * (SONG_MIN + SONG_MAX);
@@ -291,7 +231,7 @@ public class ShuffleController {
     }
 
     // returns value from bellish shaped function (e ^ (-1 * x ^ 2)
-    private double getBellValue(double val, double offset, double spread) {
+    public static double getBellValue(double val, double offset, double spread) {
         double k = 1.0 / spread;
         double x = k * (val - offset);
         return Math.pow(Math.E, -1.0 * x * x);

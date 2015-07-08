@@ -23,6 +23,19 @@ public class GenreGraph {
 
     private boolean isPopulated;
 
+    private final double SHORT_GENRE_MIN = 0.5;
+    private final double SHORT_GENRE_MAX = 2.0;
+    private final double SHORT_GENRE_MED_MULTI = 0.1;
+    private final double SHORT_GENRE_OFF_MULTI = 1.0;
+    private final double SHORT_GENRE_POS_MULTI = 0.25;
+    private final double SHORT_GENRE_NEG_MULTI = 0.25;
+    private final double LONG_GENRE_MIN = 0.5;
+    private final double LONG_GENRE_MAX = 2.0;
+    private final double LONG_GENRE_MED_MULTI = 0.1;
+    private final double LONG_GENRE_OFF_MULTI = 1.0;
+    private final double LONG_GENRE_POS_MULTI = 0.05;
+    private final double LONG_GENRE_NEG_MULTI = 0.05;
+
     public GenreGraph(Context context) {
         this.mEdges = new HashMap<>();
         this.mGenreRef = new HashMap<>();
@@ -99,12 +112,64 @@ public class GenreGraph {
     }
 
     // Implement the update value method for a change in a genre
-    public void modifyGenre(String genre, double stVal, double ltVal) {
+    public void modifyGenre(String genreString, double r, ShuffleController shuffleController) {
         try {
-            mGenreRef.get(genre).shortTerm = stVal;
-            mGenreRef.get(genre).longTerm = ltVal;
+            GenreVertex genre = mGenreRef.get(genreString);
+
+            double stDelta = shortTermGenreChange(genre, r);
+            double stVal = genre.shortTerm + stDelta;
+
+            if (stVal > SHORT_GENRE_MAX) {
+                stVal = SHORT_GENRE_MAX;
+            } else if (stVal < SHORT_GENRE_MIN) {
+                stVal = SHORT_GENRE_MIN;
+            }
+            genre.shortTerm = stVal;
+
+            double ltDelta = longTermGenreChange(genre, r);
+            double ltVal = genre.longTerm + ltDelta;
+
+            if (ltVal > LONG_GENRE_MAX) {
+                ltVal = LONG_GENRE_MAX;
+            } else if (ltVal < LONG_GENRE_MIN) {
+                ltVal = LONG_GENRE_MIN;
+            }
+            genre.longTerm = ltVal;
+
+            Log.i("GenreGraph", "Modified " + genreString + " to st: " + stVal + " and lt: " + ltVal);
+            branchGenres(genre, r, shuffleController);
         } catch (Exception e) {
-            Log.e("GenreGraph", "Could not find genre " + genre);
+            Log.e("GenreGraph", "Could not find genre " + genreString);
+        }
+    }
+
+    // Can be made into recursive for future
+    private void branchGenres(GenreVertex genre, double r, ShuffleController shuffleController) {
+        List<GenreEdge> edges = mEdges.get(genre);
+
+        for (int i = 0; i < edges.size(); i++) {
+            GenreEdge edge = edges.get(i);
+
+            double stDelta = shortTermGenreChange(edge.to, r);
+            double stVal = edge.to.shortTerm + stDelta * edge.similarity;
+
+            if (stVal > SHORT_GENRE_MAX) {
+                stVal = SHORT_GENRE_MAX;
+            } else if (stVal < SHORT_GENRE_MIN) {
+                stVal = SHORT_GENRE_MIN;
+            }
+            edge.to.shortTerm = stVal;
+
+            double ltDelta = longTermGenreChange(edge.to, r);
+            double ltVal = edge.to.longTerm + ltDelta * edge.similarity;
+
+            if (ltVal > LONG_GENRE_MAX) {
+                ltVal = LONG_GENRE_MAX;
+            } else if (ltVal < LONG_GENRE_MIN) {
+                ltVal = LONG_GENRE_MIN;
+            }
+            edge.to.longTerm = ltVal;
+            Log.i("GenreGraph", "Modified " + edge.to.genre + " to st: " + edge.to.shortTerm + " and lt: " + edge.to.longTerm);
         }
     }
 
@@ -114,6 +179,34 @@ public class GenreGraph {
 
     public double getGenreLT(String genre) {
         return mGenreRef.get(genre).longTerm;
+    }
+
+    public double shortTermGenreChange(GenreVertex genre, double r) {
+        double genreVal = genre.shortTerm;
+        double med = 0.5 * (SHORT_GENRE_MIN + SHORT_GENRE_MAX);
+        double spread = 0.5 * (SHORT_GENRE_MAX - SHORT_GENRE_MIN);
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
+        double multi = r < 0.0 ? SHORT_GENRE_NEG_MULTI : SHORT_GENRE_POS_MULTI;
+        double offset = offsetRatio * (SHORT_GENRE_MAX - SHORT_GENRE_MIN) + SHORT_GENRE_MIN;
+        double medVal = ShuffleController.getBellValue(genreVal, med, 1.0);
+        double offVal = ShuffleController.getBellValue(genreVal, offset, spread);
+        double fullVal = SHORT_GENRE_MED_MULTI * medVal +
+                SHORT_GENRE_OFF_MULTI * offVal;
+        return multi * fullVal * r;
+    }
+
+    public double longTermGenreChange(GenreVertex genre, double r) {
+        double genreVal = genre.longTerm;
+        double med = 0.5 * (LONG_GENRE_MIN + LONG_GENRE_MAX);
+        double spread = 0.5 * (LONG_GENRE_MAX - LONG_GENRE_MIN);
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
+        double multi = r < 0.0 ? LONG_GENRE_NEG_MULTI : LONG_GENRE_POS_MULTI;
+        double offset = offsetRatio * (LONG_GENRE_MAX - LONG_GENRE_MIN) + LONG_GENRE_MIN;
+        double medVal = ShuffleController.getBellValue(genreVal, med, 1.0);
+        double offVal = ShuffleController.getBellValue(genreVal, offset, spread);
+        double fullVal = LONG_GENRE_MED_MULTI * medVal +
+                LONG_GENRE_OFF_MULTI * offVal;
+        return multi * fullVal * r;
     }
 
     private void printGenres() {
