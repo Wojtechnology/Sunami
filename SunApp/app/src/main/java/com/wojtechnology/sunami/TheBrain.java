@@ -127,6 +127,8 @@ public class TheBrain extends Service{
                 JSONArray ja = new JSONArray(jString);
                 if (isNew) readNew(ja);
                 else readOld(ja);
+
+                // Enable shuffle controller to use calculated values to choose songs
                 mShuffleController.setLoadCompleted();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -332,6 +334,10 @@ public class TheBrain extends Service{
     }
 
     public void postInit() {
+
+        // Set the list for the shuffle controller to use
+        mShuffleController.updateList();
+
         if (mBound) {
             mContext.setProgressBar(false);
             mContext.setRecyclerViewData();

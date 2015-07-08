@@ -65,8 +65,6 @@ public class ShuffleController {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             loadNextAsync();
-            // If this is ran by setLoadCompleted, we want to notify that the controller is loaded
-            mIsLoaded = true;
         }
     }
 
@@ -88,12 +86,12 @@ public class ShuffleController {
     }
 
     public void setLoadCompleted() {
-        updateList();
+        setSongValuesAsync();
+        mIsLoaded = true;
     }
 
     public void updateList() {
         mSongList = new ArrayList<>(mSongManager.getFire());
-        setSongValuesAsync();
     }
 
     private void setSongValues() {
