@@ -46,6 +46,8 @@ public class FireMixtape{
     public Calendar lastPlayed;
     public double multiplier;
 
+    public double calculatedValue;
+
     // The genre that is recognized by the app
     public String actualGenre;
 
@@ -54,6 +56,7 @@ public class FireMixtape{
         mContext = context;
         icon_loaded = false;
         multiplier = 1.0;
+        calculatedValue = 1.0;
         lastPlayed = Calendar.getInstance();
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
     }

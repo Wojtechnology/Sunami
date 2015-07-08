@@ -11,6 +11,8 @@ public class UpNext {
     private int mUserIndexStart;
     private int mUserIndexFinish;
 
+    public static final int UP_NEXT_MIN = 1;
+
     public UpNext () {
         mUpNext = new LinkedList<>();
         mUserIndexStart = 0;

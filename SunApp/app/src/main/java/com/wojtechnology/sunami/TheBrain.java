@@ -44,7 +44,6 @@ public class TheBrain extends Service{
     public static final String PLAY_LAST = "play_last";
     public static final String PLAY_STOP = "play_stop";
 
-    private static final int UP_NEXT_MIN = 1;
     private static final int HISTORY_SIZE = 10;
 
     private MainActivity mContext;
@@ -166,7 +165,7 @@ public class TheBrain extends Service{
             init();
             mIsInit = true;
         } else {
-            mShuffleController.loadNext(mUpNext);
+            mShuffleController.loadNext();
             if (mBound) {
                 mContext.setProgressBar(false);
                 mContext.setRecyclerViewData();
@@ -230,7 +229,7 @@ public class TheBrain extends Service{
         mSongManager = new SongManager(this);
         mGenreGraph = new GenreGraph(this);
         mSongHistory = new SongHistory(HISTORY_SIZE);
-        mShuffleController = new ShuffleController(this, mGenreGraph, mSongManager, UP_NEXT_MIN);
+        mShuffleController = new ShuffleController(this, mGenreGraph, mSongManager, mUpNext);
         mMediaPlayer = new MediaPlayer();
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -243,7 +242,7 @@ public class TheBrain extends Service{
     }
 
     public void postInit() {
-        mShuffleController.loadNext(mUpNext);
+        mShuffleController.loadNext();
         if (mBound) {
             mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
@@ -398,7 +397,6 @@ public class TheBrain extends Service{
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mShuffleController.addPlayInstance(playInstance);
-        mShuffleController.sortList();
         mChangedState = true;
         savePersistentState();
     }
@@ -517,7 +515,7 @@ public class TheBrain extends Service{
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
-        mShuffleController.loadNext(mUpNext);
+        mShuffleController.loadNext();
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 

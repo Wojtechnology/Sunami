@@ -20,10 +20,10 @@ public class ShuffleController {
     private GenreGraph mGenreGraph;
     private SongManager mSongManager;
     private TheBrain mTheBrain;
+    private UpNext mUpNext;
     private List<FireMixtape> mSongList;
     private Queue<FireMixtape> mSongBuffer;
 
-    private final int UP_NEXT_MIN;
     private final int BUFFER_SIZE = 4;
     private final double SONG_DURATION_OFFSET = 0.1;
     private final double SONG_DURATION_SPREAD = 0.05;
@@ -47,17 +47,16 @@ public class ShuffleController {
     private final double SONG_NEG_MULTI = 0.4;
     private final long TIME_SPREAD = 1800000;
     private final long TIME_OFFSET = 3600000;
+    private final double RANDOM_SPREAD = 0.2;
 
-    private boolean mSortingState;
     private boolean mIsLoaded;
 
-    public ShuffleController(TheBrain theBrain, GenreGraph genreGraph, SongManager songManager, int min) {
+    public ShuffleController(TheBrain theBrain, GenreGraph genreGraph, SongManager songManager, UpNext upNext) {
         mGenreGraph = genreGraph;
         mSongManager = songManager;
         mTheBrain = theBrain;
         mIsLoaded = false;
-        mSortingState = false;
-        UP_NEXT_MIN = min;
+        mUpNext = upNext;
 
         mSongBuffer = new LinkedList<>();
     }
@@ -69,45 +68,12 @@ public class ShuffleController {
 
     public void updateList() {
         mSongList = new ArrayList<>(mSongManager.getFire());
-        sortList();
+        setSongValues();
     }
 
-    public void sortList() {
-        new SortListTask().execute();
-    }
-
-    private class SortListTask extends AsyncTask<Void, Integer, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            if (mSongList == null && mSortingState) {
-                return null;
-            }
-            mSortingState = true;
-            List<FireMixtape> songList = new ArrayList<>(mSongList);
-            Collections.sort(songList, new Comparator<FireMixtape>() {
-                @Override
-                public int compare(FireMixtape lhs, FireMixtape rhs) {
-                    double l = calculateSongValue(lhs);
-                    double r = calculateSongValue(rhs);
-                    if (l == r) {
-                        return 0;
-                    } else if (l > r) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                }
-            });
-
-            mSongList = songList;
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mSortingState = false;
+    private void setSongValues() {
+        for (int i = 0; i < mSongList.size(); i++) {
+            calculateSongValue(mSongList.get(i));
         }
     }
 
@@ -120,49 +86,50 @@ public class ShuffleController {
         }
         val *= song.multiplier;
         val *= getLastPlayedMultiplier(song);
+        val *= getRandomMultiplier();
         return val;
     }
 
-    private void randomLoadQueue(UpNext upNext) {
-        while (upNext.size() < UP_NEXT_MIN && upNext.size() < mSongManager.size()) {
+    private void randomLoadQueue() {
+        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
             int random = (int) (Math.random() * mSongManager.size());
             FireMixtape song = mSongManager.getSongAtIndex(random);
-            if (!upNext.contains(song)) {
-                upNext.pushBack(song);
+            if (!mUpNext.contains(song)) {
+                mUpNext.pushBack(song);
             }
         }
     }
 
-    private void calculatedLoadQueue(UpNext upNext) {
-        if (mSongBuffer.size() < BUFFER_SIZE) loadBuffer(upNext);
-        while (upNext.size() < UP_NEXT_MIN && upNext.size() < mSongManager.size()) {
+    private void calculatedLoadQueue() {
+        if (mSongBuffer.size() < BUFFER_SIZE) loadBuffer();
+        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
             FireMixtape song = mSongBuffer.poll();
-            if (!upNext.contains(song)) {
-                upNext.pushBack(song);
+            if (!mUpNext.contains(song)) {
+                mUpNext.pushBack(song);
             }
         }
     }
 
-    public void loadNext(UpNext upNext) {
+    public void loadNext() {
         if (!mIsLoaded) {
             // If file not yet read, RNJesus
-            randomLoadQueue(upNext);
+            randomLoadQueue();
         } else {
-            calculatedLoadQueue(upNext);
+            calculatedLoadQueue();
         }
     }
 
-    private boolean isContained(UpNext upNext, FireMixtape song) {
-        return upNext.contains(song) ||
+    private boolean isContained(FireMixtape song) {
+        return mUpNext.contains(song) ||
                 mSongBuffer.contains(song) ||
                 mTheBrain.getSongPlaying() == song;
     }
 
-    private void loadBuffer(UpNext upNext) {
+    private void loadBuffer() {
         int i = 0;
         while(mSongBuffer.size() < BUFFER_SIZE && i < mSongList.size()) {
             FireMixtape song = mSongList.get(i);
-            if (!isContained(upNext, song)) {
+            if (!isContained(song)) {
                 mSongBuffer.offer(song);
                 printSongValues(song);
             }
@@ -180,14 +147,13 @@ public class ShuffleController {
         String genre = playInstance.getGenre();
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
-            sortList();
             return;
         }
         double stDelta = shortTermGenreChange(genre, r);
         double ltDelta = longTermGenreChange(genre, r);
         mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
         Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
-        sortList();
+        //sortList();
     }
 
     // Determines whether the play counts as a skip or other and calculates multiplier
@@ -208,6 +174,11 @@ public class ShuffleController {
         if (denominator == 0.0) return 0.0;
         double sigmoid = 1.0 / denominator;
         return sigmoid * 0.75 + 0.25;
+    }
+
+    private double getRandomMultiplier() {
+        double random = Math.random();
+        return random * RANDOM_SPREAD + 1 - (RANDOM_SPREAD / 2.0);
     }
 
     private double shortTermGenreChange(String genre, double r) {
