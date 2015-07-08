@@ -89,6 +89,97 @@ public class TheBrain extends Service{
 
     private NoisyAudioStreamReceiver mNoisyAudioStreamReceiver;
 
+    private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
+
+        private void readNew(JSONArray ja) {
+            mGenreGraph.populateGraphJSON(ja);
+            mSongManager.genresFromDB(mGenreGraph.getGenreSet());
+        }
+
+        private void readOld(JSONArray ja) throws JSONException {
+            mGenreGraph.populateGraphJSON(ja.getJSONArray(1));
+            mSongManager.updateGenres(mGenreGraph.getGenreSet(), ja.getJSONArray(2));
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
+            boolean isNew = false;
+            InputStream is;
+            try {
+                is = TheBrain.this.openFileInput("appData.json");
+                Log.e("GenreGraph", "Open existing");
+            } catch (FileNotFoundException e) {
+                is = TheBrain.this.getResources().openRawResource(R.raw.genres);
+                isNew = true;
+                Log.e("GenreGraph", "Open new");
+            }
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line = reader.readLine();
+                String jString = "";
+                while (line != null) {
+                    jString += line;
+                    line = reader.readLine();
+                }
+                reader.close();
+                is.close();
+                JSONArray ja = new JSONArray(jString);
+                if (isNew) readNew(ja);
+                else readOld(ja);
+                mShuffleController.setLoadCompleted();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i("TheBrain", "Finished reading file in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mLoaded = true;
+        }
+    }
+
+    private class SaveAppDataTask extends AsyncTask<Void, Integer, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
+            try{
+                FileOutputStream fileOS = TheBrain.this.openFileOutput(
+                        "appData.json", Context.MODE_PRIVATE);
+                JSONArray ja = new JSONArray();
+                ja.put(0, 1);
+                ja.put(1, mGenreGraph.getGraphJSON());
+                ja.put(2, mSongManager.getSongJSON());
+                fileOS.write(ja.toString().getBytes());
+                fileOS.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.i("TheBrain", "Finished saving file in " +
+                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                    " millis.");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mChangedState = false;
+        }
+    }
+
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -254,99 +345,8 @@ public class TheBrain extends Service{
         return mPlaying;
     }
 
-    private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
-
-        private void readNew(JSONArray ja) {
-            mGenreGraph.populateGraphJSON(ja);
-            mSongManager.genresFromDB(mGenreGraph.getGenreSet());
-        }
-
-        private void readOld(JSONArray ja) throws JSONException {
-            mGenreGraph.populateGraphJSON(ja.getJSONArray(1));
-            mSongManager.updateGenres(mGenreGraph.getGenreSet(), ja.getJSONArray(2));
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
-            boolean isNew = false;
-            InputStream is;
-            try {
-                is = TheBrain.this.openFileInput("appData.json");
-                Log.e("GenreGraph", "Open existing");
-            } catch (FileNotFoundException e) {
-                is = TheBrain.this.getResources().openRawResource(R.raw.genres);
-                isNew = true;
-                Log.e("GenreGraph", "Open new");
-            }
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                String line = reader.readLine();
-                String jString = "";
-                while (line != null) {
-                    jString += line;
-                    line = reader.readLine();
-                }
-                reader.close();
-                is.close();
-                JSONArray ja = new JSONArray(jString);
-                if (isNew) readNew(ja);
-                else readOld(ja);
-                mShuffleController.setLoadCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.i("TheBrain", "Finished reading file in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mLoaded = true;
-        }
-    }
-
     private void readAppData() {
         new LoadAppDataTask().execute();
-    }
-
-    private class SaveAppDataTask extends AsyncTask<Void, Integer, Void>{
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
-            try{
-                FileOutputStream fileOS = TheBrain.this.openFileOutput(
-                        "appData.json", Context.MODE_PRIVATE);
-                JSONArray ja = new JSONArray();
-                ja.put(0, 1);
-                ja.put(1, mGenreGraph.getGraphJSON());
-                ja.put(2, mSongManager.getSongJSON());
-                fileOS.write(ja.toString().getBytes());
-                fileOS.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Log.i("TheBrain", "Finished saving file in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mChangedState = false;
-        }
     }
 
     private void saveAppData() {new SaveAppDataTask().execute();}
@@ -515,7 +515,6 @@ public class TheBrain extends Service{
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
-        mShuffleController.loadNext();
         mContext.mDrawerFragment.updateRecyclerView(this);
     }
 

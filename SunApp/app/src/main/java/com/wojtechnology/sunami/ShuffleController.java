@@ -50,6 +50,13 @@ public class ShuffleController {
 
     private boolean mIsLoaded;
 
+    private class SetSongValuesTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+    }
+
     public ShuffleController(TheBrain theBrain, GenreGraph genreGraph, SongManager songManager, UpNext upNext) {
         mGenreGraph = genreGraph;
         mSongManager = songManager;
@@ -70,7 +77,7 @@ public class ShuffleController {
 
     private void setSongValues() {
         for (int i = 0; i < mSongList.size(); i++) {
-            calculateSongValue(mSongList.get(i));
+            mSongList.get(i).calculatedValue = calculateSongValue(mSongList.get(i));
         }
     }
 
@@ -101,9 +108,11 @@ public class ShuffleController {
         int i = 0;
         while (mUpNext.size() < mUpNext.UP_NEXT_MIN && i < mSongList.size() && mUpNext.size() < mSongList.size()) {
             FireMixtape song = mSongList.get(i);
-            if (!mUpNext.contains(song)) {
+            if (!isContained(song)) {
                 mUpNext.pushBack(song);
+                printSongValues(song);
             }
+            i++;
         }
     }
 
@@ -137,7 +146,6 @@ public class ShuffleController {
         double ltDelta = longTermGenreChange(genre, r);
         mGenreGraph.modifyGenre(genre, stDelta, ltDelta);
         Log.i("ShuffleController", "Modified " + genre + " to st: " + stDelta + " and lt: " + ltDelta);
-        //sortList();
     }
 
     // Determines whether the play counts as a skip or other and calculates multiplier
