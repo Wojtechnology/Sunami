@@ -116,7 +116,7 @@ public class ShuffleController {
         }
 
         // Do not apply song multiplier is song is below cutoff
-        if (Long.parseLong(song.duration) < SONG_MULIPLIER_CUTOFF) {
+        if (Long.parseLong(song.duration) > SONG_MULIPLIER_CUTOFF) {
             val *= song.multiplier;
         }
         val *= getLastPlayedMultiplier(song);
@@ -144,6 +144,7 @@ public class ShuffleController {
             if (!isContained(song) && song.calculatedValue > max) {
                 max = song.calculatedValue;
                 highestSong = song;
+                printSongValues(song);
             }
         }
 
@@ -156,6 +157,12 @@ public class ShuffleController {
     }
 
     public void loadNext() {
+        if (mSongList == null) {
+            Log.e("ShuffleManager", "songListNull");
+        }
+        if (mUpNext == null) {
+            Log.e("ShuffleManager", "upNextNull");
+        }
         // `mSongList.size() - 1` to account for the song that is currently playing
         while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongList.size() - 1) {
             if (!mIsLoaded) {
