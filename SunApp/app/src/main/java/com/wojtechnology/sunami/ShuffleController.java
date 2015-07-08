@@ -22,7 +22,6 @@ public class ShuffleController {
     private TheBrain mTheBrain;
     private UpNext mUpNext;
     private List<FireMixtape> mSongList;
-    private Queue<FireMixtape> mSongBuffer;
 
     private final int BUFFER_SIZE = 4;
     private final double SONG_DURATION_OFFSET = 0.1;
@@ -57,8 +56,6 @@ public class ShuffleController {
         mTheBrain = theBrain;
         mIsLoaded = false;
         mUpNext = upNext;
-
-        mSongBuffer = new LinkedList<>();
     }
 
     public void setLoadCompleted() {
@@ -101,9 +98,9 @@ public class ShuffleController {
     }
 
     private void calculatedLoadQueue() {
-        if (mSongBuffer.size() < BUFFER_SIZE) loadBuffer();
-        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongManager.size()) {
-            FireMixtape song = mSongBuffer.poll();
+        int i = 0;
+        while (mUpNext.size() < mUpNext.UP_NEXT_MIN && i < mSongList.size() && mUpNext.size() < mSongList.size()) {
+            FireMixtape song = mSongList.get(i);
             if (!mUpNext.contains(song)) {
                 mUpNext.pushBack(song);
             }
@@ -121,20 +118,7 @@ public class ShuffleController {
 
     private boolean isContained(FireMixtape song) {
         return mUpNext.contains(song) ||
-                mSongBuffer.contains(song) ||
                 mTheBrain.getSongPlaying() == song;
-    }
-
-    private void loadBuffer() {
-        int i = 0;
-        while(mSongBuffer.size() < BUFFER_SIZE && i < mSongList.size()) {
-            FireMixtape song = mSongList.get(i);
-            if (!isContained(song)) {
-                mSongBuffer.offer(song);
-                printSongValues(song);
-            }
-            i++;
-        }
     }
 
     // Pass in the play instance and modify genre and song values based on play duration

@@ -292,6 +292,7 @@ public class TheBrain extends Service{
                 JSONArray ja = new JSONArray(jString);
                 if (isNew) readNew(ja);
                 else readOld(ja);
+                mShuffleController.setLoadCompleted();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -306,7 +307,6 @@ public class TheBrain extends Service{
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mShuffleController.setLoadCompleted();
             mLoaded = true;
         }
     }
