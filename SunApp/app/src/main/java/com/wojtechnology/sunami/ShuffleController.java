@@ -48,6 +48,9 @@ public class ShuffleController {
     private final long TIME_OFFSET = 3600000;
     private final double RANDOM_SPREAD = 0.2;
 
+    // Cutoff threshold for song multiplier, currently 2 minutes
+    private final long SONG_MULIPLIER_CUTOFF = 120000;
+
     private boolean mIsLoaded;
 
     // Async wrapper for setSongValues function
@@ -111,7 +114,11 @@ public class ShuffleController {
             val *= mGenreGraph.getGenreLT(song.actualGenre);
             val *= mGenreGraph.getGenreST(song.actualGenre);
         }
-        val *= song.multiplier;
+
+        // Do not apply song multiplier is song is below cutoff
+        if (Long.parseLong(song.duration) < SONG_MULIPLIER_CUTOFF) {
+            val *= song.multiplier;
+        }
         val *= getLastPlayedMultiplier(song);
         val *= getRandomMultiplier();
         return val;
