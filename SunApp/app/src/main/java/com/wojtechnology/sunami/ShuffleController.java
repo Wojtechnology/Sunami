@@ -143,12 +143,6 @@ public class ShuffleController {
     }
 
     public void loadNext() {
-        if (mSongList == null) {
-            Log.e("ShuffleManager", "songListNull");
-        }
-        if (mUpNext == null) {
-            Log.e("ShuffleManager", "upNextNull");
-        }
         // `mSongList.size() - 1` to account for the song that is currently playing
         while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongList.size() - 1) {
             if (!mIsLoaded) {
