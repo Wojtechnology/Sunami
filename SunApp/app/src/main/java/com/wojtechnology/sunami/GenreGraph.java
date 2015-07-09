@@ -23,18 +23,18 @@ public class GenreGraph {
 
     private boolean isPopulated;
 
-    private final double SHORT_GENRE_MIN = 0.5;
+    private final double SHORT_GENRE_MIN = 1.0;
     private final double SHORT_GENRE_MAX = 2.0;
     private final double SHORT_GENRE_MED_MULTI = 0.1;
     private final double SHORT_GENRE_OFF_MULTI = 1.0;
-    private final double SHORT_GENRE_POS_MULTI = 0.25;
-    private final double SHORT_GENRE_NEG_MULTI = 0.25;
-    private final double LONG_GENRE_MIN = 0.5;
+    private final double SHORT_GENRE_POS_MULTI = 0.4;
+    private final double SHORT_GENRE_NEG_MULTI = 0.4;
+    private final double LONG_GENRE_MIN = 1.0;
     private final double LONG_GENRE_MAX = 2.0;
     private final double LONG_GENRE_MED_MULTI = 0.1;
     private final double LONG_GENRE_OFF_MULTI = 1.0;
-    private final double LONG_GENRE_POS_MULTI = 0.05;
-    private final double LONG_GENRE_NEG_MULTI = 0.05;
+    private final double LONG_GENRE_POS_MULTI = 0.1;
+    private final double LONG_GENRE_NEG_MULTI = 0.1;
 
     public GenreGraph(Context context) {
         this.mEdges = new HashMap<>();
