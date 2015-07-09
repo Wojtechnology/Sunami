@@ -209,6 +209,22 @@ public class GenreGraph {
         return multi * fullVal * r;
     }
 
+    public String associateGenre(FireMixtape song) {
+        if (canEdit(song)) {
+            Set<String> keys = mGenreRef.keySet();
+            double max = 0.0;
+            String genre = "";
+            for (String key : keys) {
+
+            }
+        }
+        return song.actualGenre;
+    }
+
+    private boolean canEdit(FireMixtape song) {
+        return song.genre == SongManager.DEFAULT_GENRE;
+    }
+
     private void printGenres() {
         Set<GenreVertex> vertices = mEdges.keySet();
         for (GenreVertex vertex : vertices) {

@@ -34,6 +34,8 @@ public class SongManager {
 
     private boolean genresUpdated;
 
+    public static final String DEFAULT_GENRE = "__notfound__";
+
     public SongManager(Context context) {
         this.context = context;
         genresUpdated = false;
@@ -44,7 +46,7 @@ public class SongManager {
 
     public List<FireMixtape> getByTitle() {
         List<FireMixtape> displayList = new ArrayList<>(mSongList);
-        if (mSongList.size() <= 0){
+        if (mSongList.size() <= 0) {
             return displayList;
         }
 
@@ -72,16 +74,16 @@ public class SongManager {
         Map<Character, Integer> letters = new HashMap<>();
 
         int i = 0;
-        while(firstLetter(displayList.get(i).title) < 'A' ||
-                firstLetter(displayList.get(i).title) > 'Z'){
+        while (firstLetter(displayList.get(i).title) < 'A' ||
+                firstLetter(displayList.get(i).title) > 'Z') {
             i++;
             if (i >= displayList.size()) return displayList;
         }
         int sum = i;
         int j = i;
 
-        for(char headerTitle = 'A'; headerTitle <= 'Z' && i < displayList.size(); i++){
-            if(firstLetter(displayList.get(i).title) != headerTitle){
+        for (char headerTitle = 'A'; headerTitle <= 'Z' && i < displayList.size(); i++) {
+            if (firstLetter(displayList.get(i).title) != headerTitle) {
                 letters.put(headerTitle, i - j);
                 headerTitle++;
                 j = i;
@@ -89,9 +91,9 @@ public class SongManager {
             }
         }
 
-        for(char headerTitle = 'A'; headerTitle <= 'Z'
-                && letters.containsKey(headerTitle); headerTitle++){
-            if(letters.get(headerTitle) != 0) {
+        for (char headerTitle = 'A'; headerTitle <= 'Z'
+                && letters.containsKey(headerTitle); headerTitle++) {
+            if (letters.get(headerTitle) != 0) {
                 FireMixtape mixtape = new FireMixtape(null);
                 mixtape.title = Character.toString(headerTitle);
                 mixtape.genre = "__header__";
@@ -104,9 +106,9 @@ public class SongManager {
         return displayList;
     }
 
-    private char firstLetter(String word){
+    private char firstLetter(String word) {
         word = word.toLowerCase();
-        if(word.length() > 4) {
+        if (word.length() > 4) {
             if (word.substring(0, 4).equals("THE ")) {
                 word = word.substring(4);
             }
@@ -118,15 +120,15 @@ public class SongManager {
         return mSongList;
     }
 
-    public int size(){
+    public int size() {
         return mSongList.size();
     }
 
-    public FireMixtape getSongAtIndex(int index){
+    public FireMixtape getSongAtIndex(int index) {
         return mSongList.get(index);
     }
 
-    private class InitSongsTask extends AsyncTask<Void, Integer, Void>{
+    private class InitSongsTask extends AsyncTask<Void, Integer, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -147,7 +149,8 @@ public class SongManager {
                     MediaStore.Audio.Media.SIZE,
             };
 
-            Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;;
+            Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            ;
 
             Cursor cursor = context.getContentResolver().query(
                     uri,
@@ -157,7 +160,7 @@ public class SongManager {
                     null
             );
 
-            if (cursor == null){
+            if (cursor == null) {
                 return null;
             }
 
@@ -174,7 +177,7 @@ public class SongManager {
                 current.year = cursor.getString(6);
                 current.data = cursor.getString(7);
                 current.size = cursor.getString(8);
-                current.genre = "__notfound__";
+                current.genre = DEFAULT_GENRE;
 
                 mSongList.add(current);
                 mSongDict.put(current.data, current);
@@ -195,66 +198,66 @@ public class SongManager {
         }
     }
 
-    private void initSongs(){
+    private void initSongs() {
         new InitSongsTask().execute();
     }
 
 
-        public void genresFromDB (Set<String> genres) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
-            //Some audio may be explicitly marked as not being music
-            String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+    public void genresFromDB(Set<String> genres) {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        //Some audio may be explicitly marked as not being music
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
-            String[] projection = {
-                    MediaStore.Audio.Media.DATA
-            };
+        String[] projection = {
+                MediaStore.Audio.Media.DATA
+        };
 
-            String[] genresProjection = {
-                    MediaStore.Audio.Genres._ID,
-                    MediaStore.Audio.Genres.NAME
-            };
+        String[] genresProjection = {
+                MediaStore.Audio.Genres._ID,
+                MediaStore.Audio.Genres.NAME
+        };
 
-            Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
-            Cursor projectionCursor = context.getContentResolver().query(
+        Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
+        Cursor projectionCursor = context.getContentResolver().query(
+                uri,
+                genresProjection,
+                null,
+                null,
+                null
+        );
+
+        if (projectionCursor == null) {
+            return;
+        }
+
+        while (projectionCursor.moveToNext()) {
+            String genre_id = projectionCursor.getString(0);
+            String genre_name = projectionCursor.getString(1);
+
+            uri = MediaStore.Audio.Genres.Members.getContentUri("external", Long.parseLong(genre_id));
+
+            Cursor cursor = context.getContentResolver().query(
                     uri,
-                    genresProjection,
-                    null,
+                    projection,
+                    selection,
                     null,
                     null
             );
 
-            if (projectionCursor == null){
-                return;
+            while (cursor.moveToNext()) {
+                FireMixtape song = mSongDict.get(cursor.getString(0));
+                song.genre = genre_name.toLowerCase();
+                setActualGenre(song, genres);
+
             }
-
-            while (projectionCursor.moveToNext()) {
-                String genre_id = projectionCursor.getString(0);
-                String genre_name = projectionCursor.getString(1);
-
-                uri = MediaStore.Audio.Genres.Members.getContentUri("external", Long.parseLong(genre_id));
-
-                Cursor cursor = context.getContentResolver().query(
-                        uri,
-                        projection,
-                        selection,
-                        null,
-                        null
-                );
-
-                while (cursor.moveToNext()) {
-                    FireMixtape song = mSongDict.get(cursor.getString(0));
-                    song.genre = genre_name.toLowerCase();
-                    setActualGenre(song, genres);
-
-                }
-                cursor.close();
-            }
-            projectionCursor.close();
-
-            Log.i("SongManager", "Finished genresFromDB() in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
+            cursor.close();
         }
+        projectionCursor.close();
+
+        Log.i("SongManager", "Finished genresFromDB() in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
+    }
 
     private void setActualGenre(FireMixtape song, Set<String> genres) {
         if (genres.contains(song.genre)) {
@@ -267,7 +270,7 @@ public class SongManager {
         for (String genre : genres) {
             int sum = 0;
             for (String word : keyWords) {
-                if(genre.contains(word)) {
+                if (genre.contains(word)) {
                     sum += word.length();
                 }
             }
@@ -305,7 +308,7 @@ public class SongManager {
                 " millis.");
     }
 
-    public JSONArray getSongJSON () throws JSONException {
+    public JSONArray getSongJSON() throws JSONException {
         JSONArray ja = new JSONArray();
         for (int i = 0; i < mSongList.size(); i++) {
             JSONArray song = new JSONArray();
@@ -324,8 +327,8 @@ public class SongManager {
 
     }
 
-    private void printSongs(){
-        for(int i = 0; i < mSongList.size(); i++){
+    private void printSongs() {
+        for (int i = 0; i < mSongList.size(); i++) {
             Log.i("SongManager", mSongList.get(i).title + ": Genre - " +
                     mSongList.get(i).genre + ", Best Match - " + mSongList.get(i).actualGenre);
         }

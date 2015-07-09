@@ -60,6 +60,7 @@ public class ShuffleController {
         @Override
         protected Void doInBackground(Void... params) {
             loadNext();
+            printCurrentValues();
             return null;
         }
     }
@@ -238,9 +239,28 @@ public class ShuffleController {
     }
 
     private void printCurrentValues() {
-        for (int i = 0; i < mSongList.size(); i++) {
-            printSongValues(mSongList.get(i));
-        }
+        List<FireMixtape> newList = new ArrayList<>(mSongList);
+        Collections.sort(newList, new Comparator<FireMixtape>() {
+            @Override
+            public int compare(FireMixtape lhs, FireMixtape rhs) {
+                if (lhs.calculatedValue < rhs.calculatedValue) {
+                    return -1;
+                } else if (lhs.calculatedValue == rhs.calculatedValue) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        });
+        FireMixtape song = newList.get(newList.size() - 1);
+        String message = song.title + " - " + song.calculatedValue;
+        Log.e("ShuffleController", message);
+        /*for (int i = 0; i < newList.size(); i++) {
+
+            FireMixtape song = newList.get(i);
+            String message = song.title + " - " + song.calculatedValue;
+            Log.e("ShuffleController", message);
+        }*/
     }
 
     private void printSongValues(FireMixtape song) {
