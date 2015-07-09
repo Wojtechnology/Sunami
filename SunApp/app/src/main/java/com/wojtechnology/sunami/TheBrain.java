@@ -37,7 +37,7 @@ import java.util.List;
  */
 
 // Class that manages the smart shuffle
-public class TheBrain extends Service{
+public class TheBrain extends Service {
 
     public static final String TOGGLE_PLAY = "toggle_play";
     public static final String PLAY_NEXT = "play_next";
@@ -148,12 +148,12 @@ public class TheBrain extends Service{
         }
     }
 
-    private class SaveAppDataTask extends AsyncTask<Void, Integer, Void>{
+    private class SaveAppDataTask extends AsyncTask<Void, Integer, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
             long startTime = Calendar.getInstance().getTimeInMillis();
-            try{
+            try {
                 FileOutputStream fileOS = TheBrain.this.openFileOutput(
                         "appData.json", Context.MODE_PRIVATE);
                 JSONArray ja = new JSONArray();
@@ -185,14 +185,15 @@ public class TheBrain extends Service{
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
-        mChangedState  = false;
-        mIsInit        = false;
-        mBound         = false;
+        mChangedState = false;
+        mIsInit = false;
+        mBound = false;
         mHasAudioFocus = false;
-        mLoaded        = false;
+        mLoaded = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
+        init();
         super.onCreate();
     }
 
@@ -231,7 +232,7 @@ public class TheBrain extends Service{
                     break;
             }
         }
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
@@ -254,20 +255,13 @@ public class TheBrain extends Service{
     public void registerClient(MainActivity activity) {
         mContext = activity;
         mBound = true;
-        if (!mIsInit) {
-            init();
-            mIsInit = true;
-        } else {
-            if (mBound) {
-                mContext.setProgressBar(false);
-                mContext.setRecyclerViewData();
-            }
-        }
+        mContext.setProgressBar(false);
+        mContext.setRecyclerViewData();
     }
 
     // This is needed to keep the background service running
-    private void setNotification(boolean isPlaying){
-        if(mPlaying == null){
+    private void setNotification(boolean isPlaying) {
+        if (mPlaying == null) {
             stopForeground(true);
             return;
         }
@@ -331,6 +325,7 @@ public class TheBrain extends Service{
             }
         });
         mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        mIsInit = true;
     }
 
     public void postInit() {
@@ -353,7 +348,9 @@ public class TheBrain extends Service{
         new LoadAppDataTask().execute();
     }
 
-    private void saveAppData() {new SaveAppDataTask().execute();}
+    private void saveAppData() {
+        new SaveAppDataTask().execute();
+    }
 
     public List<FireMixtape> getDataByTitle() {
         return mSongManager.getByTitle();
@@ -488,12 +485,12 @@ public class TheBrain extends Service{
         MediaSessionCompatHelper.applyState(mSession, state);
     }
 
-    public void togglePlay(){
-        if(isPlaying()){
+    public void togglePlay() {
+        if (isPlaying()) {
             mPlayTimer.stop();
             mMediaPlayer.pause();
             setUI(false);
-        }else{
+        } else {
             if (!hasSong()) {
                 playNext();
             } else {
@@ -524,7 +521,7 @@ public class TheBrain extends Service{
     }
 
     public void playLast() {
-        if (mSongHistory.isEmpty()){
+        if (mSongHistory.isEmpty()) {
             return;
         }
         FireMixtape song = mSongHistory.pop();
