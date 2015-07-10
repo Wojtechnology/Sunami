@@ -255,6 +255,7 @@ public class TheBrain extends Service {
     public void registerClient(MainActivity activity) {
         mContext = activity;
         mBound = true;
+        mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         mContext.setProgressBar(false);
         mContext.setRecyclerViewData();
     }
@@ -324,7 +325,6 @@ public class TheBrain extends Service {
                 playNext();
             }
         });
-        mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         mIsInit = true;
     }
 
