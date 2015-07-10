@@ -284,13 +284,14 @@ public class TheBrain extends Service {
 
     public void registerClient(MainActivity activity) {
         mContext = activity;
+        mBound = true;
         if (!mIsInit) {
             init();
+            mIsInit = true;
+        } else {
+            mContext.setProgressBar(false);
+            mContext.setRecyclerViewData();
         }
-        mBound = true;
-        mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        mContext.setProgressBar(false);
-        mContext.setRecyclerViewData();
     }
 
     // This is needed to keep the background service running
@@ -358,7 +359,7 @@ public class TheBrain extends Service {
                 playNext();
             }
         });
-        mIsInit = true;
+        mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     public void postInit() {
