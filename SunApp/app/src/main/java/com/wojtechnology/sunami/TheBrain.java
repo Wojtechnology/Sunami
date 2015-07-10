@@ -101,8 +101,7 @@ public class TheBrain extends Service {
             mSongManager.updateGenres(mGenreGraph.getGenreSet(), ja.getJSONArray(2));
         }
 
-        @Override
-        protected Void doInBackground(Void... params) {
+        private void attemptReadOld() {
             long startTime = Calendar.getInstance().getTimeInMillis();
             boolean isNew = false;
             InputStream is;
@@ -134,10 +133,42 @@ public class TheBrain extends Service {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
+                corruptedFile();
             }
             Log.i("TheBrain", "Finished reading file in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
+        }
+
+        // Should be replaced by a better file management system
+        private void corruptedFile() {
+            InputStream is = TheBrain.this.getResources().openRawResource(R.raw.genres);
+            Log.e("GenreGraph", "Opening new because corruption");
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line = reader.readLine();
+                String jString = "";
+                while (line != null) {
+                    jString += line;
+                    line = reader.readLine();
+                }
+                reader.close();
+                is.close();
+                JSONArray ja = new JSONArray(jString);
+                readNew(ja);
+
+                // Enable shuffle controller to use calculated values to choose songs
+                mShuffleController.setLoadCompleted();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            attemptReadOld();
             return null;
         }
 
@@ -193,7 +224,6 @@ public class TheBrain extends Service {
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
-        init();
         super.onCreate();
     }
 
@@ -254,6 +284,9 @@ public class TheBrain extends Service {
 
     public void registerClient(MainActivity activity) {
         mContext = activity;
+        if (!mIsInit) {
+            init();
+        }
         mBound = true;
         mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         mContext.setProgressBar(false);
