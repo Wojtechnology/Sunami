@@ -41,4 +41,8 @@ public class PlayInstance {
         mSong.multiplier = newMulti;
     }
 
+    public FireMixtape getSong() {
+        return mSong;
+    }
+
 }

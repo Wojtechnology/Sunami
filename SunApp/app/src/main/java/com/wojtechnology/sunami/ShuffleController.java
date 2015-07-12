@@ -167,15 +167,17 @@ public class ShuffleController {
     public void addPlayInstance(PlayInstance playInstance) {
         if (!mIsLoaded) return;
         double r = getPlayMultiplier(playInstance.getFractionPlayed(), SONG_DURATION_OFFSET, SONG_DURATION_SPREAD);
-        double songDelta = songChange(playInstance.getMulti(), r);
-        playInstance.setMulti(songDelta);
+        FireMixtape song = playInstance.getSong();
+        double songDelta = songChange(song.multiplier, r);
+        song.multiplier = songDelta;
         Log.i("ShuffleController", "Modified song value to " + songDelta);
-        String genre = playInstance.getGenre();
+        String genre = song.actualGenre;
         if (!mGenreGraph.isGenre(genre)) {
             // May want to find the most suitable genre for song here
         } else {
             mGenreGraph.modifyGenre(genre, r, this);
         }
+        song.calculatedValue = calculateSongValue(song);
         setSongValuesAsync();
     }
 
