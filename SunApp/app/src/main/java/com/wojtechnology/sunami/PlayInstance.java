@@ -29,18 +29,6 @@ public class PlayInstance {
         return ((double) mDuration) / ((double) songDuration);
     }
 
-    public String getGenre(){
-        return mSong.actualGenre;
-    }
-
-    public double getMulti() {
-        return mSong.multiplier;
-    }
-
-    public void setMulti(double newMulti) {
-        mSong.multiplier = newMulti;
-    }
-
     public FireMixtape getSong() {
         return mSong;
     }
