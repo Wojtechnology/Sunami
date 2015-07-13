@@ -31,15 +31,12 @@ public class ShuffleController {
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
     private final double SONG_NEG_MULTI = 0.4;
-    private final long TIME_SPREAD = 1800000;
-    private final long TIME_OFFSET = 3600000;
+    private final long TIME_SPREAD = 3600000;
+    private final long TIME_OFFSET = 7200000;
     private final double RANDOM_SPREAD = 0.2;
 
     // Cutoff threshold for song multiplier, currently 2 minutes
-    private final long SONG_MULIPLIER_CUTOFF = 120000;
-
-    private long mTimeSpread;
-    private long mTimeOffset;
+    private final long SONG_MULTIPLIER_CUTOFF = 120000;
 
     private boolean mIsLoaded;
 
@@ -63,7 +60,6 @@ public class ShuffleController {
         @Override
         protected Void doInBackground(Void... params) {
             loadNext();
-            printCurrentValues();
             return null;
         }
     }
@@ -74,20 +70,11 @@ public class ShuffleController {
         mTheBrain = theBrain;
         mIsLoaded = false;
         mUpNext = upNext;
-
-        mTimeOffset = TIME_OFFSET;
-        mTimeSpread = TIME_SPREAD;
     }
 
     public void setLoadCompleted() {
-        long totalSongTime = mSongManager.getTotalLibraryDuration();
-        mTimeOffset = totalSongTime / 2;
-        mTimeSpread = totalSongTime / 4;
-
         setSongValuesAsync();
         mIsLoaded = true;
-
-        Log.e("ShuffleController", "Loaded with a total song time of " + totalSongTime / 60000 + " minutes.");
     }
 
     public void updateList() {
@@ -114,7 +101,7 @@ public class ShuffleController {
         }
 
         // Do not apply song multiplier is song is below cutoff
-        if (Long.parseLong(song.duration) > SONG_MULIPLIER_CUTOFF) {
+        if (Long.parseLong(song.duration) > SONG_MULTIPLIER_CUTOFF) {
             val *= song.multiplier;
         }
         val *= getLastPlayedMultiplier(song);
@@ -188,7 +175,7 @@ public class ShuffleController {
         // Makes changes to song multipliers
         double songDelta = songChange(song.multiplier, r);
         song.multiplier = songDelta;
-        Log.i("ShuffleController", "Modified song value to " + songDelta);
+        //Log.i("ShuffleController", "Modified song value to " + songDelta);
 
         // if the genre is not recognized, try to find the most likely one
         String genre = song.actualGenre;
@@ -222,11 +209,11 @@ public class ShuffleController {
 
     private double getLastPlayedMultiplier(FireMixtape song) {
         long delta = song.getMillisSinceLastPlay();
-        double k = -1.0 / ((double) mTimeSpread);
-        double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - mTimeOffset)));
+        double k = -1.0 / ((double) TIME_SPREAD);
+        double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - TIME_OFFSET)));
         if (denominator == 0.0) return 0.0;
         double sigmoid = 1.0 / denominator;
-        return sigmoid * 0.75 + 0.25;
+        return sigmoid * 0.9 + 0.1;
     }
 
     private double getRandomMultiplier() {
@@ -288,7 +275,7 @@ public class ShuffleController {
     }
 
     private void printSongValues(FireMixtape song) {
-        String message = song.title + " - " + song.getMillisSinceLastPlay() + " - " + song.multiplier;
+        String message = song.title + " - " + getLastPlayedMultiplier(song) + " - " + song.multiplier;
         if (mGenreGraph.isGenre(song.actualGenre)) {
             message += " - " + mGenreGraph.getGenreLT(song.actualGenre);
             message += " - " + mGenreGraph.getGenreST(song.actualGenre);

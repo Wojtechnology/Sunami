@@ -322,19 +322,6 @@ public class SongManager {
         return ja;
     }
 
-    public long getTotalLibraryDuration() {
-        long sum = 0;
-        for (int i = 0; i < mSongList.size(); i++) {
-            sum += Long.parseLong(mSongList.get(i).duration);
-        }
-        return sum;
-    }
-
-    // Function to change certain values of a song based on time played
-    public void modifySong(PlayInstance playInstance) {
-
-    }
-
     private void printSongs() {
         for (int i = 0; i < mSongList.size(); i++) {
             Log.i("SongManager", mSongList.get(i).title + ": Genre - " +
