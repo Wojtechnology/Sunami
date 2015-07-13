@@ -209,10 +209,10 @@ public class GenreGraph {
         return multi * fullVal * r;
     }
 
-    public String associateGenre(FireMixtape song) {
+    public void associateGenre(FireMixtape song) {
         if (canEdit(song)) {
             Set<String> keys = mGenreRef.keySet();
-            double max = 0.0;
+            double max = (SHORT_GENRE_MAX + SHORT_GENRE_MIN) / 2.0;
             String maxGenre = song.actualGenre;
             for (String key : keys) {
                 double stVal = mGenreRef.get(key).shortTerm;
@@ -222,12 +222,12 @@ public class GenreGraph {
                 }
             }
             song.actualGenre = maxGenre;
+            Log.e("GenreGraph", "Changed genre of " + song.title + " to " + song.actualGenre);
         }
-        return song.actualGenre;
     }
 
     public boolean canEdit(FireMixtape song) {
-        return song.genre == SongManager.DEFAULT_GENRE;
+        return song.genre.equals(SongManager.DEFAULT_GENRE);
     }
 
     private void printGenres() {

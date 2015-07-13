@@ -170,7 +170,6 @@ public class ShuffleController {
         // sets required variables
         double r = getPlayMultiplier(playInstance.getFractionPlayed(), SONG_DURATION_OFFSET, SONG_DURATION_SPREAD);
         FireMixtape song = playInstance.getSong();
-        boolean hasGenre = true;
 
         // Makes changes to song multipliers
         double songDelta = songChange(song.multiplier, r);
@@ -179,17 +178,11 @@ public class ShuffleController {
 
         // if the genre is not recognized, try to find the most likely one
         String genre = song.actualGenre;
-        if (!mGenreGraph.isGenre(genre)) {
+        if (!mGenreGraph.isGenre(genre) || mGenreGraph.canEdit(song)) {
             if (r > 0.0) {
-                genre = mGenreGraph.associateGenre(song);
-            } else {
-                hasGenre = false;
+                mGenreGraph.associateGenre(song);
             }
-        } else if (mGenreGraph.canEdit(song) && r > 0.0) {
-            genre = mGenreGraph.associateGenre(song);
-        }
-
-        if (hasGenre) {
+        } else {
             mGenreGraph.modifyGenre(genre, r, this);
         }
         song.calculatedValue = calculateSongValue(song);
