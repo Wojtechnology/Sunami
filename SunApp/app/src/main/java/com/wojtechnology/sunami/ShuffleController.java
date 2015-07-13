@@ -126,7 +126,7 @@ public class ShuffleController {
     private void randomLoadOne() {
         int random = (int) (Math.random() * mSongManager.size());
         FireMixtape song = mSongManager.getSongAtIndex(random);
-        if (isContained(song)) {
+        if (!isContained(song)) {
             mUpNext.pushBack(song);
         }
     }

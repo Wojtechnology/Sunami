@@ -365,7 +365,6 @@ public class TheBrain extends Service {
     }
 
     public void postInit() {
-
         // Set the list for the shuffle controller to use
         mShuffleController.updateList();
 
