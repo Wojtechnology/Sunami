@@ -213,15 +213,20 @@ public class GenreGraph {
         if (canEdit(song)) {
             Set<String> keys = mGenreRef.keySet();
             double max = 0.0;
-            String genre = "";
+            String maxGenre = song.actualGenre;
             for (String key : keys) {
-
+                double stVal = mGenreRef.get(key).shortTerm;
+                if (stVal > max) {
+                    max = stVal;
+                    maxGenre = key;
+                }
             }
+            song.actualGenre = maxGenre;
         }
         return song.actualGenre;
     }
 
-    private boolean canEdit(FireMixtape song) {
+    public boolean canEdit(FireMixtape song) {
         return song.genre == SongManager.DEFAULT_GENRE;
     }
 
