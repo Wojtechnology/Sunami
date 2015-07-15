@@ -107,7 +107,7 @@ public class SongManager {
     }
 
     private char firstLetter(String word) {
-        word = word.toLowerCase();
+        word = word.toUpperCase();
         if (word.length() > 4) {
             if (word.substring(0, 4).equals("THE ")) {
                 word = word.substring(4);
