@@ -62,16 +62,23 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.artist.setText(current.artist);
             itemHolder.duration.setText(displayTime(current.duration));
             itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
+
+            // Set add button resourse
+            Drawable addToQueue;
+            if (current.isUpNext) {
+                addToQueue = mContext.getResources().getDrawable(R.drawable.ic_playlist_add_white_24dp);
+                addToQueue.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
+            } else {
+                addToQueue = mContext.getResources().getDrawable(R.drawable.ic_queue_add);
+            }
+            itemHolder.addButton.setBackground(addToQueue);
+
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     mTheBrain.playSong(current, true);
                 }
             });
-            if (false) {
-                itemHolder.addButton.setBackground(mContext.getResources().getDrawable(R.drawable.ic_playlist_add_white_24dp));
-                itemHolder.addButton.getBackground().setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
-            }
             itemHolder.addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

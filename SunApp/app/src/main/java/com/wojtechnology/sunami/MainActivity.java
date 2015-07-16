@@ -24,7 +24,6 @@ public class MainActivity extends ActionBarActivity {
 
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
-    private ListAdapter mListAdapter;
     private ProgressBar mProgressBar;
     private OuterLayout mOuterLayout;
     private Handler mHandler;
@@ -32,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
 
     public TheBrain mTheBrain;
     public NavigationDrawerFragment mDrawerFragment;
+    public ListAdapter mListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

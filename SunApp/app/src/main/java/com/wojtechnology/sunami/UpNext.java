@@ -37,6 +37,7 @@ public class UpNext {
 
     public void pushUser (FireMixtape song) {
         mUpNext.add(mUserIndexFinish++, song);
+        song.isUpNext = true;
     }
 
     public void pushFront (FireMixtape song) {
@@ -45,6 +46,7 @@ public class UpNext {
             mUserIndexStart++;
             mUserIndexFinish++;
         }
+        song.isUpNext = true;
     }
 
     public FireMixtape popFront () {
@@ -53,6 +55,7 @@ public class UpNext {
         }
         if (mUserIndexFinish > 0) mUserIndexFinish--;
         if (mUserIndexStart > 0) mUserIndexStart--;
+        mUpNext.peekFirst().isUpNext = false;
         return mUpNext.removeFirst();
     }
 }
