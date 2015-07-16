@@ -176,15 +176,8 @@ public class ShuffleController {
         song.multiplier = songDelta;
         //Log.i("ShuffleController", "Modified song value to " + songDelta);
 
-        // if the genre is not recognized, try to find the most likely one
-        String genre = song.actualGenre;
-        if (!mGenreGraph.isGenre(genre) || mGenreGraph.canEdit(song)) {
-            if (r > 0.0) {
-                mGenreGraph.associateGenre(song);
-            }
-        } else {
-            mGenreGraph.modifyGenre(genre, r, this);
-        }
+        mGenreGraph.modifyGenre(song.actualGenre, r, this);
+
         song.calculatedValue = calculateSongValue(song);
         setSongValuesAsync();
     }

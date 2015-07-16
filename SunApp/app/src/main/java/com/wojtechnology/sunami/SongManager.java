@@ -34,6 +34,7 @@ public class SongManager {
 
     private boolean genresUpdated;
 
+    // needs to be current with JSON file containing genres
     public static final String DEFAULT_GENRE = "__notfound__";
 
     public SongManager(Context context) {
