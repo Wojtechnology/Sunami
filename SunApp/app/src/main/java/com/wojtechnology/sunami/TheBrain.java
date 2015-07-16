@@ -438,6 +438,16 @@ public class TheBrain extends Service {
         }
     }
 
+    // Adds song to queue
+    public void addSong(FireMixtape song) {
+        if (!mUpNext.contains(song)) {
+            mUpNext.pushUser(song);
+            if (mBound) {
+                mContext.mDrawerFragment.updateRecyclerView();
+            }
+        }
+    }
+
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mShuffleController.addPlayInstance(playInstance);
@@ -560,7 +570,7 @@ public class TheBrain extends Service {
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
-        mContext.mDrawerFragment.updateRecyclerView(this);
+        mContext.mDrawerFragment.updateRecyclerView();
     }
 
     public void playLast() {
@@ -572,7 +582,7 @@ public class TheBrain extends Service {
             mUpNext.pushFront(mPlaying);
         }
         playSong(song, false);
-        mContext.mDrawerFragment.updateRecyclerView(this);
+        mContext.mDrawerFragment.updateRecyclerView();
     }
 
     @Override

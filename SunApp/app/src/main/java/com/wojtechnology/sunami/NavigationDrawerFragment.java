@@ -127,8 +127,8 @@ public class NavigationDrawerFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    public void updateRecyclerView (TheBrain theBrain) {
-        mListAdapter.updateData(theBrain.getUpNext());
+    public void updateRecyclerView () {
+        mListAdapter.notifyDataSetChanged();
     }
 
     public static void saveToPreferences(Context context, String preferenceName, String preferenceValue) {

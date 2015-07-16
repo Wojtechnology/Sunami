@@ -43,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="0dp"
+            android:paddingRight="32dp"
             android:singleLine="true"
             android:text="Dummy Text"
             android:textSize="14sp" />
@@ -63,6 +64,13 @@
             android:layout_height="wrap_content"
             android:textColor="@color/primaryColorDark"
             android:text="Dummy Text"/>
+        
+        <Button
+            android:id="@+id/add_queue_button"
+            android:layout_marginTop="24dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/ic_queue_add"/>
 
     </LinearLayout>
 
