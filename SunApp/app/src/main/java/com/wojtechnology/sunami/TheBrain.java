@@ -44,6 +44,7 @@ public class TheBrain extends Service {
     public static final String PLAY_NEXT = "play_next";
     public static final String PLAY_LAST = "play_last";
     public static final String PLAY_STOP = "play_stop";
+    private final String WAKE_LOCK_ID = "SunamiWakeLock";
 
     private static final int HISTORY_SIZE = 10;
 
@@ -65,6 +66,7 @@ public class TheBrain extends Service {
     public FireMixtape mPlaying;
     public MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
+    private PowerManager.WakeLock mWakeLock;
     public UpNext mUpNext;
     AudioManager.OnAudioFocusChangeListener mAFChangeListener;
 
@@ -353,7 +355,13 @@ public class TheBrain extends Service {
         mSongHistory = new SongHistory(HISTORY_SIZE);
         mShuffleController = new ShuffleController(this, mGenreGraph, mSongManager, mUpNext);
         mMediaPlayer = new MediaPlayer();
+
+        // Setting wake locks
         mMediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_ID);
+        mWakeLock.acquire();
+
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -570,6 +578,7 @@ public class TheBrain extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mWakeLock.release();
         mMediaPlayer.release();
         mSession.release();
     }
