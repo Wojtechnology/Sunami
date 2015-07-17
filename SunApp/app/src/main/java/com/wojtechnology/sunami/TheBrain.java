@@ -440,17 +440,15 @@ public class TheBrain extends Service {
 
     // Adds song to queue
     public void addSong(FireMixtape song) {
-        if (!song.isUpNext) {
+        if (!song.isUpNext && song != mPlaying) {
             mUpNext.pushUser(song);
-            updateListUI();
+            updateListItem(song);
             updateUpNextUI();
         }
     }
 
-    public void updateListUI() {
-        if (mBound) {
-            mContext.mListAdapter.notifyDataSetChanged();
-        }
+    public void updateListItem(FireMixtape song) {
+        mContext.mListAdapter.updateItem(song);
     }
 
     public void updateUpNextUI() {
@@ -464,6 +462,7 @@ public class TheBrain extends Service {
         mShuffleController.addPlayInstance(playInstance);
         mChangedState = true;
         savePersistentState();
+        updateListItem(song);
     }
 
     // Registers audio and media session
@@ -581,7 +580,6 @@ public class TheBrain extends Service {
         if (mUpNext.size() > 0) {
             playSong(mUpNext.popFront(), true);
         }
-        updateListUI();
         updateUpNextUI();
     }
 
@@ -594,7 +592,6 @@ public class TheBrain extends Service {
             mUpNext.pushFront(mPlaying);
         }
         playSong(song, false);
-        updateListUI();
         updateUpNextUI();
     }
 

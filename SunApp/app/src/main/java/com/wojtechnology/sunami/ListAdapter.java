@@ -88,6 +88,18 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void updateItem(FireMixtape song) {
+        int i;
+        for (i = 0; i < getItemCount(); i++) {
+            if (song == mData.get(i)) {
+                break;
+            }
+        }
+        if (i < getItemCount()) {
+            notifyItemChanged(i);
+        }
+    }
+
     @Override
     public int getItemViewType(int position) {
         if(mData.get(position).genre == "__header__"){

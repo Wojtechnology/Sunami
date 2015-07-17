@@ -44,17 +44,12 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         itemHolder.title.setText(current.title);
         itemHolder.artist.setText(current.artist);
         itemHolder.duration.setText(displayTime(current.duration));
-        itemHolder.background.setOnClickListener(new View.OnClickListener(){
+        itemHolder.background.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mTheBrain.playSong(current, true);
             }
         });
-    }
-
-    public void updateData(List<FireMixtape> data) {
-        mData = data;
-        notifyDataSetChanged();
     }
 
     @Override
