@@ -79,6 +79,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Drawable fire = mContext.getResources().getDrawable(R.drawable.fire_mixtape);
             fire.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
             itemHolder.fireView.setImageDrawable(fire);
+            itemHolder.fireView.setAlpha(calculateNormalized(current));
 
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -93,6 +94,16 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         }
+    }
+
+    private float calculateNormalized(FireMixtape song) {
+        if (FireMixtape.maxCalculatedValue == 0.0) {
+            return 0.0f;
+        }
+        float normalizedValue = (float) ((song.calculatedValue) / (FireMixtape.maxCalculatedValue));
+        if (normalizedValue > 1.0f) return 1.0f;
+        else if (normalizedValue < 0.0f) return 0.0f;
+        else return normalizedValue;
     }
 
     public void updateItem(FireMixtape song) {

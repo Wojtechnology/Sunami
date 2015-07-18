@@ -21,6 +21,9 @@ import java.util.List;
  */
 public class FireMixtape{
 
+    // static value used for opacity values for songs
+    public static double maxCalculatedValue = 1.0;
+
     // If no artwork available
     public int default_icon_id;
 
@@ -48,7 +51,6 @@ public class FireMixtape{
     public double multiplier;
 
     public double calculatedValue;
-    public double normalizedValue;
 
     // The genre that is recognized by the app
     public String actualGenre;
@@ -60,7 +62,6 @@ public class FireMixtape{
         isUpNext = false;
         multiplier = 1.0;
         calculatedValue = 1.0;
-        normalizedValue = 0.0;
         actualGenre = SongManager.DEFAULT_GENRE;
         lastPlayed = Calendar.getInstance();
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);

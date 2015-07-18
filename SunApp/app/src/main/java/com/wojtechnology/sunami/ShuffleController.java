@@ -83,9 +83,15 @@ public class ShuffleController {
     }
 
     private void setSongValues() {
+        double maxCalculatedValue = 0.0;
         for (int i = 0; i < mSongList.size(); i++) {
-            mSongList.get(i).calculatedValue = calculateSongValue(mSongList.get(i));
+            double calculatedValue = calculateSongValue(mSongList.get(i));
+            mSongList.get(i).calculatedValue = calculatedValue;
+            if (calculatedValue > maxCalculatedValue) {
+                maxCalculatedValue = calculatedValue;
+            }
         }
+        FireMixtape.maxCalculatedValue = maxCalculatedValue;
     }
 
     // Runs setSongValues in a separate thread and then loads the UpNext
