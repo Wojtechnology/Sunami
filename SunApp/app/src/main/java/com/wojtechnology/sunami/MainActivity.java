@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -118,6 +119,8 @@ public class MainActivity extends ActionBarActivity {
         mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        FastScroller fastScroller = (FastScroller) findViewById(R.id.fast_scroller);
+        fastScroller.setRecyclerView(mRecyclerView);
         mDrawerFragment.setUpRecyclerView(mTheBrain);
     }
 

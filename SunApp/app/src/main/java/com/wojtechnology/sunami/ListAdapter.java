@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by wojtekswiderski on 15-04-12.
  */
-public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements BubbleTextGetter {
 
     private Context mContext;
     private TheBrain mTheBrain;
@@ -130,6 +130,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    @Override
+    public String getTextToShowInBubble(int pos) {
+        return "A";
     }
 
     class ItemHolder extends RecyclerView.ViewHolder {

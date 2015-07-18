@@ -31,7 +31,19 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/drawer_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+                    android:layout_height="wrap_content"/>
+
+                <com.wojtechnology.sunami.FastScroller
+                    android:id="@+id/fast_scroller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:layout_alignTop="@id/drawer_list"
+                    android:layout_alignBottom="@id/drawer_list"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    tools:ignore="RtlCompat"/>
 
                 <ProgressBar
                     android:id="@+id/progressBar"
