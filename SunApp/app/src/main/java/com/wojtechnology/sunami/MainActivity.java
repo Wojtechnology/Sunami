@@ -116,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void setRecyclerViewData(){
         mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
+        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain, mRecyclerView);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         FastScroller fastScroller = (FastScroller) findViewById(R.id.fast_scroller);

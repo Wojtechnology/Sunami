@@ -28,13 +28,16 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
 
+    private RecyclerView mRecyclerView;
+
     private LayoutInflater mInflater;
     List<FireMixtape> mData = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
+    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain, RecyclerView recyclerView) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mData = data;
+        mRecyclerView = recyclerView;
         this.mTheBrain = theBrain;
     }
 
@@ -134,7 +137,12 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     @Override
     public String getTextToShowInBubble(int pos) {
-        return "A";
+        FireMixtape song = mData.get(pos);
+        char firstLetter = SongManager.firstLetter(song.title);
+        if (firstLetter >= 'A' && firstLetter <= 'Z') {
+            return Character.toString(firstLetter);
+        }
+        return "#";
     }
 
     class ItemHolder extends RecyclerView.ViewHolder {

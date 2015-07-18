@@ -281,9 +281,13 @@ public class OuterLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (isDraggableTarget(event) && mDragHelper.shouldInterceptTouchEvent(event)) {
-            return true;
-        } else {
+        try {
+            if (isDraggableTarget(event) && mDragHelper.shouldInterceptTouchEvent(event)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }
