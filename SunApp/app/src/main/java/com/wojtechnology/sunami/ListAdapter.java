@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,6 +75,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             itemHolder.addButton.setBackground(addToQueue);
 
+            // Set fire resource
+            Drawable fire = mContext.getResources().getDrawable(R.drawable.fire_mixtape);
+            fire.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
+            itemHolder.fireView.setImageDrawable(fire);
+
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -121,6 +128,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ImageView icon;
         private RelativeLayout background;
         private Button addButton;
+        private ImageView fireView;
 
         public ItemHolder(View itemView) {
             super(itemView);
@@ -130,6 +138,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
             background = (RelativeLayout) itemView.findViewById(R.id.list_background);
             addButton = (Button) itemView.findViewById(R.id.add_queue_button);
+            fireView = (ImageView) itemView.findViewById(R.id.fire);
         }
     }
 

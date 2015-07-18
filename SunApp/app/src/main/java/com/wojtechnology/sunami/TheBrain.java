@@ -423,8 +423,8 @@ public class TheBrain extends Service {
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setDataSource(mPlaying.data);
                 mMediaPlayer.prepare();
-                mPlayTimer.start();
                 mMediaPlayer.start();
+                mPlayTimer.start();
                 setUI(true);
                 setMetaData(mPlaying);
                 if (mBound) {

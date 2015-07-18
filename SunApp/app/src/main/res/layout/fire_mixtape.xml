@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:id="@+id/list_background"
-    android:background="@drawable/fire_mixtape_background"
+    android:layout_marginBottom="1dp"
     android:layout_marginTop="1dp"
-    android:layout_marginBottom="1dp">
+    android:background="@drawable/fire_mixtape_background"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/list_icon"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:layout_alignParentLeft="true"
         android:layout_gravity="center_vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_alignParentLeft="true"/>
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
         android:id="@+id/song_display_left"
         android:layout_width="wrap_content"
         android:layout_height="72dp"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:paddingRight="16dp"
-        android:layout_toRightOf="@+id/list_icon">
+        android:layout_toRightOf="@+id/list_icon"
+        android:orientation="vertical"
+        android:paddingRight="16dp">
 
         <TextView
             android:id="@+id/list_title"
@@ -35,42 +35,57 @@
             android:paddingTop="20dp"
             android:singleLine="true"
             android:text="Dummy Text"
-            android:textSize="16sp"
-            android:textColor="#000"/>
+            android:textColor="#000"
+            android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/list_artist"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="0dp"
-            android:paddingRight="32dp"
-            android:singleLine="true"
-            android:text="Dummy Text"
-            android:textSize="14sp" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/fire"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/fire_mixtape"/>
+
+            <TextView
+                android:id="@+id/list_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="32dp"
+                android:paddingTop="0dp"
+                android:singleLine="true"
+                android:text="Dummy Text"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/song_display_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="right"
-        android:paddingRight="16dp"
         android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:orientation="vertical"
         android:paddingTop="2dp">
+
         <TextView
             android:id="@+id/list_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/primaryColorDark"
-            android:text="Dummy Text"/>
-        
+            android:layout_marginRight="16dp"
+            android:text="Dummy Text"
+            android:textColor="@color/primaryColorDark" />
+
         <Button
             android:id="@+id/add_queue_button"
-            android:layout_marginTop="24dp"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:background="@drawable/ic_queue_add"/>
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/ic_queue_add" />
 
     </LinearLayout>
 
