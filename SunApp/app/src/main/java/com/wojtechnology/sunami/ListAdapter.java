@@ -25,6 +25,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private Context mContext;
     private TheBrain mTheBrain;
 
+    private static int TYPE_FINAL = 2;
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
 
@@ -47,6 +48,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             View view = mInflater.inflate(R.layout.fire_header, parent, false);
             HeaderHolder holder = new HeaderHolder(view);
             return holder;
+        } else if (viewType == TYPE_FINAL) {
+            View view = mInflater.inflate(R.layout.fire_final, parent, false);
+            FinalHolder holder = new FinalHolder(view);
+            return holder;
         } else {
             View view = mInflater.inflate(R.layout.fire_mixtape, parent, false);
             ItemHolder holder = new ItemHolder(view);
@@ -60,7 +65,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             HeaderHolder headerHolder = (HeaderHolder) holder;
             final FireMixtape current = mData.get(position);
             headerHolder.label.setText(current.title);
-        }else{
+        } else if (holder instanceof FinalHolder) {
+            FinalHolder finalHolder = (FinalHolder) holder;
+            final FireMixtape current = mData.get(position);
+            finalHolder.label.setText(current.title);
+        } else {
             final ItemHolder itemHolder = (ItemHolder) holder;
             final FireMixtape current = mData.get(position);
             itemHolder.title.setText(current.title);
@@ -125,6 +134,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public int getItemViewType(int position) {
         if(mData.get(position).genre == "__header__"){
             return TYPE_HEADER;
+        }else if(mData.get(position).genre == "__final__") {
+            return TYPE_FINAL;
         }else{
             return TYPE_LIST;
         }
@@ -172,6 +183,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         public HeaderHolder(View itemView) {
             super(itemView);
             label = (TextView) itemView.findViewById(R.id.header_label);
+        }
+    }
+
+    class FinalHolder extends RecyclerView.ViewHolder {
+        private TextView label;
+
+        public FinalHolder(View itemView) {
+            super(itemView);
+            label = (TextView) itemView.findViewById(R.id.final_label);
         }
     }
 

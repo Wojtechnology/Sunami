@@ -104,6 +104,12 @@ public class SongManager {
             sum += letters.get(headerTitle);
         }
 
+        FireMixtape final_header = new FireMixtape(context);
+        final_header.title = mSongList.size() + " songs found";
+        final_header.genre = "__final__";
+
+        displayList.add(final_header);
+
         return displayList;
     }
 

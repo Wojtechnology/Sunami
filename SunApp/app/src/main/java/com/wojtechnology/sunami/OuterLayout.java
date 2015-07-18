@@ -127,6 +127,7 @@ public class OuterLayout extends RelativeLayout {
         mDragHelper = ViewDragHelper.create(this, 2.0f, new DragHelperCallback());
         mIsOpen = true;
         mIsFirst = true;
+        mActive = false;
         mDraggingState = 0;
 
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
@@ -319,13 +320,11 @@ public class OuterLayout extends RelativeLayout {
     }
 
     public void playSong(FireMixtape song){
-        if (song == null){
-            mActive = false;
-            return;
-        } else {
-            mActive = true;
-        }
+        mActive = true;
         mSeekBar.setProgress(0);
+        if (song == null){
+            return;
+        }
         mSeekBar.setMax(Integer.parseInt(song.duration));
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);

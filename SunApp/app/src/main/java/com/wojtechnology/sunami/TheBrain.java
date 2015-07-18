@@ -379,6 +379,7 @@ public class TheBrain extends Service {
         if (mBound) {
             mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
+            mContext.showSong();
         }
         readAppData();
     }
