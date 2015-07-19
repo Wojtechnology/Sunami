@@ -412,11 +412,14 @@ public class TheBrain extends Service {
         if (mPlaying != null) {
             // request audio focus if already doesn't have it
             registerAudio();
+            updateListItem(mPlaying);
             if (oldPlaying != null) {
                 donePlayback(oldPlaying, mPlayTimer.reset());
                 if (saveLast) {
                     mSongHistory.push(oldPlaying);
                 }
+            } else {
+                mShuffleController.setSongValuesAsync();
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
             try {
@@ -439,19 +442,28 @@ public class TheBrain extends Service {
         }
     }
 
+    public void toggleSongInQueue(FireMixtape song) {
+        if (song.isUpNext) {
+            removeSong(song);
+        } else if (song != mPlaying) {
+            addSong(song);
+        }
+    }
+
     // Adds song to queue
     public void addSong(FireMixtape song) {
-        if (!song.isUpNext && song != mPlaying) {
-            mUpNext.pushUser(song);
-            updateListItem(song);
-            updateUpNextUI();
-        }
+        mUpNext.pushUser(song);
+        updateListItem(song);
+        updateUpNextUI();
     }
 
     public void removeSong(FireMixtape song) {
         mUpNext.remove(song);
         updateListItem(song);
         updateUpNextUI();
+
+        // Send an empty song play
+        donePlayback(song, 0);
     }
 
     public void updateListItem(FireMixtape song) {
@@ -464,12 +476,22 @@ public class TheBrain extends Service {
         }
     }
 
+    public void updateUpNextUIAsync() {
+        if (mBound) {
+            mContext.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mContext.mDrawerFragment.updateRecyclerView();
+                }
+            });
+        }
+    }
+
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mShuffleController.addPlayInstance(playInstance);
         mChangedState = true;
         savePersistentState();
-        updateListItem(song);
     }
 
     // Registers audio and media session

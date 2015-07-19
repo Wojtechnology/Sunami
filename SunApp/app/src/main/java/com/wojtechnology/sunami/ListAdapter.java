@@ -108,7 +108,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             itemHolder.addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTheBrain.addSong(current);
+                    mTheBrain.toggleSongInQueue(current);
                 }
             });
         }

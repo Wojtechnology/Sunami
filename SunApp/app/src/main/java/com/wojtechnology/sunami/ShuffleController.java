@@ -83,6 +83,7 @@ public class ShuffleController {
     }
 
     private void setSongValues() {
+        long startTime = Calendar.getInstance().getTimeInMillis();
         double maxCalculatedValue = 0.0;
         for (int i = 0; i < mSongList.size(); i++) {
             double calculatedValue = calculateSongValue(mSongList.get(i));
@@ -92,10 +93,13 @@ public class ShuffleController {
             }
         }
         FireMixtape.maxCalculatedValue = maxCalculatedValue;
+        Log.i("ShuffleController", "Finished adding play instance in " +
+                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
+                " millis.");
     }
 
     // Runs setSongValues in a separate thread and then loads the UpNext
-    private void setSongValuesAsync() {
+    public void setSongValuesAsync() {
         new SetSongValuesTask().execute();
     }
 
@@ -158,6 +162,7 @@ public class ShuffleController {
                 if (!calculatedLoadOne()) return;
             }
         }
+        mTheBrain.updateUpNextUIAsync();
     }
 
     private void loadNextAsync() {

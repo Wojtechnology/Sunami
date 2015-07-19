@@ -62,6 +62,8 @@ public class UpNext {
     public void remove(FireMixtape song) {
         if (!mUpNext.contains(song)) return;
         mUpNext.remove(song);
+        if (mUserIndexFinish > 0) mUserIndexFinish--;
+        if (mUserIndexStart > 0) mUserIndexStart--;
         song.isUpNext = false;
     }
 }
