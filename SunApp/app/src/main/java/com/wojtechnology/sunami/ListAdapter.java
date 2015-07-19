@@ -89,9 +89,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
             // Set fire resource
             Drawable fire = mContext.getResources().getDrawable(R.drawable.fire_mixtape);
-            fire.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
+            float val = calculateNormalized(current);
+            if (val > 0.2f) {
+                fire.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
+                itemHolder.fireView.setAlpha((val - 1.0f) * 0.5f + 1.0f);
+            } else {
+                fire.setColorFilter(0xff03a9f4, PorterDuff.Mode.MULTIPLY);
+                itemHolder.fireView.setAlpha(0.6f - val);
+            }
             itemHolder.fireView.setImageDrawable(fire);
-            itemHolder.fireView.setAlpha(calculateNormalized(current));
 
             itemHolder.background.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -109,10 +115,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private float calculateNormalized(FireMixtape song) {
-        if (FireMixtape.maxCalculatedValue == 0.0) {
+        if (FireMixtape.maxCalculatedValue == 1.0) {
             return 0.0f;
         }
-        float normalizedValue = (float) ((song.calculatedValue) / (FireMixtape.maxCalculatedValue));
+        float normalizedValue = (float) ((song.calculatedValue - 1.0) / (FireMixtape.maxCalculatedValue - 1.0));
         if (normalizedValue > 1.0f) return 1.0f;
         else if (normalizedValue < 0.0f) return 0.0f;
         else return normalizedValue;

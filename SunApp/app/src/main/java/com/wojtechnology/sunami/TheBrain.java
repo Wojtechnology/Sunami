@@ -448,6 +448,12 @@ public class TheBrain extends Service {
         }
     }
 
+    public void removeSong(FireMixtape song) {
+        mUpNext.remove(song);
+        updateListItem(song);
+        updateUpNextUI();
+    }
+
     public void updateListItem(FireMixtape song) {
         mContext.mListAdapter.updateItem(song);
     }

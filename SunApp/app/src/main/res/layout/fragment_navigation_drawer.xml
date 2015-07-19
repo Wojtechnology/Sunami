@@ -1,14 +1,119 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/backgroundColor"
     android:clickable="true"
+    android:orientation="vertical"
     tools:context="com.wojtechnology.sunami.NavigationDrawerFragment">
+
+    <LinearLayout
+        android:id="@+id/by_song_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:background="@drawable/fire_mixtape_background"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_my_library_music_grey600_36dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="By Song"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/by_artist_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:background="@drawable/fire_mixtape_background"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_recent_actors_grey600_36dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="By Artist"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/by_fire_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/fire_mixtape_background"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_album_grey600_36dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="By Fire"/>
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="vertical">
+
+        <View android:id="@+id/separator"
+            android:background="@color/accentColor"
+            android:layout_width = "match_parent"
+            android:layout_height="1dip"
+            android:layout_centerVertical ="true"
+            android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/header_label"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:text="Up Next"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/up_next_drawer_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
-</RelativeLayout>
+</LinearLayout>

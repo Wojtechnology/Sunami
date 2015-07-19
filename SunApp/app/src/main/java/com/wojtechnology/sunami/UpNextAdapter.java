@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -43,11 +44,10 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FireMixtape current = mData.get(position);
         itemHolder.title.setText(current.title);
         itemHolder.artist.setText(current.artist);
-        itemHolder.duration.setText(displayTime(current.duration));
-        itemHolder.background.setOnClickListener(new View.OnClickListener() {
+        itemHolder.close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTheBrain.playSong(current, true);
+                mTheBrain.removeSong(current);
             }
         });
     }
@@ -60,15 +60,13 @@ public class UpNextAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class ItemHolder extends RecyclerView.ViewHolder {
         private TextView title;
         private TextView artist;
-        private TextView duration;
-        private RelativeLayout background;
+        private Button close;
 
         public ItemHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.list_title);
             artist = (TextView) itemView.findViewById(R.id.list_artist);
-            duration = (TextView) itemView.findViewById(R.id.list_duration);
-            background = (RelativeLayout) itemView.findViewById(R.id.list_background);
+            close = (Button) itemView.findViewById(R.id.close_song_button);
         }
     }
 
