@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/ic_my_library_music_grey600_36dp"/>
 
@@ -46,7 +46,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/ic_recent_actors_grey600_36dp"/>
 
@@ -61,7 +61,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <!--<LinearLayout
         android:id="@+id/by_fire_button"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -85,7 +85,7 @@
             android:textStyle="bold"
             android:text="By Fire"/>
 
-    </LinearLayout>
+    </LinearLayout>-->
     
     <LinearLayout
         android:layout_width="match_parent"

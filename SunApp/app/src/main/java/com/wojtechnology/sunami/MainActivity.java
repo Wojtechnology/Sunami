@@ -23,12 +23,16 @@ import android.widget.ProgressBar;
 // This is the beginning of an amazing summer
 public class MainActivity extends ActionBarActivity {
 
+    public static int STATE_SONGS = 0;
+    public static int STATE_ARTISTS = 1;
+
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
     private OuterLayout mOuterLayout;
     private Handler mHandler;
     private boolean mSongPlayingChecked;
+    private int mState;
 
     public TheBrain mTheBrain;
     public NavigationDrawerFragment mDrawerFragment;
@@ -60,6 +64,8 @@ public class MainActivity extends ActionBarActivity {
                 ,(DrawerLayout) findViewById(R.id.drawer_layout)
                 ,mToolbar
                 ,this);
+
+        mState = STATE_SONGS;
 
         Intent serviceIntent = new Intent(MainActivity.this, TheBrain.class);
         startService(serviceIntent);

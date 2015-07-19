@@ -38,6 +38,9 @@ public class NavigationDrawerFragment extends Fragment {
     private View containerView;
     private boolean mOpened;
 
+    private LinearLayout mSongButton;
+    private LinearLayout mArtistButton;
+
     public NavigationDrawerFragment() {
         // Required empty public constructor
     }

@@ -194,6 +194,12 @@ public class ShuffleController {
         setSongValuesAsync();
     }
 
+    public void recalculateSong(FireMixtape song) {
+        if (!mIsLoaded) return;
+        song.calculatedValue = calculateSongValue(song);
+        setSongValuesAsync();
+    }
+
     // Determines whether the play counts as a skip or other and calculates multiplier
     // Uses sigmoid function
     private double getPlayMultiplier(double fractionPlayed, double offset, double spread) {

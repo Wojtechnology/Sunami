@@ -59,11 +59,14 @@ public class UpNext {
         return mUpNext.removeFirst();
     }
 
-    public void remove(FireMixtape song) {
-        if (!mUpNext.contains(song)) return;
+    public boolean remove(FireMixtape song) {
+        if (!mUpNext.contains(song)) return false;
+        int index = mUpNext.indexOf(song);
         mUpNext.remove(song);
+        boolean isAuto = index < mUserIndexStart || index >= mUserIndexFinish;
         if (mUserIndexFinish > 0) mUserIndexFinish--;
         if (mUserIndexStart > 0) mUserIndexStart--;
         song.isUpNext = false;
+        return isAuto;
     }
 }

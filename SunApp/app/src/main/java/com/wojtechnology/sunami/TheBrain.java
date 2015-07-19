@@ -458,12 +458,15 @@ public class TheBrain extends Service {
     }
 
     public void removeSong(FireMixtape song) {
-        mUpNext.remove(song);
+        boolean isAuto = mUpNext.remove(song);
         updateListItem(song);
         updateUpNextUI();
 
-        // Send an empty song play
-        donePlayback(song, 0);
+        if (isAuto) {
+            // Send an empty song play
+            PlayInstance.setSongDate(song);
+            mShuffleController.recalculateSong(song);
+        }
     }
 
     public void updateListItem(FireMixtape song) {
