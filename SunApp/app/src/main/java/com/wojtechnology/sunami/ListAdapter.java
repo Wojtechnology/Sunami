@@ -29,16 +29,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
 
-    private RecyclerView mRecyclerView;
-
     private LayoutInflater mInflater;
     List<FireMixtape> mData = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain, RecyclerView recyclerView) {
+    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mData = data;
-        mRecyclerView = recyclerView;
         this.mTheBrain = theBrain;
     }
 

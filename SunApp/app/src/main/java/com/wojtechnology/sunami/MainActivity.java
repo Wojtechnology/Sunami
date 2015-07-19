@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import java.util.ArrayList;
 
 // This is the beginning of an amazing summer
 public class MainActivity extends ActionBarActivity {
@@ -66,6 +69,7 @@ public class MainActivity extends ActionBarActivity {
                 ,this);
 
         mState = STATE_SONGS;
+        mDrawerFragment.updateChoices(mState);
 
         Intent serviceIntent = new Intent(MainActivity.this, TheBrain.class);
         startService(serviceIntent);
@@ -120,14 +124,52 @@ public class MainActivity extends ActionBarActivity {
         mTheBrain = null;
     }
 
+    public void setState(int state) {
+        if (mRecyclerView == null) { return; }
+        if (state != mState) {
+            mState = state;
+            resetRecyclerView();
+            new GetDataTask().execute();
+            if (mDrawerFragment != null) {
+                mDrawerFragment.updateChoices(state);
+            }
+        }
+    }
+
     public void setRecyclerViewData(){
+        setProgressBar(false);
         mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain, mRecyclerView);
+        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         FastScroller fastScroller = (FastScroller) findViewById(R.id.fast_scroller);
         fastScroller.setRecyclerView(mRecyclerView);
         mDrawerFragment.setUpRecyclerView(mTheBrain);
+    }
+
+    private void resetRecyclerView() {
+        mListAdapter.mData = new ArrayList<>(0);
+        mListAdapter.notifyDataSetChanged();
+        setProgressBar(true);
+    }
+
+    class GetDataTask extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (mState == STATE_SONGS) {
+                mListAdapter.mData = mTheBrain.getDataByTitle();
+            } else {
+                mListAdapter.mData = mTheBrain.getDataByArtist();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mListAdapter.notifyDataSetChanged();
+                    setProgressBar(false);
+                }
+            });
+            return null;
+        }
     }
 
     @Override

@@ -54,21 +54,7 @@ public class SongManager {
         Collections.sort(displayList, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
-                String lTitle = lhs.title.toLowerCase();
-                String rTitle = rhs.title.toLowerCase();
-
-                if (lTitle.length() > 4) {
-                    if (lTitle.substring(0, 4).equals("the ")) {
-                        lTitle = lTitle.substring(4);
-                    }
-                }
-                if (rTitle.length() > 4) {
-                    if (rTitle.substring(0, 4).equals("the ")) {
-                        rTitle = rTitle.substring(4);
-                    }
-                }
-
-                return lTitle.compareTo(rTitle);
+                return compareTitles(lhs, rhs);
             }
         });
 
@@ -111,6 +97,64 @@ public class SongManager {
         displayList.add(final_header);
 
         return displayList;
+    }
+
+    public List<FireMixtape> getByArtist() {
+        List<FireMixtape> displayList = new ArrayList<>(mSongList);
+        if (mSongList.size() <= 0) {
+            return displayList;
+        }
+
+        Collections.sort(displayList, new Comparator<FireMixtape>() {
+            @Override
+            public int compare(FireMixtape lhs, FireMixtape rhs) {
+                String lArtist = lhs.artist;
+                String rArtist = rhs.artist;
+
+                if (lArtist.equals(rArtist)) {
+                    return compareTitles(lhs, rhs);
+                }
+
+                return lArtist.compareTo(rArtist);
+            }
+        });
+
+        String lastArtist = "";
+        for (int i = 0; i < displayList.size(); i++) {
+            if (!lastArtist.equals(displayList.get(i).artist)) {
+                lastArtist = displayList.get(i).artist;
+                FireMixtape artistHeader = new FireMixtape(context);
+                artistHeader.title = displayList.get(i).artist;
+                artistHeader.genre = "__header__";
+                displayList.add(i, artistHeader);
+                i++;
+            }
+        }
+
+        FireMixtape final_header = new FireMixtape(context);
+        final_header.title = mSongList.size() + " songs found";
+        final_header.genre = "__final__";
+
+        displayList.add(final_header);
+        return displayList;
+    }
+
+    private int compareTitles(FireMixtape lhs, FireMixtape rhs) {
+        String lTitle = lhs.title.toLowerCase();
+        String rTitle = rhs.title.toLowerCase();
+
+        if (lTitle.length() > 4) {
+            if (lTitle.substring(0, 4).equals("the ")) {
+                lTitle = lTitle.substring(4);
+            }
+        }
+        if (rTitle.length() > 4) {
+            if (rTitle.substring(0, 4).equals("the ")) {
+                rTitle = rTitle.substring(4);
+            }
+        }
+
+        return lTitle.compareTo(rTitle);
     }
 
     public static char firstLetter(String word) {

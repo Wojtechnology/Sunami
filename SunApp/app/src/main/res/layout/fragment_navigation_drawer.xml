@@ -17,6 +17,7 @@
         android:layout_marginBottom="2dp">
 
         <ImageView
+            android:id="@+id/by_song_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -44,6 +45,7 @@
         android:layout_marginBottom="2dp">
 
         <ImageView
+            android:id="@+id/by_artist_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

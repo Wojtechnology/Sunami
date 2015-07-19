@@ -292,8 +292,8 @@ public class TheBrain extends Service {
             init();
             mIsInit = true;
         } else {
-            mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
+            mContext.showSong();
         }
     }
 
@@ -377,7 +377,6 @@ public class TheBrain extends Service {
         mShuffleController.updateList();
 
         if (mBound) {
-            mContext.setProgressBar(false);
             mContext.setRecyclerViewData();
             mContext.showSong();
         }
@@ -399,6 +398,8 @@ public class TheBrain extends Service {
     public List<FireMixtape> getDataByTitle() {
         return mSongManager.getByTitle();
     }
+
+    public List<FireMixtape> getDataByArtist() { return mSongManager.getByArtist(); }
 
     public List<FireMixtape> getUpNext() {
         return mUpNext.data();
