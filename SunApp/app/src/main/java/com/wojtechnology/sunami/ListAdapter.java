@@ -152,7 +152,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     @Override
     public String getTextToShowInBubble(int pos) {
         FireMixtape song = mData.get(pos);
-        char firstLetter = SongManager.firstLetter(song.title);
+        int state = ((MainActivity) mContext).getState();
+        String important = (state == MainActivity.STATE_SONGS) ? song.title : song.artist;
+        char firstLetter = SongManager.firstLetter(important);
         if (firstLetter >= 'A' && firstLetter <= 'Z') {
             return Character.toString(firstLetter);
         }

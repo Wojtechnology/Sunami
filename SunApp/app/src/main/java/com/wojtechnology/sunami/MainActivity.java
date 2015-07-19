@@ -136,6 +136,10 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public int getState() {
+        return mState;
+    }
+
     public void setRecyclerViewData(){
         setProgressBar(false);
         mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);

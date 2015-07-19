@@ -125,6 +125,7 @@ public class SongManager {
                 lastArtist = displayList.get(i).artist;
                 FireMixtape artistHeader = new FireMixtape(context);
                 artistHeader.title = displayList.get(i).artist;
+                artistHeader.artist = displayList.get(i).artist;
                 artistHeader.genre = "__header__";
                 displayList.add(i, artistHeader);
                 i++;
@@ -133,6 +134,7 @@ public class SongManager {
 
         FireMixtape final_header = new FireMixtape(context);
         final_header.title = mSongList.size() + " songs found";
+        final_header.artist = mSongList.size() + " songs found";
         final_header.genre = "__final__";
 
         displayList.add(final_header);
