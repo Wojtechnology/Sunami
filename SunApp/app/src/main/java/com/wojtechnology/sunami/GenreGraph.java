@@ -30,11 +30,11 @@ public class GenreGraph {
     private final double SHORT_GENRE_POS_MULTI = 0.4;
     private final double SHORT_GENRE_NEG_MULTI = 0.4;
     private final double LONG_GENRE_MIN = 1.0;
-    private final double LONG_GENRE_MAX = 2.0;
-    private final double LONG_GENRE_MED_MULTI = 0.1;
-    private final double LONG_GENRE_OFF_MULTI = 1.0;
-    private final double LONG_GENRE_POS_MULTI = 0.1;
-    private final double LONG_GENRE_NEG_MULTI = 0.1;
+    private final double LONG_GENRE_MAX = 1.2;
+    private final double LONG_GENRE_MED_MULTI = 0.01;
+    private final double LONG_GENRE_OFF_MULTI = 0.01;
+    private final double LONG_GENRE_POS_MULTI = 1.0;
+    private final double LONG_GENRE_NEG_MULTI = 1.0;
 
     public GenreGraph(Context context) {
         this.mEdges = new HashMap<>();
@@ -185,7 +185,7 @@ public class GenreGraph {
         double genreVal = genre.shortTerm;
         double med = 0.5 * (SHORT_GENRE_MIN + SHORT_GENRE_MAX);
         double spread = SHORT_GENRE_MAX - SHORT_GENRE_MIN;
-        double offsetRatio = r < 0.0 ? 0.6 : 0.4;
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
         double multi = r < 0.0 ? SHORT_GENRE_NEG_MULTI : SHORT_GENRE_POS_MULTI;
         double offset = offsetRatio * (SHORT_GENRE_MAX - SHORT_GENRE_MIN) + SHORT_GENRE_MIN;
         double medVal = ShuffleController.getBellValue(genreVal, med, 1.0);
@@ -199,7 +199,7 @@ public class GenreGraph {
         double genreVal = genre.longTerm;
         double med = 0.5 * (LONG_GENRE_MIN + LONG_GENRE_MAX);
         double spread = LONG_GENRE_MAX - LONG_GENRE_MIN;
-        double offsetRatio = r < 0.0 ? 0.6 : 0.4;
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
         double multi = r < 0.0 ? LONG_GENRE_NEG_MULTI : LONG_GENRE_POS_MULTI;
         double offset = offsetRatio * (LONG_GENRE_MAX - LONG_GENRE_MIN) + LONG_GENRE_MIN;
         double medVal = ShuffleController.getBellValue(genreVal, med, 1.0);

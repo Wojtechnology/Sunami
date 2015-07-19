@@ -223,7 +223,7 @@ public class ShuffleController {
         double y = songVal;
         double med = 0.5 * (SONG_MIN + SONG_MAX);
         double spread = 0.5 * (SONG_MAX - SONG_MIN);
-        double offsetRatio = r < 0.0 ? 0.6 : 0.4;
+        double offsetRatio = r < 0.0 ? 0.75 : 0.25;
         double multi = r < 0.0 ? SONG_NEG_MULTI : SONG_POS_MULTI;
         double offset = offsetRatio * (SONG_MAX - SONG_MIN) + SONG_MIN;
         double medVal = getBellValue(songVal, med, 1.0);
