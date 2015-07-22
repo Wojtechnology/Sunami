@@ -32,14 +32,11 @@ public class SongManager {
     private List<FireMixtape> mSongList;
     private Map<String, FireMixtape> mSongDict;
 
-    private boolean genresUpdated;
-
     // needs to be current with JSON file containing genres
     public static final String DEFAULT_GENRE = "__notfound__";
 
     public SongManager(Context context) {
         this.context = context;
-        genresUpdated = false;
         mSongList = new ArrayList<>();
         mSongDict = new HashMap<>();
         initSongs();

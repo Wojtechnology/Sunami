@@ -41,8 +41,8 @@
         android:layout_height="56dp"
         android:clickable="true"
         android:background="@drawable/fire_mixtape_background"
-        android:orientation="horizontal"
-        android:layout_marginBottom="2dp">
+        android:orientation="horizontal">
+        <!--android:layout_marginBottom="2dp"-->
 
         <ImageView
             android:id="@+id/by_artist_icon"
