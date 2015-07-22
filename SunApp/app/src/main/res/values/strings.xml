@@ -13,4 +13,5 @@
     <string name="preference_file_key">JpUc58Z55TjrRjW9zT77tT3r6X6Or7TT</string>
     <string name="saved_db_status">isPopulated</string>
     <string name="user_learn_drawer">isDrawerLearned</string>
+    <string name="search_hint">Search</string>
 </resources>

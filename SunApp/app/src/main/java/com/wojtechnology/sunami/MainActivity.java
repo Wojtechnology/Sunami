@@ -1,5 +1,6 @@
 package com.wojtechnology.sunami;
 
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,23 +9,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.support.v7.widget.SearchView;
 
 import java.util.ArrayList;
 
 // This is the beginning of an amazing summer
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements SearchView.OnQueryTextListener {
 
     public static int STATE_SONGS = 0;
     public static int STATE_ARTISTS = 1;
@@ -157,6 +157,18 @@ public class MainActivity extends ActionBarActivity {
         setProgressBar(true);
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        Log.e("MainActivity", "Submit: " + s);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        Log.e("MainActivity", "Change: " + s);
+        return false;
+    }
+
     class GetDataTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -180,6 +192,16 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
+
         return true;
     }
 
@@ -191,12 +213,27 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.search) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    // Needed if I want to receive intent from search
+    // Currently using OnQueryTextListenerInstead
+    /*@Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.e("MainActivity", query);
+        }
+    }*/
 
     public void setProgressBar(boolean on){
         if(on){
