@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     public TheBrain mTheBrain;
     public NavigationDrawerFragment mDrawerFragment;
     public ListAdapter mListAdapter;
+    public FastScroller mFastScroller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +146,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        FastScroller fastScroller = (FastScroller) findViewById(R.id.fast_scroller);
-        fastScroller.setRecyclerView(mRecyclerView);
+        mFastScroller = (FastScroller) findViewById(R.id.fast_scroller);
+        mFastScroller.setRecyclerView(mRecyclerView);
         mDrawerFragment.setUpRecyclerView(mTheBrain);
     }
 

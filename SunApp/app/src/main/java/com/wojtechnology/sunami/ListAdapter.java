@@ -46,6 +46,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void flushVisibleData() {
+        if (((MainActivity) mContext).mFastScroller != null) {
+            ((MainActivity) mContext).mFastScroller.setVisibility(View.VISIBLE);
+        }
         mVisibleData = new ArrayList<>(mData);
         notifyDataSetChanged();
     }
@@ -58,6 +61,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (q.equals("")) {
             flushVisibleData();
             return;
+        }
+        if (((MainActivity) mContext).mFastScroller != null) {
+            ((MainActivity) mContext).mFastScroller.setVisibility(View.INVISIBLE);
         }
         mVisibleData = new ArrayList<>(0);
         for(int i = 0; i < mData.size(); i++) {
