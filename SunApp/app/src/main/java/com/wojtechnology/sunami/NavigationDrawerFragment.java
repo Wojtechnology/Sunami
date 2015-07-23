@@ -88,14 +88,14 @@ public class NavigationDrawerFragment extends Fragment {
                     editor.commit();
                 }
                 toolbar.setTitle(R.string.title_side_fragment);
-                getActivity().invalidateOptionsMenu();
+                //getActivity().invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 toolbar.setTitle(R.string.title_activity_main);
-                getActivity().invalidateOptionsMenu();
+                //getActivity().invalidateOptionsMenu();
             }
 
             @Override
@@ -145,6 +145,10 @@ public class NavigationDrawerFragment extends Fragment {
                 ((MainActivity) mContext).setState(MainActivity.STATE_ARTISTS);
             }
         });
+    }
+
+    public void closeDrawer() {
+        mDrawerLayout.closeDrawers();
     }
 
     public void updateChoices(int state) {

@@ -87,7 +87,9 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         super.onWindowFocusChanged(hasFocus);
         if (!mSongPlayingChecked) {
             mSongPlayingChecked = true;
-            mOuterLayout.playSong(mTheBrain.mPlaying);
+            if (mTheBrain != null) {
+                mOuterLayout.playSong(mTheBrain.mPlaying);
+            }
         }
     }
 
@@ -200,6 +202,15 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
+        final SearchView sv = searchView;
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v == sv && hasFocus) {
+                    mDrawerFragment.closeDrawer();
+                }
+            }
+        });
 
         return true;
     }
