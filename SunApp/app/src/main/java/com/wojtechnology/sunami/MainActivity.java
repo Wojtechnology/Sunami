@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.support.v7.widget.SearchView;
-
 import java.util.ArrayList;
 
 // This is the beginning of an amazing summer
@@ -152,35 +151,35 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     }
 
     private void resetRecyclerView() {
-        mListAdapter.mData = new ArrayList<>(0);
-        mListAdapter.notifyDataSetChanged();
+        mListAdapter.setData(new ArrayList<FireMixtape>(0));
+        mListAdapter.flushVisibleData();
         setProgressBar(true);
     }
 
     @Override
     public boolean onQueryTextSubmit(String s) {
         Log.e("MainActivity", "Submit: " + s);
-        return false;
+        return true;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
-        Log.e("MainActivity", "Change: " + s);
-        return false;
+        mListAdapter.setFilter(s);
+        return true;
     }
 
     class GetDataTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             if (mState == STATE_SONGS) {
-                mListAdapter.mData = mTheBrain.getDataByTitle();
+                mListAdapter.setData(mTheBrain.getDataByTitle());
             } else {
-                mListAdapter.mData = mTheBrain.getDataByArtist();
+                mListAdapter.setData(mTheBrain.getDataByArtist());
             }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mListAdapter.notifyDataSetChanged();
+                    mListAdapter.flushVisibleData();
                     setProgressBar(false);
                 }
             });
@@ -196,8 +195,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
@@ -214,6 +212,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.search) {
+            // Menus are for plebs...
             return true;
         }
 

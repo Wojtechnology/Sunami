@@ -99,7 +99,7 @@ public class FastScroller extends LinearLayout {
                 proportion = y / (float) height;
             int targetPos = getValueInRange(0, itemCount - 1, (int) (proportion * (float) itemCount));
             recyclerView.scrollToPosition(targetPos);
-            String bubbleText = ((BubbleTextGetter) recyclerView.getAdapter()).getTextToShowInBubble(targetPos);
+            String bubbleText = ((ListAdapter) recyclerView.getAdapter()).getTextToShowInBubble(targetPos);
             bubble.setText(bubbleText);
         }
     }

@@ -9,18 +9,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by wojtekswiderski on 15-04-12.
  */
-public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements BubbleTextGetter {
+public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private TheBrain mTheBrain;
@@ -30,13 +34,49 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private static int TYPE_LIST = 0;
 
     private LayoutInflater mInflater;
-    List<FireMixtape> mData = Collections.emptyList();
+    private List<FireMixtape> mData = Collections.emptyList();
+    private List<FireMixtape> mVisibleData = Collections.emptyList();
 
     public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
         mContext = context;
+        setData(data);
+        flushVisibleData();
         mInflater = LayoutInflater.from(mContext);
-        mData = data;
         this.mTheBrain = theBrain;
+    }
+
+    public void flushVisibleData() {
+        mVisibleData = new ArrayList<>(mData);
+        notifyDataSetChanged();
+    }
+
+    public void setData(List<FireMixtape> data) {
+        mData = data;
+    }
+
+    public void setFilter(String q) {
+        if (q.equals("")) {
+            flushVisibleData();
+            return;
+        }
+        mVisibleData = new ArrayList<>(0);
+        for(int i = 0; i < mData.size(); i++) {
+            if (mData.get(i).genre == "__header__" || mData.get(i).genre == "__final__") {
+                // Do nothing
+            } else if (mData.get(i).artist.toLowerCase().contains(q.toLowerCase()) ||
+                    mData.get(i).title.toLowerCase().contains(q.toLowerCase())) {
+                mVisibleData.add(mData.get(i));
+            }
+        }
+        FireMixtape finalHeader = new FireMixtape(mContext);
+        finalHeader.title = getFinalLabel();
+        finalHeader.genre = "__final__";
+        mVisibleData.add(finalHeader);
+        notifyDataSetChanged();
+    }
+
+    private String getFinalLabel() {
+        return mVisibleData.size() + ((mVisibleData.size() == 1) ? " song found" : " songs found");
     }
 
     @Override
@@ -60,15 +100,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof HeaderHolder){
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            final FireMixtape current = mData.get(position);
+            final FireMixtape current = mVisibleData.get(position);
             headerHolder.label.setText(current.title);
         } else if (holder instanceof FinalHolder) {
             FinalHolder finalHolder = (FinalHolder) holder;
-            final FireMixtape current = mData.get(position);
+            final FireMixtape current = mVisibleData.get(position);
             finalHolder.label.setText(current.title);
         } else {
             final ItemHolder itemHolder = (ItemHolder) holder;
-            final FireMixtape current = mData.get(position);
+            final FireMixtape current = mVisibleData.get(position);
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
             itemHolder.duration.setText(displayTime(current.duration));
@@ -124,7 +164,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public void updateItem(FireMixtape song) {
         int i;
         for (i = 0; i < getItemCount(); i++) {
-            if (song == mData.get(i)) {
+            if (song == mVisibleData.get(i)) {
                 break;
             }
         }
@@ -133,11 +173,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         }
     }
 
+
+
     @Override
     public int getItemViewType(int position) {
-        if(mData.get(position).genre == "__header__"){
+        if(mVisibleData.get(position).genre == "__header__"){
             return TYPE_HEADER;
-        }else if(mData.get(position).genre == "__final__") {
+        }else if(mVisibleData.get(position).genre == "__final__") {
             return TYPE_FINAL;
         }else{
             return TYPE_LIST;
@@ -146,12 +188,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mVisibleData.size();
     }
 
-    @Override
     public String getTextToShowInBubble(int pos) {
-        FireMixtape song = mData.get(pos);
+        FireMixtape song = mVisibleData.get(pos);
         int state = ((MainActivity) mContext).getState();
         String important = (state == MainActivity.STATE_SONGS) ? song.title : song.artist;
         char firstLetter = SongManager.firstLetter(important);

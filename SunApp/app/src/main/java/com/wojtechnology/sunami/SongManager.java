@@ -88,7 +88,7 @@ public class SongManager {
         }
 
         FireMixtape final_header = new FireMixtape(context);
-        final_header.title = mSongList.size() + " songs found";
+        final_header.title = getFinalLabel();
         final_header.genre = "__final__";
 
         displayList.add(final_header);
@@ -130,12 +130,16 @@ public class SongManager {
         }
 
         FireMixtape final_header = new FireMixtape(context);
-        final_header.title = mSongList.size() + " songs found";
-        final_header.artist = mSongList.size() + " songs found";
+        final_header.title = getFinalLabel();
+        final_header.artist = getFinalLabel();
         final_header.genre = "__final__";
 
         displayList.add(final_header);
         return displayList;
+    }
+
+    private String getFinalLabel() {
+        return mSongList.size() + ((mSongList.size() == 1) ? " song found" : " songs found");
     }
 
     private int compareTitles(FireMixtape lhs, FireMixtape rhs) {
