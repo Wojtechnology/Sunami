@@ -31,7 +31,7 @@ public class ShuffleController {
     private final double SONG_MED_MULTI = 0.1;
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
-    private final double SONG_NEG_MULTI = 0.4;
+    private final double SONG_NEG_MULTI = 0.5;
     private final long TIME_SPREAD = 3600000;
     private final long TIME_OFFSET = 7200000;
     private final double RANDOM_SPREAD = 0.2;
@@ -228,7 +228,7 @@ public class ShuffleController {
     private double songChange(double songVal, double r) {
         double y = songVal;
         double med = 0.5 * (SONG_MIN + SONG_MAX);
-        double spread = 0.5 * (SONG_MAX - SONG_MIN);
+        double spread = SONG_MAX - SONG_MIN;
         double offsetRatio = r < 0.0 ? 0.6 : 0.4;
         double multi = r < 0.0 ? SONG_NEG_MULTI : SONG_POS_MULTI;
         double offset = offsetRatio * (SONG_MAX - SONG_MIN) + SONG_MIN;
