@@ -33,6 +33,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     private ProgressBar mProgressBar;
     private OuterLayout mOuterLayout;
     private Handler mHandler;
+    private Soundcloud mSoundcloud;
     private boolean mSongPlayingChecked;
     private int mState;
 
@@ -47,6 +48,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         setContentView(R.layout.activity_main);
 
         mSongPlayingChecked = false;
+        mSoundcloud = new Soundcloud(this);
 
         // Setup mToolbar at top of app
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -145,7 +147,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     public void setRecyclerViewData(){
         setProgressBar(false);
         mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
-        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), this.mTheBrain);
+        mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), mTheBrain, mSoundcloud);
         mRecyclerView.setAdapter(mListAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFastScroller = (FastScroller) findViewById(R.id.fast_scroller);
@@ -161,7 +163,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String s) {
-        Log.e("MainActivity", "Submit: " + s);
+        mListAdapter.setFilterSubmit(s);
         return true;
     }
 

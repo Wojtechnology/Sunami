@@ -37,12 +37,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<FireMixtape> mData = Collections.emptyList();
     private List<FireMixtape> mVisibleData = Collections.emptyList();
 
-    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain) {
+    private Soundcloud mSoundCloud;
+
+    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain, Soundcloud soundCloud) {
         mContext = context;
         setData(data);
         flushVisibleData();
         mInflater = LayoutInflater.from(mContext);
-        this.mTheBrain = theBrain;
+        mTheBrain = theBrain;
+        mSoundCloud = soundCloud;
     }
 
     public void flushVisibleData() {
@@ -79,6 +82,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         finalHeader.genre = "__final__";
         mVisibleData.add(finalHeader);
         notifyDataSetChanged();
+    }
+
+    public void setFilterSubmit(String q) {
+        setFilter(q);
+        mSoundCloud.getTracks();
     }
 
     private String getFinalLabel() {
