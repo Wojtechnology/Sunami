@@ -279,4 +279,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     public void showSong() {
         mOuterLayout.showSong();
     }
+
+    public boolean drawerOpen() {
+        return mDrawerFragment.isOpen();
+    }
 }

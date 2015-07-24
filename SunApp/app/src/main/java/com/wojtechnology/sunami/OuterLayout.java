@@ -320,7 +320,9 @@ public class OuterLayout extends RelativeLayout {
     }
 
     public void playSong(FireMixtape song){
-        mActive = true;
+        if (!mContext.drawerOpen()) {
+            mActive = true;
+        }
         mSeekBar.setProgress(0);
         if (song == null){
             return;

@@ -191,4 +191,8 @@ public class NavigationDrawerFragment extends Fragment {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(preferenceName, defaultValue);
     }
+
+    public boolean isOpen() {
+        return mOpened;
+    }
 }
