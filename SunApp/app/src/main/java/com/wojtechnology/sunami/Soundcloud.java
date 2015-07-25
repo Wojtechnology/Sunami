@@ -1,24 +1,20 @@
 package com.wojtechnology.sunami;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Created by wojtekswiderski on 15-07-23.
  */
 public class Soundcloud {
-
-    private MainActivity mContext;
+    private Context mContext;
 
     public Soundcloud(MainActivity context) {
         mContext = context;

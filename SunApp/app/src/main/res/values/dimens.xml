@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_drawer_width">280dp</dimen>
     <dimen name="hint_height">66dp</dimen>
+
+    <dimen name="song_top_padding">20dp</dimen>
+    <dimen name="sort_top_padding">20dp</dimen>
+    <dimen name="upnext_top_padding">8dp</dimen>
 </resources>

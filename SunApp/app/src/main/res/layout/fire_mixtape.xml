@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="0dp"
-            android:paddingTop="20dp"
+            android:paddingTop="@dimen/song_top_padding"
             android:singleLine="true"
             android:text="Dummy Text"
             android:textColor="#000"
