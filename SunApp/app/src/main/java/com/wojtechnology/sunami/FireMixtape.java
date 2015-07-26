@@ -33,6 +33,7 @@ public class FireMixtape{
     // Helpful booollllssss
     public Boolean icon_loaded;
     public Boolean isUpNext;
+    public Boolean isSoundcloud;
 
     // Song data from SQL
     public String _id;
@@ -60,6 +61,7 @@ public class FireMixtape{
         mContext = context;
         icon_loaded = false;
         isUpNext = false;
+        isSoundcloud = false;
         multiplier = 1.0;
         calculatedValue = 1.0;
         actualGenre = SongManager.DEFAULT_GENRE;

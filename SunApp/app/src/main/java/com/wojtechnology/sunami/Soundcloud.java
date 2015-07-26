@@ -12,8 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,6 +45,7 @@ public class Soundcloud {
                         fireMixtape.artist = song.getJSONObject("user").getString("username");
                         fireMixtape.duration = song.getString("duration");
                         fireMixtape.data = SoundcloudRestClient.generateStreamUrl(song.getString("stream_url"));
+                        fireMixtape.isSoundcloud = true;
                         fireMixtapeList.add(fireMixtape);
                     }
                     callback.callback(fireMixtapeList);
