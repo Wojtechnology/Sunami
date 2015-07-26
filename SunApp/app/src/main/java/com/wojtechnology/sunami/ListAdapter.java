@@ -131,6 +131,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final FireMixtape current = mVisibleData.get(position);
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
+
+            if (current.isSoundcloud) {
+                itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));
+            } else {
+                itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.primaryColorDark));
+            }
+
             itemHolder.duration.setText(displayTime(current.duration));
             itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
 

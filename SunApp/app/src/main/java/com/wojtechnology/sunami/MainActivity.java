@@ -264,7 +264,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
     public void updateMediaPlayerProgress(int progress) {
         if (mTheBrain == null) return;
-        if (mTheBrain.mMediaPlayer != null) {
+        if (mTheBrain.mMediaPlayer != null && mTheBrain.mPlaying != null) {
             mTheBrain.mMediaPlayer.seekTo(progress);
             mTheBrain.setProgress(progress, mTheBrain.isPlaying());
         }
