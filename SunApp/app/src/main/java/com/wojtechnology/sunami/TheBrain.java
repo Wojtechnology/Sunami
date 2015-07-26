@@ -220,6 +220,8 @@ public class TheBrain extends Service {
         @Override
         protected Void doInBackground(FireMixtape... params) {
             try {
+                mMediaPlayer.reset();
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setDataSource(params[0].data);
                 mMediaPlayer.prepare();
             } catch (IOException e) {
@@ -450,8 +452,6 @@ public class TheBrain extends Service {
                 mShuffleController.setSongValuesAsync();
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
-            mMediaPlayer.reset();
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             new PlayTask().execute(mPlaying);
         } else {
             Log.e("TheBrain", "No song provided");
