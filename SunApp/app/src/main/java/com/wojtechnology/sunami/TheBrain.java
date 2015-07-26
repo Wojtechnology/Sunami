@@ -216,6 +216,31 @@ public class TheBrain extends Service {
         }
     }
 
+    private class PlayTask extends AsyncTask<FireMixtape, Integer, Void> {
+        @Override
+        protected Void doInBackground(FireMixtape... params) {
+            try {
+                mMediaPlayer.setDataSource(params[0].data);
+                mMediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mMediaPlayer.start();
+            mPlayTimer.start();
+            setUI(true);
+            setMetaData(mPlaying);
+            if (mBound) {
+                mContext.playSong(mPlaying);
+            }
+        }
+    }
+
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -399,7 +424,9 @@ public class TheBrain extends Service {
         return mSongManager.getByTitle();
     }
 
-    public List<FireMixtape> getDataByArtist() { return mSongManager.getByArtist(); }
+    public List<FireMixtape> getDataByArtist() {
+        return mSongManager.getByArtist();
+    }
 
     public List<FireMixtape> getUpNext() {
         return mUpNext.data();
@@ -423,21 +450,9 @@ public class TheBrain extends Service {
                 mShuffleController.setSongValuesAsync();
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
-            try {
-                mMediaPlayer.reset();
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mMediaPlayer.setDataSource(mPlaying.data);
-                mMediaPlayer.prepare();
-                mMediaPlayer.start();
-                mPlayTimer.start();
-                setUI(true);
-                setMetaData(mPlaying);
-                if (mBound) {
-                    mContext.playSong(mPlaying);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            mMediaPlayer.reset();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            new PlayTask().execute(mPlaying);
         } else {
             Log.e("TheBrain", "No song provided");
         }
