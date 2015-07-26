@@ -86,7 +86,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setFilterSubmit(String q) {
         setFilter(q);
-        mSoundCloud.getTracks();
+        mSoundCloud.getTracks(q, new SoundcloudCallback() {
+            @Override
+            public void callback(List<FireMixtape> data) {
+                mVisibleData.addAll(data);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     private String getFinalLabel() {

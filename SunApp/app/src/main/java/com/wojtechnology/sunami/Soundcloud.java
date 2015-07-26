@@ -4,11 +4,17 @@ import android.content.Context;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by wojtekswiderski on 15-07-23.
@@ -21,19 +27,29 @@ public class Soundcloud {
     }
 
     // Note that this is an asynchronous function
-    public void getTracks() {
+    public void getTracks(String q, final SoundcloudCallback callback) {
 
-        SoundcloudRestClient.get("/tracks", null, new AsyncHttpResponseHandler() {
+        RequestParams requestParams = new RequestParams();
+        requestParams.put("q", q);
+        requestParams.put("limit", 25);
+
+        SoundcloudRestClient.get("/tracks", requestParams, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
+                    List<FireMixtape> fireMixtapeList = new ArrayList<>();
                     String response = new String(responseBody);
                     JSONArray songs = new JSONArray(response);
                     for (int i = 0; i < songs.length(); i++) {
                         JSONObject song = (JSONObject) songs.get(i);
-                        Log.e("Soundcloud", song.getString("title"));
-
+                        FireMixtape fireMixtape = new FireMixtape(mContext);
+                        fireMixtape.title = song.getString("title");
+                        fireMixtape.artist = song.getJSONObject("user").getString("username");
+                        fireMixtape.duration = song.getString("duration");
+                        fireMixtape.data = SoundcloudRestClient.generateStreamUrl(song.getString("stream_url"));
+                        fireMixtapeList.add(fireMixtape);
                     }
+                    callback.callback(fireMixtapeList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
