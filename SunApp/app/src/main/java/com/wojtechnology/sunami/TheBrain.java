@@ -54,6 +54,10 @@ public class TheBrain extends Service {
     private boolean mBound;
     private boolean mHasAudioFocus;
     private boolean mLoaded;
+    private boolean mPreparing;
+
+    // Determines whether the song will be paused after it is prepared
+    private boolean mPauseAfterLoad;
 
     // Contains list of songs
     private SongManager mSongManager;
@@ -83,14 +87,15 @@ public class TheBrain extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                mPlayTimer.stop();
-                mMediaPlayer.pause();
+                pausePlayback();
                 setUI(false);
             }
         }
     }
 
     private NoisyAudioStreamReceiver mNoisyAudioStreamReceiver;
+
+    private MediaPlayer.OnPreparedListener mMPPreparedListener;
 
     private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
 
@@ -216,33 +221,6 @@ public class TheBrain extends Service {
         }
     }
 
-    private class PlayTask extends AsyncTask<FireMixtape, Integer, Void> {
-        @Override
-        protected Void doInBackground(FireMixtape... params) {
-            try {
-                mMediaPlayer.reset();
-                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mMediaPlayer.setDataSource(params[0].data);
-                mMediaPlayer.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mMediaPlayer.start();
-            mPlayTimer.start();
-            setUI(true);
-            setMetaData(mPlaying);
-            if (mBound) {
-                mContext.playSong(mPlaying);
-            }
-        }
-    }
-
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -251,9 +229,28 @@ public class TheBrain extends Service {
         mBound = false;
         mHasAudioFocus = false;
         mLoaded = false;
+        mPreparing = false;
+        mPauseAfterLoad = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
+        mMPPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                if (!mPauseAfterLoad) {
+                    resumePlayback();
+                    setUI(true);
+                } else {
+                    setUI(false);
+                    mPauseAfterLoad = false;
+                }
+                setMetaData(mPlaying);
+                if (mBound) {
+                    mContext.playSong(mPlaying);
+                }
+                mPreparing = false;
+            }
+        };
         super.onCreate();
     }
 
@@ -275,8 +272,7 @@ public class TheBrain extends Service {
                     break;
 
                 case PLAY_STOP:
-                    mPlayTimer.stop();
-                    mMediaPlayer.pause();
+                    pausePlayback();
                     unregisterAudio();
                     stopForeground(true);
                     if (mBound) {
@@ -393,9 +389,19 @@ public class TheBrain extends Service {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                playNext();
+                if (!mPreparing) {
+                    playNext();
+                }
             }
         });
+        mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.e("TheBrain", "Error");
+                return false;
+            }
+        });
+        mMediaPlayer.setOnPreparedListener(mMPPreparedListener);
         mContext.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
@@ -452,7 +458,15 @@ public class TheBrain extends Service {
                 mShuffleController.setSongValuesAsync();
             }
             Log.e("TheBrain", "Playing song " + mPlaying.title);
-            new PlayTask().execute(mPlaying);
+            mMediaPlayer.reset();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mMediaPlayer.setDataSource(mPlaying.data);
+                mMediaPlayer.prepareAsync();
+                mPreparing = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             Log.e("TheBrain", "No song provided");
         }
@@ -524,14 +538,12 @@ public class TheBrain extends Service {
         mAFChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             public void onAudioFocusChange(int focusChange) {
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                    mPlayTimer.stop();
-                    mMediaPlayer.pause();
+                    pausePlayback();
                     setUI(false);
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Does nothing cause made me play music at work
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                    mPlayTimer.stop();
-                    mMediaPlayer.pause();
+                    pausePlayback();
                     unregisterAudio();
                     setUI(false);
                 }
@@ -597,21 +609,33 @@ public class TheBrain extends Service {
     }
 
     public void togglePlay() {
-        if (isPlaying()) {
-            mPlayTimer.stop();
-            mMediaPlayer.pause();
+        if (isPlaying() || mPreparing) {
+            pausePlayback();
             setUI(false);
         } else {
             if (!hasSong()) {
                 playNext();
             } else {
-                mPlayTimer.start();
-                mMediaPlayer.start();
+                resumePlayback();
                 registerAudio();
                 setMetaData(mPlaying);
                 setUI(true);
             }
         }
+    }
+
+    private void pausePlayback() {
+        if (mPreparing) {
+            mPauseAfterLoad = true;
+            return;
+        }
+        mPlayTimer.stop();
+        mMediaPlayer.pause();
+    }
+
+    private void resumePlayback() {
+        mPlayTimer.start();
+        mMediaPlayer.start();
     }
 
     // Changes UI as required
@@ -633,6 +657,7 @@ public class TheBrain extends Service {
 
     public void playLast() {
         if (mSongHistory.isEmpty()) {
+            setUI(false);
             return;
         }
         FireMixtape song = mSongHistory.pop();
