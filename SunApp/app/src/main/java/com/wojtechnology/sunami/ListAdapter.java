@@ -26,9 +26,10 @@ import java.util.List;
  */
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Context mContext;
+    private MainActivity mContext;
     private TheBrain mTheBrain;
 
+    private static int TYPE_FINAL_SOUNDCLOUD = 3;
     private static int TYPE_FINAL = 2;
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
@@ -39,7 +40,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Soundcloud mSoundCloud;
 
-    public ListAdapter(Context context, List<FireMixtape> data, TheBrain theBrain, Soundcloud soundCloud) {
+    public ListAdapter(MainActivity context, List<FireMixtape> data, TheBrain theBrain, Soundcloud soundCloud) {
         mContext = context;
         setData(data);
         flushVisibleData();
@@ -49,8 +50,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void flushVisibleData() {
-        if (((MainActivity) mContext).mFastScroller != null) {
-            ((MainActivity) mContext).mFastScroller.setVisibility(View.VISIBLE);
+        if (mContext.mFastScroller != null) {
+            mContext.mFastScroller.setVisibility(View.VISIBLE);
         }
         mVisibleData = new ArrayList<>(mData);
         notifyDataSetChanged();
@@ -60,13 +61,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mData = data;
     }
 
-    public void setFilter(String q) {
+    public void setFilter(String q, boolean addFinal) {
         if (q.equals("")) {
             flushVisibleData();
             return;
         }
-        if (((MainActivity) mContext).mFastScroller != null) {
-            ((MainActivity) mContext).mFastScroller.setVisibility(View.INVISIBLE);
+        if (mContext.mFastScroller != null) {
+            mContext.mFastScroller.setVisibility(View.INVISIBLE);
         }
         mVisibleData = new ArrayList<>(0);
         for(int i = 0; i < mData.size(); i++) {
@@ -77,22 +78,38 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mVisibleData.add(mData.get(i));
             }
         }
-        FireMixtape finalHeader = new FireMixtape(mContext);
-        finalHeader.title = getFinalLabel();
-        finalHeader.genre = "__final__";
-        mVisibleData.add(finalHeader);
+        if (addFinal) {
+            FireMixtape finalHeader = new FireMixtape(mContext);
+            finalHeader.title = getFinalLabel();
+            finalHeader.genre = "__final__";
+            mVisibleData.add(finalHeader);
+        }
         notifyDataSetChanged();
     }
 
     public void setFilterSubmit(String q) {
-        setFilter(q);
-        mSoundCloud.getTracks(q, new SoundcloudCallback() {
-            @Override
-            public void callback(List<FireMixtape> data) {
-                mVisibleData.addAll(data);
-                notifyDataSetChanged();
-            }
-        });
+        setFilter(q, false);
+
+        if (mContext.isNetworkAvailable()) {
+            FireMixtape fireMixtape = new FireMixtape(mContext);
+            fireMixtape.title = "Searching...";
+            fireMixtape.genre = "__finalsoundcloud__";
+            mVisibleData.add(fireMixtape);
+
+            mSoundCloud.getTracks(q, new SoundcloudCallback() {
+                @Override
+                public void callback(List<FireMixtape> data) {
+                    mVisibleData.addAll(data);
+                    notifyDataSetChanged();
+                }
+            });
+        } else {
+            FireMixtape fireMixtape = new FireMixtape(mContext);
+            fireMixtape.title = getFinalLabel();
+            fireMixtape.genre = "__final__";
+            mVisibleData.add(fireMixtape);
+        }
+        notifyDataSetChanged();
     }
 
     private String getFinalLabel() {
@@ -107,6 +124,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return holder;
         } else if (viewType == TYPE_FINAL) {
             View view = mInflater.inflate(R.layout.fire_final, parent, false);
+            FinalHolder holder = new FinalHolder(view);
+            return holder;
+        } else if (viewType == TYPE_FINAL_SOUNDCLOUD) {
+            View view = mInflater.inflate(R.layout.fire_final_soundcloud, parent, false);
             FinalHolder holder = new FinalHolder(view);
             return holder;
         } else {
@@ -200,14 +221,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-
-
     @Override
     public int getItemViewType(int position) {
         if(mVisibleData.get(position).genre == "__header__"){
             return TYPE_HEADER;
-        }else if(mVisibleData.get(position).genre == "__final__") {
+        }else if (mVisibleData.get(position).genre == "__final__") {
             return TYPE_FINAL;
+        }else if (mVisibleData.get(position).genre == "__finalsoundcloud__") {
+            return TYPE_FINAL_SOUNDCLOUD;
         }else{
             return TYPE_LIST;
         }

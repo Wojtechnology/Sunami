@@ -40,13 +40,15 @@ public class Soundcloud {
                     JSONArray songs = new JSONArray(response);
                     for (int i = 0; i < songs.length(); i++) {
                         JSONObject song = (JSONObject) songs.get(i);
-                        FireMixtape fireMixtape = new FireMixtape(mContext);
-                        fireMixtape.title = song.getString("title");
-                        fireMixtape.artist = song.getJSONObject("user").getString("username");
-                        fireMixtape.duration = song.getString("duration");
-                        fireMixtape.data = SoundcloudRestClient.generateStreamUrl(song.getString("stream_url"));
-                        fireMixtape.isSoundcloud = true;
-                        fireMixtapeList.add(fireMixtape);
+                        if (song.getBoolean("streamable")) {
+                            FireMixtape fireMixtape = new FireMixtape(mContext);
+                            fireMixtape.title = song.getString("title");
+                            fireMixtape.artist = song.getJSONObject("user").getString("username");
+                            fireMixtape.duration = song.getString("duration");
+                            fireMixtape.data = SoundcloudRestClient.generateStreamUrl(song.getString("stream_url"));
+                            fireMixtape.isSoundcloud = true;
+                            fireMixtapeList.add(fireMixtape);
+                        }
                     }
                     callback.callback(fireMixtapeList);
                 } catch (JSONException e) {

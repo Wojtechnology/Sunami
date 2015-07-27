@@ -5,6 +5,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -164,13 +166,20 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextSubmit(String s) {
         mListAdapter.setFilterSubmit(s);
-        return true;
+        return false;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
-        mListAdapter.setFilter(s);
+        mListAdapter.setFilter(s, true);
         return true;
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     class GetDataTask extends AsyncTask<Void, Integer, Void> {
