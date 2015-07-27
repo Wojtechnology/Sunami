@@ -340,6 +340,7 @@ public class SongManager {
 
     public void updateGenres(Set<String> genres, JSONArray songs) throws JSONException {
         long startTime = Calendar.getInstance().getTimeInMillis();
+        int sum = 0;
         for (int i = 0; i < songs.length(); i++) {
             JSONArray ja = (JSONArray) songs.get(i);
             try {
@@ -351,11 +352,14 @@ public class SongManager {
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
                 cal.setTime(sdf.parse(ja.getString(4)));
                 song.lastPlayed = cal;
+                sum++;
             } catch (Exception e) {
-                Log.e("Song Wrong", i + ": " + ja.getString(0) + ", " + ja.getString(1));
-                genresFromDB(genres);
-                return;
+                // Song that used to exist is missing from file system
             }
+        }
+        Log.e("SongManager", "Sum: " + sum + " Real: " + mSongList.size());
+        if (sum != mSongList.size()) {
+            genresFromDB(genres);
         }
         Log.i("SongManager", "Finished updateGenres() in " +
                 Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
