@@ -1,8 +1,11 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,8 +32,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private MainActivity mContext;
     private TheBrain mTheBrain;
 
-    private static int TYPE_FINAL_SOUNDCLOUD = 3;
-    private static int TYPE_FINAL = 2;
+    private static int TYPE_FINAL_SOUNDCLOUD = 4;
+    private static int TYPE_FINAL = 3;
+    private static int TYPE_HEADER_SOUNDCLOUD = 2;
     private static int TYPE_HEADER = 1;
     private static int TYPE_LIST = 0;
 
@@ -70,7 +74,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mContext.mFastScroller.setVisibility(View.INVISIBLE);
         }
         mVisibleData = new ArrayList<>(0);
-        for(int i = 0; i < mData.size(); i++) {
+        for (int i = 0; i < mData.size(); i++) {
             if (mData.get(i).genre == "__header__" || mData.get(i).genre == "__final__") {
                 // Do nothing
             } else if (mData.get(i).artist.toLowerCase().contains(q.toLowerCase()) ||
@@ -91,22 +95,34 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         setFilter(q, false);
 
         if (mContext.isNetworkAvailable()) {
-            FireMixtape fireMixtape = new FireMixtape(mContext);
-            fireMixtape.title = "Searching...";
-            fireMixtape.genre = "__finalsoundcloud__";
+            FireMixtape fireMixtape = HeaderHelper.makeSoundcloudFinal(mContext, "Searching...");
             mVisibleData.add(fireMixtape);
 
             mSoundCloud.getTracks(q, new SoundcloudCallback() {
                 @Override
                 public void callback(List<FireMixtape> data) {
-                    mVisibleData.addAll(data);
+                    mVisibleData.remove(mVisibleData.size() - 1);
+
+                    if (data.size() > 0) {
+                        FireMixtape foundHeader = HeaderHelper.makeSoundcloudHeader(mContext,
+                                data.size() + " results");
+                        mVisibleData.add(foundHeader);
+
+                        mVisibleData.addAll(data);
+
+                        FireMixtape foundFinal = HeaderHelper.makeFinal(mContext,
+                                (mVisibleData.size() - 1) + ((mVisibleData.size() - 1 == 1) ? " song found" : " songs found"));
+                        mVisibleData.add(foundFinal);
+                    } else {
+                        FireMixtape fireMixtape = HeaderHelper.makeFinal(mContext, getFinalLabel());
+                        mVisibleData.add(fireMixtape);
+                    }
+
                     notifyDataSetChanged();
                 }
             });
         } else {
-            FireMixtape fireMixtape = new FireMixtape(mContext);
-            fireMixtape.title = getFinalLabel();
-            fireMixtape.genre = "__final__";
+            FireMixtape fireMixtape = HeaderHelper.makeFinal(mContext, getFinalLabel());
             mVisibleData.add(fireMixtape);
         }
         notifyDataSetChanged();
@@ -118,9 +134,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == TYPE_HEADER){
+        if (viewType == TYPE_HEADER) {
             View view = mInflater.inflate(R.layout.fire_header, parent, false);
             HeaderHolder holder = new HeaderHolder(view);
+            return holder;
+        } else if (viewType == TYPE_HEADER_SOUNDCLOUD) {
+            View view = mInflater.inflate(R.layout.fire_header_soundcloud, parent, false);
+            HeaderSoundcloudHolder holder = new HeaderSoundcloudHolder(view);
             return holder;
         } else if (viewType == TYPE_FINAL) {
             View view = mInflater.inflate(R.layout.fire_final, parent, false);
@@ -128,7 +148,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return holder;
         } else if (viewType == TYPE_FINAL_SOUNDCLOUD) {
             View view = mInflater.inflate(R.layout.fire_final_soundcloud, parent, false);
-            FinalHolder holder = new FinalHolder(view);
+            FinalSoundcloudHolder holder = new FinalSoundcloudHolder(view);
             return holder;
         } else {
             View view = mInflater.inflate(R.layout.fire_mixtape, parent, false);
@@ -139,17 +159,33 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof HeaderHolder){
+        final FireMixtape current = mVisibleData.get(position);
+        if (holder instanceof HeaderHolder) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            final FireMixtape current = mVisibleData.get(position);
             headerHolder.label.setText(current.title);
+        } else if (holder instanceof HeaderSoundcloudHolder) {
+            HeaderSoundcloudHolder headerSoundcloudHolder = (HeaderSoundcloudHolder) holder;
+            headerSoundcloudHolder.label.setText(current.title);
+            headerSoundcloudHolder.logo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openSoundcloudInBrowser();
+                }
+            });
         } else if (holder instanceof FinalHolder) {
             FinalHolder finalHolder = (FinalHolder) holder;
-            final FireMixtape current = mVisibleData.get(position);
             finalHolder.label.setText(current.title);
+        } else if (holder instanceof FinalSoundcloudHolder) {
+            FinalSoundcloudHolder finalSoundcloudHolder = (FinalSoundcloudHolder) holder;
+            finalSoundcloudHolder.label.setText(current.title);
+            finalSoundcloudHolder.logo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openSoundcloudInBrowser();
+                }
+            });
         } else {
             final ItemHolder itemHolder = (ItemHolder) holder;
-            final FireMixtape current = mVisibleData.get(position);
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
 
@@ -184,7 +220,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             itemHolder.fireView.setImageDrawable(fire);
 
-            itemHolder.background.setOnClickListener(new View.OnClickListener(){
+            itemHolder.background.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mTheBrain.playSong(current, true);
@@ -197,6 +233,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         }
+    }
+
+    private void openSoundcloudInBrowser() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("https://soundcloud.com"));
+        mContext.startActivity(intent);
     }
 
     private float calculateNormalized(FireMixtape song) {
@@ -223,13 +267,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(mVisibleData.get(position).genre == "__header__"){
+        if (mVisibleData.get(position).genre == "__header__") {
             return TYPE_HEADER;
-        }else if (mVisibleData.get(position).genre == "__final__") {
+        } else if (mVisibleData.get(position).genre == "__headersoundcloud__") {
+            return TYPE_HEADER_SOUNDCLOUD;
+        } else if (mVisibleData.get(position).genre == "__final__") {
             return TYPE_FINAL;
-        }else if (mVisibleData.get(position).genre == "__finalsoundcloud__") {
+        } else if (mVisibleData.get(position).genre == "__finalsoundcloud__") {
             return TYPE_FINAL_SOUNDCLOUD;
-        }else{
+        } else {
             return TYPE_LIST;
         }
     }
@@ -241,7 +287,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public String getTextToShowInBubble(int pos) {
         FireMixtape song = mVisibleData.get(pos);
-        int state = ((MainActivity) mContext).getState();
+        int state = mContext.getState();
         String important = (state == MainActivity.STATE_SONGS) ? song.title : song.artist;
         char firstLetter = SongManager.firstLetter(important);
         if (firstLetter >= 'A' && firstLetter <= 'Z') {
@@ -280,6 +326,17 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    class HeaderSoundcloudHolder extends RecyclerView.ViewHolder {
+        private TextView label;
+        private ImageView logo;
+
+        public HeaderSoundcloudHolder(View itemView) {
+            super(itemView);
+            label = (TextView) itemView.findViewById(R.id.header_label);
+            logo = (ImageView) itemView.findViewById(R.id.soundcloud_logo);
+        }
+    }
+
     class FinalHolder extends RecyclerView.ViewHolder {
         private TextView label;
 
@@ -289,20 +346,31 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private String displayTime(String time){
+    class FinalSoundcloudHolder extends RecyclerView.ViewHolder {
+        private TextView label;
+        private ImageView logo;
+
+        public FinalSoundcloudHolder(View itemView) {
+            super(itemView);
+            label = (TextView) itemView.findViewById(R.id.final_label);
+            logo = (ImageView) itemView.findViewById(R.id.soundcloud_logo);
+        }
+    }
+
+    private String displayTime(String time) {
         String newTime = "";
         int intTime = Integer.parseInt(time);
-        if(intTime < 60000){
+        if (intTime < 60000) {
             newTime += "0";
-        }else{
+        } else {
             newTime += Integer.toString(intTime / 60000);
             intTime = intTime % 60000;
         }
         newTime += ":";
         String seconds = Integer.toString(intTime / 1000);
-        if(seconds.length() == 1){
+        if (seconds.length() == 1) {
             newTime += "0" + seconds;
-        }else{
+        } else {
             newTime += seconds;
         }
         return newTime;

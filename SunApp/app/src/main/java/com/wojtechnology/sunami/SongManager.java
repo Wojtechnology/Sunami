@@ -78,18 +78,14 @@ public class SongManager {
         for (char headerTitle = 'A'; headerTitle <= 'Z'
                 && letters.containsKey(headerTitle); headerTitle++) {
             if (letters.get(headerTitle) != 0) {
-                FireMixtape mixtape = new FireMixtape(null);
-                mixtape.title = Character.toString(headerTitle);
-                mixtape.genre = "__header__";
+                FireMixtape mixtape = HeaderHelper.makeHeader(context, Character.toString(headerTitle));
                 displayList.add(sum, mixtape);
                 sum++;
             }
             sum += letters.get(headerTitle);
         }
 
-        FireMixtape final_header = new FireMixtape(context);
-        final_header.title = getFinalLabel();
-        final_header.genre = "__final__";
+        FireMixtape final_header = HeaderHelper.makeFinal(context,  getFinalLabel());
 
         displayList.add(final_header);
 
@@ -120,19 +116,15 @@ public class SongManager {
         for (int i = 0; i < displayList.size(); i++) {
             if (!lastArtist.equals(displayList.get(i).artist)) {
                 lastArtist = displayList.get(i).artist;
-                FireMixtape artistHeader = new FireMixtape(context);
-                artistHeader.title = displayList.get(i).artist;
+                FireMixtape artistHeader = HeaderHelper.makeHeader(context, displayList.get(i).artist);
                 artistHeader.artist = displayList.get(i).artist;
-                artistHeader.genre = "__header__";
                 displayList.add(i, artistHeader);
                 i++;
             }
         }
 
-        FireMixtape final_header = new FireMixtape(context);
-        final_header.title = getFinalLabel();
+        FireMixtape final_header = HeaderHelper.makeFinal(context, getFinalLabel());
         final_header.artist = getFinalLabel();
-        final_header.genre = "__final__";
 
         displayList.add(final_header);
         return displayList;
@@ -357,7 +349,6 @@ public class SongManager {
                 // Song that used to exist is missing from file system
             }
         }
-        Log.e("SongManager", "Sum: " + sum + " Real: " + mSongList.size());
         if (sum != mSongList.size()) {
             genresFromDB(genres);
         }
