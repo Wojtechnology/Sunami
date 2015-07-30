@@ -193,6 +193,7 @@ public class SongManager {
                     MediaStore.Audio.Media.YEAR,
                     MediaStore.Audio.Media.DATA,
                     MediaStore.Audio.Media.SIZE,
+                    MediaStore.Audio.Media.ALBUM_ID,
             };
 
             Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -223,6 +224,7 @@ public class SongManager {
                 current.year = cursor.getString(6);
                 current.data = cursor.getString(7);
                 current.size = cursor.getString(8);
+                current.album_id = cursor.getString(9);
                 current.genre = DEFAULT_GENRE;
 
                 mSongList.add(current);

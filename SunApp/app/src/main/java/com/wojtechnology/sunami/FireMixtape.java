@@ -47,6 +47,9 @@ public class FireMixtape{
     public String data;
     public String size;
 
+    // Used for getting thumbnails
+    public String album_id;
+
     // Values that are used to calculate popularity of song
     public Calendar lastPlayed;
     public double multiplier;

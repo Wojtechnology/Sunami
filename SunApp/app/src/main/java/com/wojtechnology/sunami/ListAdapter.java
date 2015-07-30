@@ -1,27 +1,21 @@
 package com.wojtechnology.sunami;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,6 +35,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater mInflater;
     private List<FireMixtape> mData = Collections.emptyList();
     private List<FireMixtape> mVisibleData = Collections.emptyList();
+
+    private Pair<Integer, Integer> mThumbnailDimens;
 
     private Soundcloud mSoundCloud;
 
@@ -189,6 +185,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
 
+            getThumbnailSize(itemHolder);
+
             if (current.isSoundcloud) {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));
             } else {
@@ -233,6 +231,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         }
+    }
+
+    private Pair<Integer, Integer> getThumbnailSize(ItemHolder itemHolder) {
+        if (mThumbnailDimens == null) {
+            itemHolder.icon.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            mThumbnailDimens = new Pair<>(itemHolder.icon.getMeasuredWidth(), itemHolder.icon.getMeasuredHeight());
+        }
+        return mThumbnailDimens;
     }
 
     private void openSoundcloudInBrowser() {
