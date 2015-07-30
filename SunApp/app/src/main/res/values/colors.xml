@@ -7,5 +7,6 @@
     <color name="listOddColor">#ECEFF1</color>
     <color name="listEvenColor">#FFFFFF</color>
     <color name="backgroundColor">#F5F5F5</color>
+    <color name="backgroundColorDark">#EAEAEA</color>
 
 </resources>

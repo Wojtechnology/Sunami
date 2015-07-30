@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_background"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
-    android:layout_marginBottom="1dp"
+    android:layout_height="84dp"
     android:background="@drawable/fire_mixtape_background"
     android:orientation="horizontal">
 
@@ -46,7 +45,7 @@
                 android:paddingTop="0dp"
                 android:singleLine="true"
                 android:text="Dummy Text"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
         </LinearLayout>
 
@@ -60,7 +59,7 @@
             android:ellipsize="end"
             android:text="Dummy Text"
             android:textColor="#000"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -71,7 +70,7 @@
         android:layout_alignParentRight="true"
         android:gravity="right"
         android:orientation="vertical"
-        android:paddingTop="16dp">
+        android:paddingTop="8dp">
 
         <TextView
             android:id="@+id/list_duration"
@@ -90,5 +89,25 @@
             android:background="@drawable/ic_queue_add" />
 
     </LinearLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/backgroundColorDark">
+        
+        <View
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="#FFF"/>
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#FFF"/>
+        
+    </RelativeLayout>
 
 </RelativeLayout>
