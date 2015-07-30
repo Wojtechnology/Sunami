@@ -1,7 +1,10 @@
 package com.wojtechnology.sunami;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -187,6 +192,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             getThumbnailSize(itemHolder);
 
+            if (!current.album_id.equals("")) {
+                Drawable drawable = new BitmapDrawable(mContext.getResources(),
+                        BitmapHelper.decodeSampledBitmapFromUri(mContext, Long.parseLong(current.album_id),
+                                mThumbnailDimens.first, mThumbnailDimens.second));
+                itemHolder.icon.setBackground(drawable);
+            } else {
+                itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
+            }
+
             if (current.isSoundcloud) {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));
             } else {
@@ -194,7 +208,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             itemHolder.duration.setText(displayTime(current.duration));
-            itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
 
             // Set add button resourse
             Drawable addToQueue;
