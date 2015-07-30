@@ -43,6 +43,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Pair<Integer, Integer> mThumbnailDimens;
 
+    private ThumbnailManager mThumbnailManager;
     private Soundcloud mSoundCloud;
 
     public ListAdapter(MainActivity context, List<FireMixtape> data, TheBrain theBrain, Soundcloud soundCloud) {
@@ -52,6 +53,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mInflater = LayoutInflater.from(mContext);
         mTheBrain = theBrain;
         mSoundCloud = soundCloud;
+        mThumbnailManager = new ThumbnailManager(context);
     }
 
     public void flushVisibleData() {
@@ -191,15 +193,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.artist.setText(current.artist);
 
             getThumbnailSize(itemHolder);
-
-            if (!current.album_id.equals("")) {
-                Drawable drawable = new BitmapDrawable(mContext.getResources(),
-                        BitmapHelper.decodeSampledBitmapFromUri(mContext, Long.parseLong(current.album_id),
-                                mThumbnailDimens.first, mThumbnailDimens.second));
-                itemHolder.icon.setBackground(drawable);
-            } else {
-                itemHolder.icon.setImageResource(R.mipmap.ic_launcher);
-            }
+            mThumbnailManager.setAlbumThumbnail(current, mThumbnailDimens, itemHolder.icon);
 
             if (current.isSoundcloud) {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));

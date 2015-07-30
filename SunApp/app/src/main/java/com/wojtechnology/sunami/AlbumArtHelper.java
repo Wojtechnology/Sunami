@@ -10,7 +10,7 @@ import android.provider.MediaStore;
 /**
  * Created by wojtekswiderski on 15-07-29.
  */
-public class BitmapHelper {
+public class AlbumArtHelper {
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
