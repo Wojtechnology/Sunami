@@ -363,7 +363,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         boolean hasHour = false;
         do {
             if (intTime < 60000) {
-                newTime += "0";
+                newTime += "0:";
             } else if (intTime < 3600000) {
                 String minutes = Integer.toString(intTime / 60000);
                 if (minutes.length() == 1 && hasHour) {
