@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.util.LruCache;
 import android.util.Pair;
 import android.widget.ImageView;
 
@@ -19,19 +21,38 @@ public class ThumbnailManager {
     private MainActivity mContext;
     private Bitmap mPlaceHolderBitmap;
 
+    private LruCache<String, Bitmap> mMemoryCache;
+
     public ThumbnailManager(MainActivity context) {
         mContext = context;
         mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     public void setAlbumThumbnail(FireMixtape song, Pair<Integer, Integer> dimens, ImageView imageView) {
+        String album_id_str = song.album_id;
         Long album_id = Long.parseLong(song.album_id);
         if (cancelPotentialWork(album_id, imageView)) {
-            BitmapWorkerTask task = new BitmapWorkerTask(imageView, dimens);
-            final AsyncDrawable asyncDrawable =
-                    new AsyncDrawable(mContext.getResources(), mPlaceHolderBitmap, task);
-            imageView.setImageDrawable(asyncDrawable);
-            task.execute(album_id);
+            final Bitmap bitmap = getBitmapFromMemCache(album_id_str);
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+                Log.e("ThumbnailManager", "GetFromThumbnail");
+            } else {
+                BitmapWorkerTask task = new BitmapWorkerTask(imageView, dimens);
+                final AsyncDrawable asyncDrawable =
+                        new AsyncDrawable(mContext.getResources(), mPlaceHolderBitmap, task);
+                imageView.setImageDrawable(asyncDrawable);
+                task.execute(album_id);
+            }
         }
     }
 
@@ -49,8 +70,11 @@ public class ThumbnailManager {
         @Override
         protected Bitmap doInBackground(Long... params) {
             album_id = params[0];
-            return AlbumArtHelper.decodeSampledBitmapFromUri(mContext, album_id,
+            final Bitmap bitmap = AlbumArtHelper.decodeSampledBitmapFromUri(mContext, album_id,
                             paramDimens.first, paramDimens.second);
+            if (bitmap == null) return null;
+            addBitmapToMemoryCache(String.valueOf(album_id), bitmap);
+            return bitmap;
         }
 
         @Override
@@ -110,5 +134,15 @@ public class ThumbnailManager {
             }
         }
         return null;
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
     }
 }
