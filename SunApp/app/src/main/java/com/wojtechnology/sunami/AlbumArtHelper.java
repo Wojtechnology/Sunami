@@ -7,6 +7,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Created by wojtekswiderski on 15-07-29.
  */
@@ -33,7 +39,7 @@ public class AlbumArtHelper {
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromUri(Context context,
+    public static Bitmap decodeSampledBitmapFromAlbumId(Context context,
             long album_id, int reqWidth, int reqHeight) {
 
         // Get real path from the Uri
@@ -50,6 +56,37 @@ public class AlbumArtHelper {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(pathName, options);
+    }
+
+    public static Bitmap decodeSampledBitmapFromURL(Context context,
+            String src, int reqWidth, int reqHeight) {
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        InputStream inputStream = null;
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            inputStream = connection.getInputStream();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (inputStream == null) {
+            return null;
+        }
+
+        BitmapFactory.decodeStream(inputStream, null, options);
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeStream(inputStream, null, options);
     }
 
     public static String getRealPathFromURI(Context context, long album_id) {

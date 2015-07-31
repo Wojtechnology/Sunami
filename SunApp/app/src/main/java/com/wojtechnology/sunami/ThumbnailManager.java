@@ -39,28 +39,25 @@ public class ThumbnailManager {
     }
 
     public void setAlbumThumbnail(FireMixtape song, Pair<Integer, Integer> dimens, ImageView imageView) {
-        String album_id_str = song.album_id;
-        Long album_id = Long.parseLong(song.album_id);
-        if (cancelPotentialWork(album_id, imageView)) {
-            final Bitmap bitmap = getBitmapFromMemCache(album_id_str);
+        if (cancelPotentialWork(song, imageView)) {
+            final Bitmap bitmap = getBitmapFromMemCache(song.album_id);
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
-                Log.e("ThumbnailManager", "GetFromThumbnail");
             } else {
                 BitmapWorkerTask task = new BitmapWorkerTask(imageView, dimens);
                 final AsyncDrawable asyncDrawable =
                         new AsyncDrawable(mContext.getResources(), mPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
-                task.execute(album_id);
+                task.execute(song);
             }
         }
     }
 
-    class BitmapWorkerTask extends AsyncTask<Long, Void, Bitmap> {
+    class BitmapWorkerTask extends AsyncTask<FireMixtape, Void, Bitmap> {
 
         private final WeakReference<ImageView> imageViewReference;
         private Pair<Integer, Integer> paramDimens;
-        private long album_id = 0;
+        private FireMixtape song = null;
 
         public BitmapWorkerTask(ImageView imageView, Pair<Integer, Integer> dimens) {
             paramDimens = dimens;
@@ -68,12 +65,13 @@ public class ThumbnailManager {
         }
 
         @Override
-        protected Bitmap doInBackground(Long... params) {
-            album_id = params[0];
-            final Bitmap bitmap = AlbumArtHelper.decodeSampledBitmapFromUri(mContext, album_id,
+        protected Bitmap doInBackground(FireMixtape... params) {
+            song = params[0];
+            final Bitmap bitmap = AlbumArtHelper.decodeSampledBitmapFromAlbumId(mContext,
+                            Long.parseLong(song.album_id),
                             paramDimens.first, paramDimens.second);
             if (bitmap == null) return null;
-            addBitmapToMemoryCache(String.valueOf(album_id), bitmap);
+            addBitmapToMemoryCache(song.album_id, bitmap);
             return bitmap;
         }
 
@@ -107,13 +105,13 @@ public class ThumbnailManager {
         }
     }
 
-    public static boolean cancelPotentialWork(long album_id, ImageView imageView) {
+    public static boolean cancelPotentialWork(FireMixtape song, ImageView imageView) {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
         if (bitmapWorkerTask != null) {
-            final long bitmapData = bitmapWorkerTask.album_id;
+            final FireMixtape bitmapData = bitmapWorkerTask.song;
             // If bitmapData is not yet set or it differs from the new data
-            if (bitmapData == 0 || bitmapData != album_id) {
+            if (bitmapData == null || bitmapData != song) {
                 // Cancel previous task
                 bitmapWorkerTask.cancel(true);
             } else {
