@@ -15,7 +15,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:background="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
         android:id="@+id/song_display_left"
