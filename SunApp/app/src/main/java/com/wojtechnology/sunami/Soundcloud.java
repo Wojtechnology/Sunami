@@ -45,7 +45,7 @@ public class Soundcloud {
                             fireMixtape.title = song.getString("title");
                             fireMixtape.artist = song.getJSONObject("user").getString("username");
                             fireMixtape.duration = song.getString("duration");
-                            fireMixtape.album_art_url = song.getString("artwork_url");
+                            fireMixtape.album_art_url = fetchArtwork(song);
                             fireMixtape.data = SoundcloudRestClient.generateGoodUrl(song.getString("stream_url"));
                             fireMixtape.isSoundcloud = true;
                             fireMixtapeList.add(fireMixtape);
@@ -55,6 +55,14 @@ public class Soundcloud {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+
+            private String fetchArtwork(JSONObject song) throws JSONException {
+                String artwork = song.getString("artwork_url");
+                if (artwork.equals("null")) {
+                    artwork = song.getJSONObject("user").getString("avatar_url");
+                }
+                return artwork;
             }
 
             @Override
