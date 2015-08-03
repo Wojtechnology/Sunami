@@ -59,8 +59,7 @@ public class AlbumArtHelper {
         return BitmapFactory.decodeFile(pathName, options);
     }
 
-    public static Bitmap decodeSampledBitmapFromURL(Context context,
-            String src, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromURL(String src) {
 
         // If the artwork returned null, don't want to try to show artwork
         if (src.equals("null")) {

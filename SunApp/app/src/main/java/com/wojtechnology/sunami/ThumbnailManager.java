@@ -74,8 +74,7 @@ public class ThumbnailManager {
             song = params[0];
             Bitmap bitmap = null;
             if (song.isSoundcloud) {
-                bitmap = AlbumArtHelper.decodeSampledBitmapFromURL(mContext,
-                        song.album_art_url, paramDimens.first, paramDimens.second);
+                bitmap = AlbumArtHelper.decodeSampledBitmapFromURL(song.album_art_url);
             } else {
                 bitmap = AlbumArtHelper.decodeSampledBitmapFromAlbumId(mContext,
                         Long.parseLong(song.album_id),
