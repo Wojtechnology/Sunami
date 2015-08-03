@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +62,10 @@ public class AlbumArtHelper {
     public static Bitmap decodeSampledBitmapFromURL(Context context,
             String src, int reqWidth, int reqHeight) {
 
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
+        // If the artwork returned null, don't want to try to show artwork
+        if (src.equals("null")) {
+            return null;
+        }
 
         InputStream inputStream = null;
         try {
@@ -81,12 +84,17 @@ public class AlbumArtHelper {
             return null;
         }
 
+        // Decided not to scale because would have to recreate input stream
+        /*
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(inputStream, null, options);
 
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeStream(inputStream, null, options);
+        options.inJustDecodeBounds = false; */
+        Bitmap returnBitmap = BitmapFactory.decodeStream(inputStream);
+        return returnBitmap;
     }
 
     public static String getRealPathFromURI(Context context, long album_id) {

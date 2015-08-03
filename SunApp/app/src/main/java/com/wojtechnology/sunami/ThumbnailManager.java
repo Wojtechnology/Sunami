@@ -40,7 +40,12 @@ public class ThumbnailManager {
 
     public void setAlbumThumbnail(FireMixtape song, Pair<Integer, Integer> dimens, ImageView imageView) {
         if (cancelPotentialWork(song, imageView)) {
-            final Bitmap bitmap = getBitmapFromMemCache(song.album_id);
+            Bitmap bitmap = null;
+            if (song.isSoundcloud) {
+                bitmap = getBitmapFromMemCache(song.album_art_url);
+            } else {
+                bitmap = getBitmapFromMemCache(song.album_id);
+            }
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
             } else {
@@ -67,11 +72,22 @@ public class ThumbnailManager {
         @Override
         protected Bitmap doInBackground(FireMixtape... params) {
             song = params[0];
-            final Bitmap bitmap = AlbumArtHelper.decodeSampledBitmapFromAlbumId(mContext,
-                            Long.parseLong(song.album_id),
-                            paramDimens.first, paramDimens.second);
+            Bitmap bitmap = null;
+            if (song.isSoundcloud) {
+                bitmap = AlbumArtHelper.decodeSampledBitmapFromURL(mContext,
+                        song.album_art_url, paramDimens.first, paramDimens.second);
+            } else {
+                bitmap = AlbumArtHelper.decodeSampledBitmapFromAlbumId(mContext,
+                        Long.parseLong(song.album_id),
+                        paramDimens.first, paramDimens.second);
+            }
             if (bitmap == null) return null;
-            addBitmapToMemoryCache(song.album_id, bitmap);
+            if (song.isSoundcloud) {
+                addBitmapToMemoryCache(song.album_art_url, bitmap);
+            } else {
+                addBitmapToMemoryCache(song.album_id, bitmap);
+
+            }
             return bitmap;
         }
 

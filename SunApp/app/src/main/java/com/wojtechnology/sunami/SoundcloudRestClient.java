@@ -31,7 +31,7 @@ public class SoundcloudRestClient {
         return params;
     }
 
-    public static String generateStreamUrl(String stream) {
+    public static String generateGoodUrl(String stream) {
         return stream + "?client_id=" + CLIENT_ID;
     }
 }

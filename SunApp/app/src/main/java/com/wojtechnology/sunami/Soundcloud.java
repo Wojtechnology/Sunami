@@ -45,7 +45,8 @@ public class Soundcloud {
                             fireMixtape.title = song.getString("title");
                             fireMixtape.artist = song.getJSONObject("user").getString("username");
                             fireMixtape.duration = song.getString("duration");
-                            fireMixtape.data = SoundcloudRestClient.generateStreamUrl(song.getString("stream_url"));
+                            fireMixtape.album_art_url = song.getString("artwork_url");
+                            fireMixtape.data = SoundcloudRestClient.generateGoodUrl(song.getString("stream_url"));
                             fireMixtape.isSoundcloud = true;
                             fireMixtapeList.add(fireMixtape);
                         }
