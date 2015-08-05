@@ -27,7 +27,7 @@ public class ShuffleController {
     private final double SONG_DURATION_OFFSET = 0.1;
     private final double SONG_DURATION_SPREAD = 0.05;
     private final double SONG_MIN = 1.0;
-    private final double SONG_MAX = 2.0;
+    private final double SONG_MAX = 1.8;
     private final double SONG_MED_MULTI = 0.1;
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
