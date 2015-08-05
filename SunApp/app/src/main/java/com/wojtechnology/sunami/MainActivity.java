@@ -143,7 +143,9 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     }
 
     public void resetState() {
-        setState(mState);
+        if (!mListAdapter.mIsSearching) {
+            setState(mState);
+        }
     }
 
     public int getState() {

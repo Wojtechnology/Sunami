@@ -44,6 +44,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<FireMixtape> mData = Collections.emptyList();
     private List<FireMixtape> mVisibleData = Collections.emptyList();
 
+    public boolean mIsSearching;
+
     private Pair<Integer, Integer> mThumbnailDimens;
 
     private ThumbnailManager mThumbnailManager;
@@ -57,6 +59,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mTheBrain = theBrain;
         mSoundCloud = soundCloud;
         mThumbnailManager = new ThumbnailManager(context);
+        mIsSearching = false;
     }
 
     public void flushVisibleData() {
@@ -74,8 +77,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setFilter(String q, boolean addFinal) {
         if (q.equals("")) {
             flushVisibleData();
+            mIsSearching = false;
             return;
         }
+        mIsSearching = true;
         if (mContext.mFastScroller != null) {
             mContext.mFastScroller.setVisibility(View.INVISIBLE);
         }
@@ -265,6 +270,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     mTheBrain.addSongToQueue(current);
                                     break;
                                 case R.id.manage_library_button:
+                                    mTheBrain.toggleSongInLibrary(current);
                                     break;
                                 default:
                                     break;

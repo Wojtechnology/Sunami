@@ -376,7 +376,7 @@ public class SongManager {
     public boolean containsSong(FireMixtape song) {
         for (int i = 0; i < mSongList.size(); i++) {
             FireMixtape checkSong = mSongList.get(i);
-            if (song.data.equals(song.data)) {
+            if (checkSong.data.equals(song.data)) {
                 return true;
             }
         }

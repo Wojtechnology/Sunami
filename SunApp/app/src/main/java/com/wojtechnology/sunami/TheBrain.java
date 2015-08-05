@@ -499,9 +499,9 @@ public class TheBrain extends Service {
     public void toggleSongInLibrary(FireMixtape song) {
         if (!mSongManager.addSong(song)) {
             mSongManager.removeSong(song);
-            if (mBound) {
-                mContext.resetState();
-            }
+        }
+        if (mBound) {
+            mContext.resetState();
         }
     }
 

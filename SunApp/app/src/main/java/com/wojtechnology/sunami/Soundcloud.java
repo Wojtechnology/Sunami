@@ -48,7 +48,9 @@ public class Soundcloud {
                             fireMixtape.album_art_url = fetchArtwork(song);
                             fireMixtape.data = SoundcloudRestClient.generateGoodUrl(song.getString("stream_url"));
                             fireMixtape.isSoundcloud = true;
-                            fireMixtapeList.add(fireMixtape);
+                            if (!((MainActivity) mContext).mTheBrain.isSongInLibrary(fireMixtape)) {
+                                fireMixtapeList.add(fireMixtape);
+                            }
                         }
                     }
                     callback.callback(fireMixtapeList);
