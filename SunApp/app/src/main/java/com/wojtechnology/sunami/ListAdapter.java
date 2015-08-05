@@ -231,7 +231,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.background.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTheBrain.playSong(current, true);
+                    if (mTheBrain.mPlaying != current) {
+                        mTheBrain.playSong(current, true);
+                    }
                 }
             });
             itemHolder.addButton.setOnClickListener(new View.OnClickListener() {
