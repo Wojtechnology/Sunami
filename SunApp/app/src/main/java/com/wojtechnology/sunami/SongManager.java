@@ -101,8 +101,8 @@ public class SongManager {
         Collections.sort(displayList, new Comparator<FireMixtape>() {
             @Override
             public int compare(FireMixtape lhs, FireMixtape rhs) {
-                String lArtist = lhs.artist;
-                String rArtist = rhs.artist;
+                String lArtist = lhs.artist.toLowerCase();
+                String rArtist = rhs.artist.toLowerCase();
 
                 if (lArtist.equals(rArtist)) {
                     return compareTitles(lhs, rhs);
