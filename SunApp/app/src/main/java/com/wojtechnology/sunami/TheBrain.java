@@ -496,6 +496,20 @@ public class TheBrain extends Service {
         }
     }
 
+
+    public void toggleSongInLibrary(FireMixtape song) {
+        if (!mSongManager.addSong(song)) {
+            mSongManager.removeSong(song);
+            if (mBound) {
+                mContext.resetState();
+            }
+        }
+    }
+
+    public boolean isSongInLibrary(FireMixtape song) {
+        return mSongManager.containsSong(song);
+    }
+
     public void updateListItem(FireMixtape song) {
         mContext.mListAdapter.updateItem(song);
     }

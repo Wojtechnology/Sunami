@@ -142,6 +142,10 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         }
     }
 
+    public void resetState() {
+        setState(mState);
+    }
+
     public int getState() {
         return mState;
     }

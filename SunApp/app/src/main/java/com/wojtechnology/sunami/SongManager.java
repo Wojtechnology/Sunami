@@ -373,6 +373,36 @@ public class SongManager {
         return ja;
     }
 
+    public boolean containsSong(FireMixtape song) {
+        for (int i = 0; i < mSongList.size(); i++) {
+            FireMixtape checkSong = mSongList.get(i);
+            if (song.data.equals(song.data)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // returns if song was added
+    public boolean addSong(FireMixtape song) {
+        if (!containsSong(song)) {
+            mSongList.add(song);
+            mSongDict.put(song.data, song);
+            return true;
+        }
+        return false;
+    }
+
+    // returns if song was removed
+    public boolean removeSong(FireMixtape song) {
+        if (containsSong(song)) {
+            mSongList.remove(song);
+            mSongDict.remove(song.data);
+            return true;
+        }
+        return false;
+    }
+
     private void printSongs() {
         for (int i = 0; i < mSongList.size(); i++) {
             Log.i("SongManager", mSongList.get(i).title + ": Genre - " +
