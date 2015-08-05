@@ -479,7 +479,7 @@ public class TheBrain extends Service {
     }
 
     public void addSongToQueue(FireMixtape song) {
-        mUpNext.pushUser(song);
+        mUpNext.pushBackUser(song);
         updateListItem(song);
         updateUpNextUI();
     }
@@ -507,10 +507,6 @@ public class TheBrain extends Service {
 
     public boolean isSongInLibrary(FireMixtape song) {
         return mSongManager.containsSong(song);
-    }
-
-    public boolean isSongInUpNext(FireMixtape song) {
-        return mUpNext.contains(song);
     }
 
     public void updateListItem(FireMixtape song) {

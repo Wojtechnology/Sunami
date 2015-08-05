@@ -33,18 +33,19 @@ public class UpNext {
 
     public void pushBack(FireMixtape song) {
         mUpNext.addLast(song);
+        setUpNextFlag(song);
     }
 
-    public void pushUser(FireMixtape song) {
+    public void pushBackUser(FireMixtape song) {
         mUpNext.add(mUserIndexFinish++, song);
-        song.isUpNext = true;
+        setUpNextFlag(song);
     }
 
     public void pushFrontUser(FireMixtape song) {
         mUpNext.addFirst(song);
         mUserIndexStart++;
         mUserIndexFinish++;
-        song.isUpNext = true;
+        setUpNextFlag(song);
     }
 
     public void pushFront(FireMixtape song) {
@@ -53,7 +54,7 @@ public class UpNext {
             mUserIndexStart++;
             mUserIndexFinish++;
         }
-        song.isUpNext = true;
+        setUpNextFlag(song);
     }
 
     public FireMixtape popFront() {
@@ -64,8 +65,9 @@ public class UpNext {
             if (mUserIndexFinish > 0) mUserIndexFinish--;
             if (mUserIndexStart > 0) mUserIndexStart--;
         }
-        mUpNext.peekFirst().isUpNext = false;
-        return mUpNext.removeFirst();
+        FireMixtape song = mUpNext.removeFirst();
+        setUpNextFlag(song);
+        return song;
     }
 
     public boolean remove(FireMixtape song) {
@@ -77,8 +79,16 @@ public class UpNext {
             if (mUserIndexFinish > 0) mUserIndexFinish--;
             if (mUserIndexStart > 0) mUserIndexStart--;
         }
-        song.isUpNext = false;
+        setUpNextFlag(song);
         return isAuto;
+    }
+
+    private void setUpNextFlag(FireMixtape song) {
+        if (!contains(song)) {
+            song.isUpNext = false;
+        } else {
+            song.isUpNext = true;
+        }
     }
 
     private boolean isAuto(int index) {

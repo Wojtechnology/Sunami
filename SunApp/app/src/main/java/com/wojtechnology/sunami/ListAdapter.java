@@ -213,7 +213,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             // Set add button resourse
             Drawable addToQueue;
-            if (mTheBrain.isSongInUpNext(current)) {
+            if (current.isUpNext) {
                 addToQueue = mContext.getResources().getDrawable(R.drawable.ic_playlist_add_white_24dp);
                 addToQueue.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
             } else {
