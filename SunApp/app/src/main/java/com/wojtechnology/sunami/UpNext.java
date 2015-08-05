@@ -13,13 +13,13 @@ public class UpNext {
 
     public static final int UP_NEXT_MIN = 1;
 
-    public UpNext () {
+    public UpNext() {
         mUpNext = new LinkedList<>();
         mUserIndexStart = 0;
         mUserIndexFinish = 0;
     }
 
-    public List<FireMixtape> data () {
+    public List<FireMixtape> data() {
         return mUpNext;
     }
 
@@ -31,16 +31,23 @@ public class UpNext {
         return mUpNext.size();
     }
 
-    public void pushBack (FireMixtape song) {
+    public void pushBack(FireMixtape song) {
         mUpNext.addLast(song);
     }
 
-    public void pushUser (FireMixtape song) {
+    public void pushUser(FireMixtape song) {
         mUpNext.add(mUserIndexFinish++, song);
         song.isUpNext = true;
     }
 
-    public void pushFront (FireMixtape song) {
+    public void pushFrontUser(FireMixtape song) {
+        mUpNext.addFirst(song);
+        mUserIndexStart++;
+        mUserIndexFinish++;
+        song.isUpNext = true;
+    }
+
+    public void pushFront(FireMixtape song) {
         mUpNext.addFirst(song);
         if (mUserIndexFinish > 0) {
             mUserIndexStart++;
@@ -49,12 +56,14 @@ public class UpNext {
         song.isUpNext = true;
     }
 
-    public FireMixtape popFront () {
+    public FireMixtape popFront() {
         if (size() <= 0) {
             return null;
         }
-        if (mUserIndexFinish > 0) mUserIndexFinish--;
-        if (mUserIndexStart > 0) mUserIndexStart--;
+        if (!isAuto(0)) {
+            if (mUserIndexFinish > 0) mUserIndexFinish--;
+            if (mUserIndexStart > 0) mUserIndexStart--;
+        }
         mUpNext.peekFirst().isUpNext = false;
         return mUpNext.removeFirst();
     }
@@ -63,10 +72,16 @@ public class UpNext {
         if (!mUpNext.contains(song)) return false;
         int index = mUpNext.indexOf(song);
         mUpNext.remove(song);
-        boolean isAuto = index < mUserIndexStart || index >= mUserIndexFinish;
-        if (mUserIndexFinish > 0) mUserIndexFinish--;
-        if (mUserIndexStart > 0) mUserIndexStart--;
+        boolean isAuto = isAuto(index);
+        if (!isAuto) {
+            if (mUserIndexFinish > 0) mUserIndexFinish--;
+            if (mUserIndexStart > 0) mUserIndexStart--;
+        }
         song.isUpNext = false;
         return isAuto;
+    }
+
+    private boolean isAuto(int index) {
+        return index < mUserIndexStart || index >= mUserIndexFinish;
     }
 }

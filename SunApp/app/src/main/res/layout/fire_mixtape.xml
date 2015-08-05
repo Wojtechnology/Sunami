@@ -81,12 +81,12 @@
             android:textColor="@color/primaryColorDark" />
 
         <Button
-            android:id="@+id/add_queue_button"
+            android:id="@+id/song_menu_button"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/ic_queue_add" />
+            android:background="@drawable/ic_queue_add"/>
 
     </LinearLayout>
     

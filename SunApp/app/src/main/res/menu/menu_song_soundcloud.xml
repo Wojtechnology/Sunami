@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/play_next_button"
+        android:title="Play next"/>
+    <item android:id="@+id/add_queue_button"
+        android:title="Add to queue" />
+    <item android:id="@+id/manage_library_button"
+        android:title="Add to library"/>
+</menu>

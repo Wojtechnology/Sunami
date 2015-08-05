@@ -472,16 +472,13 @@ public class TheBrain extends Service {
         }
     }
 
-    public void toggleSongInQueue(FireMixtape song) {
-        if (song.isUpNext) {
-            removeSong(song);
-        } else if (song != mPlaying) {
-            addSong(song);
-        }
+    public void addSongToFront(FireMixtape song) {
+        mUpNext.pushFrontUser(song);
+        updateListItem(song);
+        updateUpNextUI();
     }
 
-    // Adds song to queue
-    public void addSong(FireMixtape song) {
+    public void addSongToQueue(FireMixtape song) {
         mUpNext.pushUser(song);
         updateListItem(song);
         updateUpNextUI();

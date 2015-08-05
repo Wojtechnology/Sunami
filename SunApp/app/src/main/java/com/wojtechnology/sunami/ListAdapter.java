@@ -7,9 +7,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -234,7 +237,35 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mTheBrain.toggleSongInQueue(current);
+                    PopupMenu popup = new PopupMenu(mContext, v);
+                    MenuInflater inflater = popup.getMenuInflater();
+                    if (current.isSoundcloud) {
+                        inflater.inflate(R.menu.menu_song_soundcloud, popup.getMenu());
+                    } else {
+                        inflater.inflate(R.menu.menu_song, popup.getMenu());
+                    }
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+
+                            switch (id) {
+                                case R.id.play_next_button:
+                                    mTheBrain.addSongToFront(current);
+                                    break;
+                                case R.id.add_queue_button:
+                                    mTheBrain.addSongToQueue(current);
+                                    break;
+                                case R.id.manage_library_button:
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            return true;
+                        }
+                    });
+                    popup.show();
                 }
             });
         }
@@ -325,7 +356,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             duration = (TextView) itemView.findViewById(R.id.list_duration);
             icon = (ImageView) itemView.findViewById(R.id.list_icon);
             background = (RelativeLayout) itemView.findViewById(R.id.list_background);
-            addButton = (Button) itemView.findViewById(R.id.add_queue_button);
+            addButton = (Button) itemView.findViewById(R.id.song_menu_button);
             fireView = (ImageView) itemView.findViewById(R.id.fire);
         }
     }
