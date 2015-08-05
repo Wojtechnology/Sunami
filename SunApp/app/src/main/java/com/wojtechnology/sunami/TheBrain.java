@@ -496,7 +496,6 @@ public class TheBrain extends Service {
         }
     }
 
-
     public void toggleSongInLibrary(FireMixtape song) {
         if (!mSongManager.addSong(song)) {
             mSongManager.removeSong(song);
@@ -508,6 +507,10 @@ public class TheBrain extends Service {
 
     public boolean isSongInLibrary(FireMixtape song) {
         return mSongManager.containsSong(song);
+    }
+
+    public boolean isSongInUpNext(FireMixtape song) {
+        return mUpNext.contains(song);
     }
 
     public void updateListItem(FireMixtape song) {

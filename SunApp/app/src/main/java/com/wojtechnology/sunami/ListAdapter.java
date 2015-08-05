@@ -208,7 +208,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             // Set add button resourse
             Drawable addToQueue;
-            if (current.isUpNext) {
+            if (mTheBrain.isSongInUpNext(current)) {
                 addToQueue = mContext.getResources().getDrawable(R.drawable.ic_playlist_add_white_24dp);
                 addToQueue.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
             } else {
@@ -241,6 +241,12 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     MenuInflater inflater = popup.getMenuInflater();
                     if (current.isSoundcloud) {
                         inflater.inflate(R.menu.menu_song_soundcloud, popup.getMenu());
+                        MenuItem menuItem = popup.getMenu().findItem(R.id.manage_library_button);
+                        if (mTheBrain.isSongInLibrary(current)) {
+                            menuItem.setTitle("Remove from library");
+                        } else {
+                            menuItem.setTitle("Add to library");
+                        }
                     } else {
                         inflater.inflate(R.menu.menu_song, popup.getMenu());
                     }
