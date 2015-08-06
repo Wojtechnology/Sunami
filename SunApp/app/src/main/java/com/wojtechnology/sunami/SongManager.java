@@ -338,7 +338,21 @@ public class SongManager {
         for (int i = 0; i < songs.length(); i++) {
             JSONArray ja = (JSONArray) songs.get(i);
             try {
-                FireMixtape song = mSongDict.get(ja.getString(0));
+                FireMixtape song;
+                boolean isSoundcloud = ja.getBoolean(5);
+                if (isSoundcloud) {
+                    song = new FireMixtape(context);
+                    song.title = ja.getString(6);
+                    song.artist = ja.getString(7);
+                    song.duration = ja.getString(8);
+                    song.album_art_url = ja.getString(9);
+                    song.data = ja.getString(0);
+                    song.isSoundcloud = true;
+                    mSongList.add(song);
+                    mSongDict.put(song.data, song);
+                } else {
+                    song = mSongDict.get(ja.getString(0));
+                }
                 song.genre = ja.getString(1);
                 song.actualGenre = ja.getString(2);
                 song.multiplier = ja.getDouble(3);
@@ -363,11 +377,19 @@ public class SongManager {
         JSONArray ja = new JSONArray();
         for (int i = 0; i < mSongList.size(); i++) {
             JSONArray song = new JSONArray();
-            song.put(0, mSongList.get(i).data);
-            song.put(1, mSongList.get(i).genre);
-            song.put(2, mSongList.get(i).actualGenre);
-            song.put(3, mSongList.get(i).multiplier);
-            song.put(4, mSongList.get(i).lastPlayed.getTime().toString());
+            FireMixtape fireMixtape = mSongList.get(i);
+            song.put(0, fireMixtape.data);
+            song.put(1, fireMixtape.genre);
+            song.put(2, fireMixtape.actualGenre);
+            song.put(3, fireMixtape.multiplier);
+            song.put(4, fireMixtape.lastPlayed.getTime().toString());
+            song.put(5, fireMixtape.isSoundcloud);
+            if (fireMixtape.isSoundcloud) {
+                song.put(6, fireMixtape.title);
+                song.put(7, fireMixtape.artist);
+                song.put(8, fireMixtape.duration);
+                song.put(9, fireMixtape.album_art_url);
+            }
             ja.put(song);
         }
         return ja;

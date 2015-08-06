@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -66,6 +67,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (mContext.mFastScroller != null) {
             mContext.mFastScroller.setVisibility(View.VISIBLE);
         }
+        Log.e("ListAdapter", "FlushVisibleData");
         mVisibleData = new ArrayList<>(mData);
         notifyDataSetChanged();
     }

@@ -185,6 +185,9 @@ public class TheBrain extends Service {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mLoaded = true;
+            if (mBound) {
+                mContext.refreshRecyclerViewData();
+            }
         }
     }
 
@@ -506,6 +509,8 @@ public class TheBrain extends Service {
         if (mBound) {
             mContext.refreshRecyclerViewData();
         }
+        mChangedState = true;
+        savePersistentState();
     }
 
     public boolean isSongInLibrary(FireMixtape song) {

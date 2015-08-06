@@ -68,6 +68,7 @@ public class FireMixtape{
         isSoundcloud = false;
         multiplier = 1.0;
         calculatedValue = 1.0;
+        genre = SongManager.DEFAULT_GENRE;
         actualGenre = SongManager.DEFAULT_GENRE;
         lastPlayed = Calendar.getInstance();
         lastPlayed.set(Calendar.YEAR, lastPlayed.get(Calendar.YEAR) - 1);
