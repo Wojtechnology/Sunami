@@ -11,6 +11,8 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
@@ -449,6 +451,11 @@ public class TheBrain extends Service {
         FireMixtape oldPlaying = mPlaying;
         mPlaying = song;
 
+        if (song.isSoundcloud && !isNetworkAvailable()) {
+            playNext();
+            return;
+        }
+
         if (mPlaying != null) {
             // request audio focus if already doesn't have it
             registerAudio();
@@ -474,6 +481,13 @@ public class TheBrain extends Service {
         } else {
             Log.e("TheBrain", "No song provided");
         }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void addSongToFront(FireMixtape song) {
