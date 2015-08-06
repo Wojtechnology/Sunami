@@ -197,13 +197,15 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         } else {
             final ItemHolder itemHolder = (ItemHolder) holder;
+            final boolean isInLibrary = !current.isSoundcloud || mTheBrain.isSongInLibrary(current);
+
             itemHolder.title.setText(current.title);
             itemHolder.artist.setText(current.artist);
 
             getThumbnailSize(itemHolder);
             mThumbnailManager.setAlbumThumbnail(current, mThumbnailDimens, itemHolder.icon);
 
-            if (current.isSoundcloud) {
+            if (!isInLibrary) {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));
             } else {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.primaryColorDark));
@@ -249,7 +251,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (current.isSoundcloud) {
                         inflater.inflate(R.menu.menu_song_soundcloud, popup.getMenu());
                         MenuItem menuItem = popup.getMenu().findItem(R.id.manage_library_button);
-                        if (mTheBrain.isSongInLibrary(current)) {
+                        if (isInLibrary) {
                             menuItem.setTitle("Remove from library");
                         } else {
                             menuItem.setTitle("Add to library");
@@ -271,6 +273,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     break;
                                 case R.id.manage_library_button:
                                     mTheBrain.toggleSongInLibrary(current);
+                                    updateItem(current);
                                     break;
                                 default:
                                     break;

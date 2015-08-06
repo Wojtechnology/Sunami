@@ -20,6 +20,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -503,7 +504,7 @@ public class TheBrain extends Service {
             mSongManager.removeSong(song);
         }
         if (mBound) {
-            mContext.resetState();
+            mContext.refreshRecyclerViewData();
         }
     }
 

@@ -142,10 +142,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         }
     }
 
-    public void resetState() {
-        if (!mListAdapter.mIsSearching) {
-            setState(mState);
-        }
+    public void refreshRecyclerViewData() {
+        new GetDataTask().execute();
     }
 
     public int getState() {
@@ -188,21 +186,23 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    class GetDataTask extends AsyncTask<Void, Integer, Void> {
+    class GetDataTask extends AsyncTask<Boolean, Integer, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(Boolean... params) {
             if (mState == STATE_SONGS) {
                 mListAdapter.setData(mTheBrain.getDataByTitle());
             } else {
                 mListAdapter.setData(mTheBrain.getDataByArtist());
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mListAdapter.flushVisibleData();
-                    setProgressBar(false);
-                }
-            });
+            if (!mListAdapter.mIsSearching) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mListAdapter.flushVisibleData();
+                        setProgressBar(false);
+                    }
+                });
+            }
             return null;
         }
     }
