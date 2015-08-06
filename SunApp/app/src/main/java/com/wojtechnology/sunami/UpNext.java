@@ -8,14 +8,14 @@ import java.util.List;
  */
 public class UpNext {
     private LinkedList<FireMixtape> mUpNext;
-    private int mUserIndexStart;
+
+    // Finish index for songs added from history or user added
     private int mUserIndexFinish;
 
     public static final int UP_NEXT_MIN = 1;
 
     public UpNext() {
         mUpNext = new LinkedList<>();
-        mUserIndexStart = 0;
         mUserIndexFinish = 0;
     }
 
@@ -41,19 +41,9 @@ public class UpNext {
         setUpNextFlag(song);
     }
 
-    public void pushFrontUser(FireMixtape song) {
-        mUpNext.addFirst(song);
-        mUserIndexStart++;
-        mUserIndexFinish++;
-        setUpNextFlag(song);
-    }
-
     public void pushFront(FireMixtape song) {
         mUpNext.addFirst(song);
-        if (mUserIndexFinish > 0) {
-            mUserIndexStart++;
-            mUserIndexFinish++;
-        }
+        mUserIndexFinish++;
         setUpNextFlag(song);
     }
 
@@ -61,10 +51,7 @@ public class UpNext {
         if (size() <= 0) {
             return null;
         }
-        if (!isAuto(0)) {
-            if (mUserIndexFinish > 0) mUserIndexFinish--;
-            if (mUserIndexStart > 0) mUserIndexStart--;
-        }
+        if (mUserIndexFinish > 0) mUserIndexFinish--;
         FireMixtape song = mUpNext.removeFirst();
         setUpNextFlag(song);
         return song;
@@ -77,7 +64,6 @@ public class UpNext {
         boolean isAuto = isAuto(index);
         if (!isAuto) {
             if (mUserIndexFinish > 0) mUserIndexFinish--;
-            if (mUserIndexStart > 0) mUserIndexStart--;
         }
         setUpNextFlag(song);
         return isAuto;
@@ -92,6 +78,6 @@ public class UpNext {
     }
 
     private boolean isAuto(int index) {
-        return index < mUserIndexStart || index >= mUserIndexFinish;
+        return index >= mUserIndexFinish;
     }
 }

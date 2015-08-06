@@ -473,7 +473,7 @@ public class TheBrain extends Service {
     }
 
     public void addSongToFront(FireMixtape song) {
-        mUpNext.pushFrontUser(song);
+        mUpNext.pushFront(song);
         updateListItem(song);
         updateUpNextUI();
     }
@@ -493,6 +493,8 @@ public class TheBrain extends Service {
             // Send an empty song play
             PlayInstance.setSongDate(song);
             mShuffleController.recalculateSong(song);
+        } else {
+            mShuffleController.loadNext();
         }
     }
 
