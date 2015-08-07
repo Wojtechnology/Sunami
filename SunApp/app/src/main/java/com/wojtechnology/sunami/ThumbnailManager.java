@@ -25,7 +25,7 @@ public class ThumbnailManager {
 
     public ThumbnailManager(MainActivity context) {
         mContext = context;
-        mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire_mixtape_default);
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;

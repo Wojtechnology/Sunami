@@ -210,6 +210,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             getThumbnailSize(itemHolder);
             mThumbnailManager.setAlbumThumbnail(current, mThumbnailDimens, itemHolder.icon);
 
+            // Set duration text color
             if (!isInLibrary) {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.accentColor));
             } else {
