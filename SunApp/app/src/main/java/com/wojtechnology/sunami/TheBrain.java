@@ -49,6 +49,8 @@ public class TheBrain extends Service {
     public static final String PLAY_STOP = "play_stop";
     private final String WAKE_LOCK_ID = "SunamiWakeLock";
 
+    private final String SAVE_FILE_BASE = "__app_data_";
+
     private static final int HISTORY_SIZE = 10;
 
     private MainActivity mContext;
@@ -115,46 +117,61 @@ public class TheBrain extends Service {
         private void attemptReadOld() {
             long startTime = Calendar.getInstance().getTimeInMillis();
             boolean isNew = false;
+            int numTries = 0;
+            int fileNum = getExistingFile();
             InputStream is;
-            try {
-                is = TheBrain.this.openFileInput("appData.json");
-                Log.e("GenreGraph", "Open existing");
-            } catch (FileNotFoundException e) {
-                is = TheBrain.this.getResources().openRawResource(R.raw.genres);
-                isNew = true;
-                Log.e("GenreGraph", "Open new");
-            }
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                String line = reader.readLine();
-                String jString = "";
-                while (line != null) {
-                    jString += line;
-                    line = reader.readLine();
+            do {
+                try {
+                    String fileName = SAVE_FILE_BASE + fileNum;
+                    is = TheBrain.this.openFileInput(fileName);
+                    Log.e("TheBrain", "Open existing " + fileName);
+                } catch (FileNotFoundException e) {
+                    is = TheBrain.this.getResources().openRawResource(R.raw.genres);
+                    isNew = true;
+                    Log.e("TheBrain", "Open new");
                 }
-                reader.close();
-                is.close();
-                JSONArray ja = new JSONArray(jString);
-                if (isNew) readNew(ja);
-                else readOld(ja);
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    String line = reader.readLine();
+                    String jString = "";
+                    while (line != null) {
+                        jString += line;
+                        line = reader.readLine();
+                    }
+                    reader.close();
+                    is.close();
+                    JSONArray ja = new JSONArray(jString);
+                    if (isNew) readNew(ja);
+                    else readOld(ja);
 
-                // Enable shuffle controller to use calculated values to choose songs
-                mShuffleController.setLoadCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                corruptedFile();
-            }
+                    // Enable shuffle controller to use calculated values to choose songs
+                    mShuffleController.setLoadCompleted();
+                    numTries = 2;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    numTries++;
+                    fileNum = (fileNum + 1) % 2;
+                    if (numTries == 2) {
+                        corruptedFile();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    numTries++;
+                    fileNum = (fileNum + 1) % 2;
+                    if (numTries == 2) {
+                        corruptedFile();
+                    }
+                }
+            } while (numTries < 2);
             Log.i("TheBrain", "Finished reading file in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
         }
 
-        // Should be replaced by a better file management system
+        // Should never be called but here just in case...
         private void corruptedFile() {
             InputStream is = TheBrain.this.getResources().openRawResource(R.raw.genres);
-            Log.e("GenreGraph", "Opening new because corruption");
+            Log.e("TheBrain", "Opening new because corruption");
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 String line = reader.readLine();
@@ -193,20 +210,34 @@ public class TheBrain extends Service {
         }
     }
 
+    private int getExistingFile() {
+        String[] files = fileList();
+        for (int i = 0; i < files.length; i++) {
+            String firstFile = files[i];
+            if (firstFile.contains(SAVE_FILE_BASE)) {
+                return Integer.parseInt(firstFile.replace(SAVE_FILE_BASE, ""));
+            }
+        }
+        return -1;
+    }
+
     private class SaveAppDataTask extends AsyncTask<Void, Integer, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
             long startTime = Calendar.getInstance().getTimeInMillis();
+            int fileNum = getExistingFile();
+            String fileName = SAVE_FILE_BASE + ((fileNum <= 0) ? 1 : 0);
             try {
                 FileOutputStream fileOS = TheBrain.this.openFileOutput(
-                        "appData.json", Context.MODE_PRIVATE);
+                        fileName, Context.MODE_PRIVATE);
                 JSONArray ja = new JSONArray();
                 ja.put(0, 1);
                 ja.put(1, mGenreGraph.getGraphJSON());
                 ja.put(2, mSongManager.getSongJSON());
                 fileOS.write(ja.toString().getBytes());
                 fileOS.close();
+                deleteFile(SAVE_FILE_BASE + ((fileNum <= 0) ? 0 : 1));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -214,7 +245,7 @@ public class TheBrain extends Service {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i("TheBrain", "Finished saving file in " +
+            Log.i("TheBrain", "Finished saving file " + fileName + " in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
             return null;
