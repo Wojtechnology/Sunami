@@ -215,7 +215,6 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 itemHolder.duration.setTextColor(mContext.getResources().getColor(R.color.primaryColorDark));
             }
-
             itemHolder.duration.setText(displayTime(current.duration));
 
             // Set add button resourse
@@ -229,7 +228,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemHolder.addButton.setBackground(addToQueue);
 
             // Set fire resource
-            Drawable fire = mContext.getResources().getDrawable(R.drawable.fire_mixtape);
+            Drawable fire = mContext.getResources().getDrawable(current.isSoundcloud ?
+                    R.drawable.logo_big_soundcloud : R.drawable.fire_mixtape);
             float val = calculateNormalized(current);
             if (val > 0.2f) {
                 fire.setColorFilter(0xffffab40, PorterDuff.Mode.MULTIPLY);
@@ -280,6 +280,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     mTheBrain.toggleSongInLibrary(current);
                                     updateItem(current);
                                     break;
+                                case R.id.open_with_soundcloud:
+                                    openSoundcloudSongInBrowser(current.permalink_url);
+                                    break;
                                 default:
                                     break;
                             }
@@ -306,6 +309,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         intent.setAction(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setData(Uri.parse("https://soundcloud.com"));
+        mContext.startActivity(intent);
+    }
+
+    private void openSoundcloudSongInBrowser(String link) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse(link));
         mContext.startActivity(intent);
     }
 

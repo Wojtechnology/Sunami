@@ -346,6 +346,7 @@ public class SongManager {
                     song.artist = ja.getString(7);
                     song.duration = ja.getString(8);
                     song.album_art_url = ja.getString(9);
+                    song.permalink_url = ja.getString(10);
                     song.data = ja.getString(0);
                     song.isSoundcloud = true;
                     mSongList.add(song);
@@ -389,6 +390,7 @@ public class SongManager {
                 song.put(7, fireMixtape.artist);
                 song.put(8, fireMixtape.duration);
                 song.put(9, fireMixtape.album_art_url);
+                song.put(10, fireMixtape.permalink_url);
             }
             ja.put(song);
         }

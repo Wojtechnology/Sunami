@@ -50,6 +50,7 @@ public class FireMixtape{
     // Used for getting thumbnails
     public String album_id;
     public String album_art_url;
+    public String permalink_url;
 
     // Values that are used to calculate popularity of song
     public Calendar lastPlayed;

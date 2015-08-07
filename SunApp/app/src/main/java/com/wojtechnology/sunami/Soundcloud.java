@@ -40,13 +40,14 @@ public class Soundcloud {
                     JSONArray songs = new JSONArray(response);
                     for (int i = 0; i < songs.length(); i++) {
                         JSONObject song = (JSONObject) songs.get(i);
-                        if (song.getBoolean("streamable")) {
+                        if (!song.getString("streamable").equals("null") && song.getBoolean("streamable")) {
                             FireMixtape fireMixtape = new FireMixtape(mContext);
                             fireMixtape.title = song.getString("title");
                             fireMixtape.artist = song.getJSONObject("user").getString("username");
                             fireMixtape.duration = song.getString("duration");
                             fireMixtape.album_art_url = fetchArtwork(song);
                             fireMixtape.data = SoundcloudRestClient.generateGoodUrl(song.getString("stream_url"));
+                            fireMixtape.permalink_url = song.getString("permalink_url");
                             fireMixtape.isSoundcloud = true;
                             if (!((MainActivity) mContext).mTheBrain.isSongInLibrary(fireMixtape)) {
                                 fireMixtapeList.add(fireMixtape);
