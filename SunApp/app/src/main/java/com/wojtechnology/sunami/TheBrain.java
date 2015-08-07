@@ -556,6 +556,8 @@ public class TheBrain extends Service {
         }
         mChangedState = true;
         savePersistentState();
+        mShuffleController.updateList();
+        mShuffleController.setSongValuesAsync();
     }
 
     public boolean isSongInLibrary(FireMixtape song) {

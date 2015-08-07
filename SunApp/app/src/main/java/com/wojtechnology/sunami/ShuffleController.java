@@ -74,6 +74,7 @@ public class ShuffleController {
     }
 
     public void setLoadCompleted() {
+        updateList();
         setSongValuesAsync();
         mIsLoaded = true;
     }
@@ -124,7 +125,7 @@ public class ShuffleController {
     private void randomLoadOne() {
         int random = (int) (Math.random() * mSongManager.size());
         FireMixtape song = mSongManager.getSongAtIndex(random);
-        if (!isContained(song)) {
+        if (!isContained(song) && (mTheBrain.isNetworkAvailable() || !song.isSoundcloud)) {
             mUpNext.pushBack(song);
         }
     }
@@ -137,7 +138,7 @@ public class ShuffleController {
         // Find the highest `calculatedValue`
         for (int i = 0; i < mSongList.size(); i++) {
             FireMixtape song = mSongList.get(i);
-            if (!isContained(song) && song.calculatedValue > max) {
+            if (!isContained(song) && song.calculatedValue > max && (mTheBrain.isNetworkAvailable() || !song.isSoundcloud)) {
                 max = song.calculatedValue;
                 highestSong = song;
             }
