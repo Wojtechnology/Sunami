@@ -54,7 +54,6 @@ public class TheBrain extends Service {
     private static final int HISTORY_SIZE = 10;
 
     private MainActivity mContext;
-    private boolean mChangedState;
     private boolean mIsInit;
     private boolean mBound;
     private boolean mHasAudioFocus;
@@ -63,6 +62,9 @@ public class TheBrain extends Service {
 
     // Determines whether the song will be paused after it is prepared
     private boolean mPauseAfterLoad;
+
+    // Keeps track of how many save request were made
+    private int mSaveCount;
 
     // Contains list of songs
     private SongManager mSongManager;
@@ -225,6 +227,11 @@ public class TheBrain extends Service {
 
         @Override
         protected Void doInBackground(Void... params) {
+            if (mSaveCount <= 0) {
+                return null;
+            }
+
+            Log.i("TheBrain", "Started saving file");
             long startTime = Calendar.getInstance().getTimeInMillis();
             int fileNum = getExistingFile();
             String fileName = SAVE_FILE_BASE + ((fileNum <= 0) ? 1 : 0);
@@ -248,20 +255,25 @@ public class TheBrain extends Service {
             Log.i("TheBrain", "Finished saving file " + fileName + " in " +
                     Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
                     " millis.");
+
+            if (mSaveCount > 1) {
+                mSaveCount = 1;
+            } else {
+                mSaveCount = 0;
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mChangedState = false;
         }
     }
 
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
-        mChangedState = false;
+        mSaveCount = 0;
         mIsInit = false;
         mBound = false;
         mHasAudioFocus = false;
@@ -404,7 +416,9 @@ public class TheBrain extends Service {
 
     // save all data that needs to persist in between sessions
     public void savePersistentState() {
-        if (mChangedState && mLoaded) {
+        Log.e("TheBrain", "Request Save");
+        mSaveCount++;
+        if (mLoaded) {
             saveAppData();
         }
     }
@@ -554,7 +568,6 @@ public class TheBrain extends Service {
         if (mBound) {
             mContext.refreshRecyclerViewData();
         }
-        mChangedState = true;
         savePersistentState();
         mShuffleController.updateList();
         mShuffleController.setSongValuesAsync();
@@ -588,7 +601,6 @@ public class TheBrain extends Service {
     private void donePlayback(FireMixtape song, int duration) {
         PlayInstance playInstance = new PlayInstance(song, duration);
         mShuffleController.addPlayInstance(playInstance);
-        mChangedState = true;
         savePersistentState();
     }
 
