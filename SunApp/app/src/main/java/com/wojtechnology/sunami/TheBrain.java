@@ -15,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.media.MediaMetadataCompat;
@@ -365,6 +366,21 @@ public class TheBrain extends Service {
         }
     }
 
+    private void setNotificationStatus(boolean isPlaying) {
+        if (mPlaying == null) {
+            stopForeground(true);
+            return;
+        }
+
+        if (isPlaying) {
+            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
+        } else {
+            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_play_hint);
+        }
+
+        startForeground(534, mNotification);
+    }
+
     // This is needed to keep the background service running
     private void setNotification(boolean isPlaying) {
         if (mPlaying == null) {
@@ -373,10 +389,9 @@ public class TheBrain extends Service {
         }
 
         if (mNotification == null || mNotificationView == null) {
-            mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
-
             Intent notificationIntent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+            mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
 
             mNotification = new Notification.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher)
@@ -395,19 +410,13 @@ public class TheBrain extends Service {
         serviceStopIntent.setAction(TheBrain.PLAY_STOP);
         PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
 
-        if (isPlaying) {
-            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
-        } else {
-            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_play_hint);
-        }
-
         mNotificationView.setTextViewText(R.id.notif_title, mPlaying.title);
         mNotificationView.setTextViewText(R.id.notif_artist, mPlaying.artist);
         mNotificationView.setOnClickPendingIntent(R.id.play_notif_button, pendingPlayIntent);
         mNotificationView.setOnClickPendingIntent(R.id.next_notif_button, pendingNextIntent);
         mNotificationView.setOnClickPendingIntent(R.id.close_notif_button, pendingStopIntent);
 
-        startForeground(534, mNotification);
+        setNotificationStatus(isPlaying);
     }
 
     // save all data that needs to persist in between sessions
@@ -517,6 +526,7 @@ public class TheBrain extends Service {
                 mMediaPlayer.prepareAsync();
                 mPreparing = true;
                 setMetaData(mPlaying);
+                setNotification(true);
                 if (mBound) {
                     mContext.playSong(mPlaying);
                 }
@@ -718,7 +728,7 @@ public class TheBrain extends Service {
     // Changes UI as required
     private void setUI(boolean isPlaying) {
         setProgress(mMediaPlayer.getCurrentPosition(), isPlaying);
-        setNotification(isPlaying);
+        setNotificationStatus(isPlaying);
         if (mBound) {
             mContext.updateSongView();
         }
