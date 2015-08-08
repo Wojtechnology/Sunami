@@ -293,10 +293,6 @@ public class TheBrain extends Service {
                     setUI(false);
                     mPauseAfterLoad = false;
                 }
-                setMetaData(mPlaying);
-                if (mBound) {
-                    mContext.playSong(mPlaying);
-                }
                 mPreparing = false;
             }
         };
@@ -520,6 +516,10 @@ public class TheBrain extends Service {
                 mMediaPlayer.setDataSource(mPlaying.data);
                 mMediaPlayer.prepareAsync();
                 mPreparing = true;
+                setMetaData(mPlaying);
+                if (mBound) {
+                    mContext.playSong(mPlaying);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
