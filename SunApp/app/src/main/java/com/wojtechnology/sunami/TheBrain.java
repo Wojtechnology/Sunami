@@ -275,49 +275,6 @@ public class TheBrain extends Service {
         }
     }
 
-    private class SetMetadataTask extends AsyncTask<FireMixtape, Integer, Void> {
-        @Override
-        protected Void doInBackground(FireMixtape... params) {
-            FireMixtape song = params[0];
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mNotification = getLollipopNotifBuilder(true)
-                        .setContentTitle(song.title)
-                        .setContentText(song.artist)
-                        .setLargeIcon(mThumbnail)
-                        .build();
-                startForeground(534, mNotification);
-            }
-            return null;
-        }
-    }
-
-    private Notification.Builder getLollipopNotifBuilder(boolean isPlaying) {
-        // Start app intent
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
-
-        // Other intents
-        Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
-        servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
-        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
-        Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
-        serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
-        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
-        Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
-        serviceStopIntent.setAction(TheBrain.PLAY_STOP);
-        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
-
-        Notification.Builder builder = new Notification.Builder(this);
-        Notification.MediaStyle style = new Notification.MediaStyle();
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setStyle(style);
-        builder.setContentIntent(pendingIntent);
-        builder.setDeleteIntent(pendingStopIntent);
-        builder.addAction(isPlaying ? R.drawable.ic_pause_hint : R.drawable.ic_play_hint, "Play",
-                pendingPlayIntent);
-        return builder;
-    }
-
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -420,11 +377,6 @@ public class TheBrain extends Service {
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Update notification with correct button
-            return;
-        }
-
         if (isPlaying) {
             mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
         } else {
@@ -440,11 +392,7 @@ public class TheBrain extends Service {
             stopForeground(true);
             return;
         }
-
         setMetadata(song);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return;
-        }
 
         if (mNotification == null || mNotificationView == null) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -487,11 +435,10 @@ public class TheBrain extends Service {
                 .build();
         MediaSessionCompatHelper.applyState(mSession, state);
         mSession.setMetadata(new MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
-            .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
-            .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, mThumbnail)
-            .build());
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
+                .build());
     }
 
     public void setProgress(int pos, boolean isPlaying) {
