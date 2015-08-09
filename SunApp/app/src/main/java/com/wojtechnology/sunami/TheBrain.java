@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
@@ -60,6 +62,8 @@ public class TheBrain extends Service {
     private boolean mHasAudioFocus;
     private boolean mLoaded;
     private boolean mPreparing;
+
+    private Bitmap mThumbnail;
 
     // Determines whether the song will be paused after it is prepared
     private boolean mPauseAfterLoad;
@@ -271,6 +275,49 @@ public class TheBrain extends Service {
         }
     }
 
+    private class SetMetadataTask extends AsyncTask<FireMixtape, Integer, Void> {
+        @Override
+        protected Void doInBackground(FireMixtape... params) {
+            FireMixtape song = params[0];
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mNotification = getLollipopNotifBuilder(true)
+                        .setContentTitle(song.title)
+                        .setContentText(song.artist)
+                        .setLargeIcon(mThumbnail)
+                        .build();
+                startForeground(534, mNotification);
+            }
+            return null;
+        }
+    }
+
+    private Notification.Builder getLollipopNotifBuilder(boolean isPlaying) {
+        // Start app intent
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+
+        // Other intents
+        Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
+        servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
+        Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
+        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+        Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceStopIntent.setAction(TheBrain.PLAY_STOP);
+        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
+
+        Notification.Builder builder = new Notification.Builder(this);
+        Notification.MediaStyle style = new Notification.MediaStyle();
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setStyle(style);
+        builder.setContentIntent(pendingIntent);
+        builder.setDeleteIntent(pendingStopIntent);
+        builder.addAction(isPlaying ? R.drawable.ic_pause_hint : R.drawable.ic_play_hint, "Play",
+                pendingPlayIntent);
+        return builder;
+    }
+
     @Override
     public void onCreate() {
         Log.e("TheBrain", "Started service");
@@ -284,6 +331,7 @@ public class TheBrain extends Service {
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
+        mThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.fire_mixtape_default_large);
         mMPPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -372,6 +420,11 @@ public class TheBrain extends Service {
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Update notification with correct button
+            return;
+        }
+
         if (isPlaying) {
             mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
         } else {
@@ -382,22 +435,27 @@ public class TheBrain extends Service {
     }
 
     // This is needed to keep the background service running
-    private void setNotification(boolean isPlaying) {
+    private void setNotification(FireMixtape song) {
         if (mPlaying == null) {
             stopForeground(true);
+            return;
+        }
+
+        setMetadata(song);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return;
         }
 
         if (mNotification == null || mNotificationView == null) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+
             mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
 
             mNotification = new Notification.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContent(mNotificationView)
                     .setContentIntent(pendingIntent)
-                    .build();
+                    .setContent(mNotificationView).build();
         }
 
         Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
@@ -416,7 +474,38 @@ public class TheBrain extends Service {
         mNotificationView.setOnClickPendingIntent(R.id.next_notif_button, pendingNextIntent);
         mNotificationView.setOnClickPendingIntent(R.id.close_notif_button, pendingStopIntent);
 
-        setNotificationStatus(isPlaying);
+        setNotificationStatus(true);
+    }
+
+    private void setMetadata(FireMixtape song) {
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
+                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 0.0f)
+                .build();
+        MediaSessionCompatHelper.applyState(mSession, state);
+        mSession.setMetadata(new MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
+            .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
+            .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, mThumbnail)
+            .build());
+    }
+
+    public void setProgress(int pos, boolean isPlaying) {
+        mMediaPlayer.seekTo(pos);
+        int speed = isPlaying ? 1 : 0;
+        int playState = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
+                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .setState(playState, pos, speed)
+                .build();
+        MediaSessionCompatHelper.applyState(mSession, state);
     }
 
     // save all data that needs to persist in between sessions
@@ -525,8 +614,7 @@ public class TheBrain extends Service {
                 mMediaPlayer.setDataSource(mPlaying.data);
                 mMediaPlayer.prepareAsync();
                 mPreparing = true;
-                setMetaData(mPlaying);
-                setNotification(true);
+                setNotification(mPlaying);
                 if (mBound) {
                     mContext.playSong(mPlaying);
                 }
@@ -658,7 +746,6 @@ public class TheBrain extends Service {
             @Override
             public void onSeekTo(long pos) {
                 super.onSeekTo(pos);
-                Log.e("TAG", "SeekTo");
                 setProgress((int) pos, isPlaying());
             }
         });
@@ -673,28 +760,6 @@ public class TheBrain extends Service {
         mSession.release();
     }
 
-    private void setMetaData(FireMixtape song) {
-        mSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
-                .build());
-    }
-
-    public void setProgress(int pos, boolean isPlaying) {
-        mMediaPlayer.seekTo(pos);
-        int speed = isPlaying ? 1 : 0;
-        int playState = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
-        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(playState, pos, speed)
-                .build();
-        MediaSessionCompatHelper.applyState(mSession, state);
-    }
-
     public void togglePlay() {
         if (isPlaying() || mPreparing) {
             pausePlayback();
@@ -705,7 +770,7 @@ public class TheBrain extends Service {
             } else {
                 resumePlayback();
                 registerAudio();
-                setMetaData(mPlaying);
+                setMetadata(mPlaying);
                 setUI(true);
             }
         }
