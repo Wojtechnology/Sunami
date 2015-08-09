@@ -32,9 +32,10 @@ public class ShuffleController {
     private final double SONG_OFF_MULTI = 1.0;
     private final double SONG_POS_MULTI = 0.4;
     private final double SONG_NEG_MULTI = 0.5;
-    private final long TIME_SPREAD = 3600000;
-    private final long TIME_OFFSET = 7200000;
     private final double RANDOM_SPREAD = 0.2;
+
+    private double mTimeSpread;
+    private double mTimeOffset;
 
     // Cutoff threshold for song multiplier, currently 2 minutes
     private final long SONG_MULTIPLIER_CUTOFF = 120000;
@@ -71,6 +72,12 @@ public class ShuffleController {
         mTheBrain = theBrain;
         mIsLoaded = false;
         mUpNext = upNext;
+        updateValues();
+    }
+
+    public void updateValues() {
+        mTimeSpread = mTheBrain.mMainPrefs.songCycle / 2;
+        mTimeOffset = mTheBrain.mMainPrefs.songCycle;
     }
 
     public void setLoadCompleted() {
@@ -210,8 +217,8 @@ public class ShuffleController {
 
     private double getLastPlayedMultiplier(FireMixtape song) {
         long delta = song.getMillisSinceLastPlay();
-        double k = -1.0 / ((double) TIME_SPREAD);
-        double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - TIME_OFFSET)));
+        double k = -1.0 / ((double) mTimeSpread);
+        double denominator = 1.0 + Math.pow(Math.E, k * ((double) (delta - mTimeOffset)));
         if (denominator == 0.0) return 0.0;
         double sigmoid = 1.0 / denominator;
         return sigmoid * 0.9 + 0.1;

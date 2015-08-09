@@ -77,7 +77,7 @@ public class TheBrain extends Service {
     private SongHistory mSongHistory;
     private PlayTimer mPlayTimer;
     private ShuffleController mShuffleController;
-    private MainPrefs mMainPrefs;
+    public MainPrefs mMainPrefs;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
@@ -341,6 +341,7 @@ public class TheBrain extends Service {
 
                 case UPDATE_SETTINGS:
                     mMainPrefs.updateValues();
+                    mShuffleController.updateValues();
                     break;
 
                 default:
