@@ -63,8 +63,6 @@ public class TheBrain extends Service {
     private boolean mLoaded;
     private boolean mPreparing;
 
-    private Bitmap mThumbnail;
-
     // Determines whether the song will be paused after it is prepared
     private boolean mPauseAfterLoad;
 
@@ -288,7 +286,6 @@ public class TheBrain extends Service {
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
-        mThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.fire_mixtape_default_large);
         mMPPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
