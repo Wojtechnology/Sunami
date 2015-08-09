@@ -5,4 +5,9 @@
         android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:title="@string/action_settings"
+        app:showAsAction="always" />
 </menu>

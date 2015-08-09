@@ -243,6 +243,9 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         if (id == R.id.search) {
             // Menus are for plebs...
             return true;
+        } else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
