@@ -63,6 +63,8 @@ public class TheBrain extends Service {
     private boolean mLoaded;
     private boolean mPreparing;
 
+    private Bitmap mThumbnail;
+
     // Determines whether the song will be paused after it is prepared
     private boolean mPauseAfterLoad;
 
@@ -285,6 +287,7 @@ public class TheBrain extends Service {
         mPauseAfterLoad = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
+        mThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.fire_mixtape_default_large);
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
         mMPPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
@@ -374,12 +377,19 @@ public class TheBrain extends Service {
             return;
         }
 
-        if (isPlaying) {
-            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mNotification = getLollipopNotifBuilder(isPlaying)
+                    .setLargeIcon(mThumbnail)
+                    .setContentTitle(mPlaying.title)
+                    .setContentText(mPlaying.artist)
+                    .build();
         } else {
-            mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_play_hint);
+            if (isPlaying) {
+                mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_pause_hint);
+            } else {
+                mNotificationView.setInt(R.id.play_notif_button, "setBackgroundResource", R.drawable.ic_play_hint);
+            }
         }
-
         startForeground(534, mNotification);
     }
 
@@ -390,6 +400,10 @@ public class TheBrain extends Service {
             return;
         }
         setMetadata(song);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Notification is created in setMetadata
+            return;
+        }
 
         if (mNotification == null || mNotificationView == null) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -413,8 +427,8 @@ public class TheBrain extends Service {
         serviceStopIntent.setAction(TheBrain.PLAY_STOP);
         PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
 
-        mNotificationView.setTextViewText(R.id.notif_title, mPlaying.title);
-        mNotificationView.setTextViewText(R.id.notif_artist, mPlaying.artist);
+        mNotificationView.setTextViewText(R.id.notif_title, song.title);
+        mNotificationView.setTextViewText(R.id.notif_artist, song.artist);
         mNotificationView.setOnClickPendingIntent(R.id.play_notif_button, pendingPlayIntent);
         mNotificationView.setOnClickPendingIntent(R.id.next_notif_button, pendingNextIntent);
         mNotificationView.setOnClickPendingIntent(R.id.close_notif_button, pendingStopIntent);
@@ -422,20 +436,59 @@ public class TheBrain extends Service {
         setNotificationStatus(true);
     }
 
+    private Notification.Builder getLollipopNotifBuilder(boolean isPlaying) {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+
+        Intent serviceLastIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceLastIntent.setAction(TheBrain.PLAY_LAST);
+        PendingIntent pendingLastIntent = PendingIntent.getService(mContext, 0, serviceLastIntent, 0);
+        Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
+        servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
+        Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
+        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+        Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceStopIntent.setAction(TheBrain.PLAY_STOP);
+        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
+
+        Notification.MediaStyle style = new Notification.MediaStyle();
+        style.setShowActionsInCompactView(1, 2);
+        Notification.Builder builder = new Notification.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
+                .setStyle(style);
+        builder.addAction(R.drawable.ic_last_hint, "Last", pendingLastIntent);
+        builder.addAction(isPlaying ? R.drawable.ic_pause_hint : R.drawable.ic_play_hint, "Play", pendingPlayIntent);
+        builder.addAction(R.drawable.ic_next_hint, "Next", pendingNextIntent);
+        builder.addAction(R.drawable.ic_stop_notif, "Stop", pendingStopIntent);
+        return builder;
+    }
+
     private void setMetadata(FireMixtape song) {
-        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                .setState(PlaybackStateCompat.STATE_PLAYING, 0, 0.0f)
-                .build();
-        MediaSessionCompatHelper.applyState(mSession, state);
-        mSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
-                .build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mNotification = getLollipopNotifBuilder(true)
+                    .setLargeIcon(mThumbnail)
+                    .setContentTitle(song.title)
+                    .setContentText(song.artist)
+                    .build();
+            startForeground(534, mNotification);
+        } else {
+            PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                    .setActions(
+                            PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                    PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO |
+                                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                    .setState(PlaybackStateCompat.STATE_PLAYING, 0, 0.0f)
+                    .build();
+            MediaSessionCompatHelper.applyState(mSession, state);
+            mSession.setMetadata(new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, song.artist)
+                    .putLong(MediaMetadata.METADATA_KEY_DURATION, Long.parseLong(song.duration))
+                    .build());
+        }
     }
 
     public void setProgress(int pos, boolean isPlaying) {
@@ -753,7 +806,6 @@ public class TheBrain extends Service {
 
     public void playLast() {
         if (mSongHistory.isEmpty()) {
-            setUI(false);
             return;
         }
         FireMixtape song = mSongHistory.pop();

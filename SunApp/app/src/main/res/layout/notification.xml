@@ -51,7 +51,7 @@
             android:textColor="@color/primaryColorDark"/>
 
     </LinearLayout>
-    
+
     <Button
         android:id="@+id/close_notif_button"
         android:layout_width="24dp"
