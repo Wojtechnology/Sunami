@@ -179,11 +179,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         return true;
     }
 
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    public boolean isSoundcloudEnabled() {
+        return mTheBrain.isSoundcloudEnabled();
     }
 
     class GetDataTask extends AsyncTask<Boolean, Integer, Void> {

@@ -595,7 +595,7 @@ public class TheBrain extends Service {
         FireMixtape oldPlaying = mPlaying;
         mPlaying = song;
 
-        if (song.isSoundcloud && !isNetworkAvailable()) {
+        if (song.isSoundcloud && !isSoundcloudEnabled()) {
             playNext();
             return;
         }
@@ -631,20 +631,15 @@ public class TheBrain extends Service {
         }
     }
 
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     public void addSongToFront(FireMixtape song) {
+        if (!checkAndNotifySoundcloudEnabled(song)) return;
         mUpNext.pushFront(song);
         updateListItem(song);
         updateUpNextUI();
     }
 
     public void addSongToQueue(FireMixtape song) {
+        if (!checkAndNotifySoundcloudEnabled(song)) return;
         mUpNext.pushBackUser(song);
         updateListItem(song);
         updateUpNextUI();
@@ -842,5 +837,32 @@ public class TheBrain extends Service {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isSoundcloudEnabled() {
+        if (!mMainPrefs.isSoundcloudEnabled) return false;
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo connection = connectivityManager.getActiveNetworkInfo();
+        return wifi.isConnected() || (!mMainPrefs.forceOverWifi && connection != null && connection.isConnected());
+    }
+
+    public boolean checkAndNotifySoundcloudEnabled(FireMixtape song) {
+        if (song.isSoundcloud && !isSoundcloudEnabled()) {
+            if (!mMainPrefs.isSoundcloudEnabled) {
+                Toast.makeText(this, "You have disabled Soundcloud integration. To play this song, change your settings.", Toast.LENGTH_SHORT).show();
+            } else if (mMainPrefs.forceOverWifi) {
+                Toast.makeText(this, "You are not connected to a wifi network. To play this song, change your settings.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "You are not connected to the internet.", Toast.LENGTH_SHORT).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isSmartEnabled() {
+        return mMainPrefs.isSmartEnabled;
     }
 }

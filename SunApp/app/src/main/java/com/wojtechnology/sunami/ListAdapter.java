@@ -110,7 +110,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setFilterSubmit(String q) {
         setFilter(q, false);
 
-        if (mContext.isNetworkAvailable()) {
+        if (mContext.isSoundcloudEnabled()) {
             FireMixtape fireMixtape = HeaderHelper.makeSoundcloudFinal(mContext, "Searching...");
             mVisibleData.add(fireMixtape);
 
@@ -245,6 +245,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     if (mTheBrain.mPlaying != current) {
+                        if (!mTheBrain.checkAndNotifySoundcloudEnabled(current)) return;
                         mTheBrain.playSong(current, true);
                     }
                 }

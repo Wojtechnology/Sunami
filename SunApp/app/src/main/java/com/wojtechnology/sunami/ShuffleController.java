@@ -121,7 +121,7 @@ public class ShuffleController {
     private void randomLoadOne() {
         int random = (int) (Math.random() * mSongManager.size());
         FireMixtape song = mSongManager.getSongAtIndex(random);
-        if (!isContained(song) && (mTheBrain.isNetworkAvailable() || !song.isSoundcloud)) {
+        if (!isContained(song) && (mTheBrain.isSoundcloudEnabled() || !song.isSoundcloud)) {
             mUpNext.pushBack(song);
         }
     }
@@ -134,7 +134,7 @@ public class ShuffleController {
         // Find the highest `calculatedValue`
         for (int i = 0; i < mSongList.size(); i++) {
             FireMixtape song = mSongList.get(i);
-            if (!isContained(song) && song.calculatedValue > max && (mTheBrain.isNetworkAvailable() || !song.isSoundcloud)) {
+            if (!isContained(song) && song.calculatedValue > max && (mTheBrain.isSoundcloudEnabled() || !song.isSoundcloud)) {
                 max = song.calculatedValue;
                 highestSong = song;
             }
@@ -152,7 +152,7 @@ public class ShuffleController {
     public void loadNext() {
         // `mSongList.size() - 1` to account for the song that is currently playing
         while (mUpNext.size() < mUpNext.UP_NEXT_MIN && mUpNext.size() < mSongList.size() - 1) {
-            if (!mIsLoaded) {
+            if (!mIsLoaded || !mTheBrain.isSmartEnabled()) {
                 // If file not yet read, RNJesus
                 randomLoadOne();
             } else {

@@ -28,7 +28,6 @@ public class MainPrefs {
         isSoundcloudEnabled = sharedPreferences.getBoolean("prefSoundcloudEnabled", true);
         forceOverWifi = sharedPreferences.getBoolean("prefOverWifi", false);
         songCycle = 60000 * Long.parseLong(sharedPreferences.getString("prefSongCycle", "120"));
-        printValues();
     }
 
     private void printValues() {
