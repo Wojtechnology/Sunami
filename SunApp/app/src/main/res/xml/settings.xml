@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_user_profile" >
-        <EditTextPreference
-            android:title="@string/pref_user_name"
-            android:summary="@string/pref_user_name_summary"
-            android:key="prefUsername"/>
+    <PreferenceCategory android:title="@string/pref_player" >
+        <CheckBoxPreference
+            android:title="@string/pref_smart_enabled"
+            android:summary="@string/pref_smart_enabled_summary"
+            android:key="prefSmartShuffleEnabled"
+            android:defaultValue="true"/>
+        <ListPreference
+            android:title="@string/pref_song_cycle"
+            android:summary="@string/pref_song_cycle_summary"
+            android:key="prefSongCycle"
+            android:defaultValue="120"
+            android:entries="@array/songCyclePeriod"
+            android:entryValues="@array/songCyclePeriodValues"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_update_setting" >
+    <PreferenceCategory android:title="@string/pref_soundcloud" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="prefSoundcloudEnabled"
+            android:summary="@string/pref_soundcloud_enabled_summary"
+            android:title="@string/pref_soundcloud_enabled" >
+        </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="prefSendReport"
-            android:summary="@string/pref_send_report_summary"
-            android:title="@string/pref_send_report" >
+            android:key="prefOverWifi"
+            android:summary="@string/pref_wifi_only_summary"
+            android:title="@string/pref_wifi_only" >
         </CheckBoxPreference>
-
-        <ListPreference
-            android:key="prefSyncFrequency"
-            android:entries="@array/syncFrequency"
-            android:summary="@string/pref_sync_frequency_summary"
-            android:entryValues="@array/syncFrequencyValues"
-            android:title="@string/pref_sync_frequency" />
     </PreferenceCategory>
 </PreferenceScreen>

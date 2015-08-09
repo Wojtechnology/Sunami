@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="syncFrequency">
-        <item name="1">Once a day</item>
-        <item name="7">Once a week</item>
-        <item name="3">Once a year</item>
-        <item name="0">Never (Update maually)</item>
+    <string-array name="songCyclePeriod">
+        <item name="30">30 minutes</item>
+        <item name="60">An hour</item>
+        <item name="120">2 hours</item>
+        <item name="240">4 hours</item>
+        <item name="480">8 hours</item>
     </string-array>
-    <string-array name="syncFrequencyValues">
-        <item name="1">1</item>
-        <item name="7">7</item>
+    <string-array name="songCyclePeriodValues">
         <item name="30">30</item>
-        <item name="0">0</item>
+        <item name="60">60</item>
+        <item name="120">120</item>
+        <item name="240">240</item>
+        <item name="480">480</item>
     </string-array>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.wojtechnology.sunami;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +24,9 @@ public class SettingsActivity extends PreferenceActivity {
         actionbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent serviceUpdateIntent = new Intent(getApplicationContext(), TheBrain.class);
+                serviceUpdateIntent.setAction(TheBrain.UPDATE_SETTINGS);
+                startService(serviceUpdateIntent);
                 finish();
             }
         });

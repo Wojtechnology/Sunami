@@ -50,6 +50,7 @@ public class TheBrain extends Service {
     public static final String PLAY_NEXT = "play_next";
     public static final String PLAY_LAST = "play_last";
     public static final String PLAY_STOP = "play_stop";
+    public static final String UPDATE_SETTINGS = "update_settings";
     private final String WAKE_LOCK_ID = "SunamiWakeLock";
 
     private final String SAVE_FILE_BASE = "__app_data_";
@@ -76,6 +77,7 @@ public class TheBrain extends Service {
     private SongHistory mSongHistory;
     private PlayTimer mPlayTimer;
     private ShuffleController mShuffleController;
+    private MainPrefs mMainPrefs;
 
     // Contains list of genres
     private GenreGraph mGenreGraph;
@@ -287,6 +289,7 @@ public class TheBrain extends Service {
         mPauseAfterLoad = false;
         mUpNext = new UpNext();
         mPlayTimer = new PlayTimer();
+        mMainPrefs = new MainPrefs(this);
         mThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.fire_mixtape_default_large);
         mNoisyAudioStreamReceiver = new NoisyAudioStreamReceiver();
         mMPPreparedListener = new MediaPlayer.OnPreparedListener() {
@@ -309,6 +312,7 @@ public class TheBrain extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (mIsInit && action != null) {
+            Log.e("TheBrain", "Received " + action);
             switch (intent.getAction()) {
                 case TOGGLE_PLAY:
                     togglePlay();
@@ -333,6 +337,10 @@ public class TheBrain extends Service {
                         mMediaPlayer.release();
                         stopSelf();
                     }
+                    break;
+
+                case UPDATE_SETTINGS:
+                    mMainPrefs.updateValues();
                     break;
 
                 default:

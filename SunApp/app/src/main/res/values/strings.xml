@@ -15,14 +15,16 @@
     <string name="user_learn_drawer">isDrawerLearned</string>
     <string name="search_hint">Search</string>
 
-    <string name="pref_send_report">Send crash reports</string>
-    <string name="pref_send_report_summary">Helps to fix bugs</string>
-    <string name="pref_sync_frequency">Sync frequency</string>
-    <string name="pref_sync_frequency_summary">Set the sync frequency</string>
-    <string name="pref_user_name">Set username</string>
-    <string name="pref_user_name_summary">Set your username</string>
+    <string name="pref_song_cycle">Set song cycle</string>
+    <string name="pref_song_cycle_summary">Song cycle is the minimum amount of time before songs will be repeated</string>
+    <string name="pref_smart_enabled">Smart shuffle enabled</string>
+    <string name="pref_smart_enabled_summary">Songs will be hand selected based on your listening history</string>
+    <string name="pref_soundcloud_enabled">Soundcloud integration enabled</string>
+    <string name="pref_soundcloud_enabled_summary">Search and play songs from Soundcloud over the internet</string>
+    <string name="pref_wifi_only">Over wifi only</string>
+    <string name="pref_wifi_only_summary">Enable Soundcloud integration only when connected to a wifi network</string>
 
-    <string name="pref_user_profile">User Profile</string>
-    <string name="pref_update_setting">Update Settings</string>
+    <string name="pref_player">Smart Shuffle</string>
+    <string name="pref_soundcloud">Soundcloud</string>
 
 </resources>
