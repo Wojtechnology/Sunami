@@ -28,7 +28,6 @@ public class OuterLayout extends RelativeLayout {
     private RelativeLayout mDraggable;
     private LinearLayout mSongHint;
     private Button mPlayHintButton;
-    private Button mNextHintButton;
     private TextView mHintTitle;
     private TextView mHintArtist;
     private SeekBar mSeekBar;
@@ -56,14 +55,14 @@ public class OuterLayout extends RelativeLayout {
                 // View has stopped moving
 
                 if(mDraggingBorder == 0){
-                    onStopDraggingToClosed();
+                    // Nothing
                 }else if(mDraggingBorder == mVerticalRange){
                     mIsOpen = true;
                 }
 
             }
             if (state == ViewDragHelper.STATE_DRAGGING){
-                onStartDragging();
+                // Nothing
             }
             mDraggingState = state;
         }
@@ -94,29 +93,29 @@ public class OuterLayout extends RelativeLayout {
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             final float rangeToCheck = mVerticalRange;
-            if(mDraggingBorder == 0){
+            if (mDraggingBorder == 0) {
                 mIsOpen = false;
                 return;
             }
-            if(mDraggingBorder == rangeToCheck){
+            if (mDraggingBorder == rangeToCheck) {
                 mIsOpen = true;
                 return;
             }
             boolean settleToOpen = false;
             if (yvel > AUTO_OPEN_SPEED_LIMIT) {
                 settleToOpen = true;
-            }else if(yvel < -AUTO_OPEN_SPEED_LIMIT){
+            } else if (yvel < -AUTO_OPEN_SPEED_LIMIT) {
                 settleToOpen = false;
-            }else if(mDraggingBorder > rangeToCheck / 2){
+            } else if (mDraggingBorder > rangeToCheck / 2) {
                 settleToOpen = true;
-            }else if(mDraggingBorder < rangeToCheck / 2){
+            } else if (mDraggingBorder < rangeToCheck / 2) {
                 settleToOpen = false;
             }
 
             final int settleDestY = settleToOpen ? mVerticalRange : 0;
             mIsOpen = settleToOpen;
 
-            if(mDragHelper.settleCapturedViewAt(0, settleDestY)){
+            if (mDragHelper.settleCapturedViewAt(0, settleDestY)) {
                 ViewCompat.postInvalidateOnAnimation(OuterLayout.this);
             }
         }
@@ -133,7 +132,6 @@ public class OuterLayout extends RelativeLayout {
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
         mSongHint = (LinearLayout) findViewById(R.id.song_hint);
         mPlayHintButton = (Button) findViewById(R.id.play_hint_button);
-        mNextHintButton = (Button) findViewById(R.id.next_hint_button);
         mHintTitle = (TextView) findViewById(R.id.hint_title);
         mHintArtist = (TextView) findViewById(R.id.hint_artist);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
@@ -145,20 +143,15 @@ public class OuterLayout extends RelativeLayout {
             }
         });
 
-        mNextHintButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mContext.mTheBrain.playNext();
-            }
-        });
-
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -192,20 +185,13 @@ public class OuterLayout extends RelativeLayout {
                 return false;
             }
         });
-
-        updateDefaultLocation();
-        super.onFinishInflate();
-    }
-
-    // Only happens when playing new song
-    public void setMaxProgress(int max) {
     }
 
     public void setProgress(int progress) {
         mSeekBar.setProgress(progress);
     }
 
-    public int updateDefaultLocation(){
+    public int updateDefaultLocation() {
         Display display = mContext.getWindowManager().getDefaultDisplay();
         Window window = mContext.getWindow();
         Point size = new Point();
@@ -215,25 +201,25 @@ public class OuterLayout extends RelativeLayout {
         return updateDefaultLocation(size.y - rectangle.top);
     }
 
-    public int updateDefaultLocation(int screenHeight){
+    public int updateDefaultLocation(int screenHeight) {
         int height;
-        if(mActive){
+        if (mActive) {
             height = screenHeight - mSongHint.getMeasuredHeight();
-        }else {
+        } else {
             height = screenHeight;
         }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mDraggable.getLayoutParams();
-        params.topMargin = height;
-        params.bottomMargin = -height;
+        params.topMargin = mIsOpen ? height : 0;
+        params.bottomMargin = mIsOpen ? -height : 0;
         mDraggable.setLayoutParams(params);
 
-        if(!mIsFirst){
-            if(mIsOpen) {
+        if (!mIsFirst) {
+            if (mIsOpen) {
                 if (mDragHelper.smoothSlideViewTo(mDraggable, 0, height)) {
                     mDragHelper.continueSettling(true);
                 }
-            }else{
+            } else {
                 mDraggable.setTop(1);
                 if (mDragHelper.smoothSlideViewTo(mDraggable, 0, 0)) {
                     mDragHelper.continueSettling(true);
@@ -244,7 +230,7 @@ public class OuterLayout extends RelativeLayout {
         return height;
     }
 
-    public void updatePlayIcon(){
+    public void updatePlayIcon() {
         if (mContext.mTheBrain.isPlaying()) {
             mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
         } else {
@@ -255,23 +241,15 @@ public class OuterLayout extends RelativeLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mVerticalRange = h - mSongHint.getMeasuredHeight();
-        if(!mIsFirst) {
+        if (!mIsFirst) {
             updateDefaultLocation(h);
-        }else{
+        } else {
             mIsFirst = false;
         }
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
-    private void onStopDraggingToClosed(){
-        // To be implemented
-    }
-
-    private void onStartDragging(){
-        // To be implemented
-    }
-
-    private boolean isDraggableTarget(MotionEvent event){
+    private boolean isDraggableTarget(MotionEvent event) {
         int[] draggableLocation = new int[2];
         mSongHint.getLocationOnScreen(draggableLocation);
         int upperLimit = draggableLocation[1] + mSongHint.getMeasuredHeight();
@@ -319,12 +297,12 @@ public class OuterLayout extends RelativeLayout {
         return mIsOpen;
     }
 
-    public void playSong(FireMixtape song){
+    public void playSong(FireMixtape song) {
         if (!mContext.drawerOpen()) {
             mActive = true;
         }
         mSeekBar.setProgress(0);
-        if (song == null){
+        if (song == null) {
             return;
         }
         mSeekBar.setMax(Integer.parseInt(song.duration));
@@ -333,13 +311,13 @@ public class OuterLayout extends RelativeLayout {
         updateDefaultLocation();
     }
 
-    public void hideSong(){
+    public void hideSong() {
         mIsOpen = true;
         mActive = false;
         updateDefaultLocation();
     }
 
-    public void showSong(){
+    public void showSong() {
         mActive = true;
         updateDefaultLocation();
     }

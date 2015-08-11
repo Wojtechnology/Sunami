@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,19 +31,19 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/drawer_list"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <com.wojtechnology.sunami.FastScroller
                     android:id="@+id/fast_scroller"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="72dp"
-                    android:layout_alignTop="@id/drawer_list"
                     android:layout_alignBottom="@id/drawer_list"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    tools:ignore="RtlCompat"/>
+                    android:layout_alignTop="@id/drawer_list"
+                    android:layout_marginBottom="72dp"
+                    android:layout_marginTop="6dp"
+                    tools:ignore="RtlCompat" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
@@ -63,7 +63,7 @@
                 android:layout_gravity="start"
                 android:clickable="true"
                 app:layout="@layout/fragment_navigation_drawer"
-                tools:layout="@layout/fragment_navigation_drawer"/>
+                tools:layout="@layout/fragment_navigation_drawer" />
 
         </android.support.v4.widget.DrawerLayout>
 
@@ -76,15 +76,6 @@
         android:background="#FFF"
         android:clickable="true">
 
-        <SeekBar
-            android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
-
         <LinearLayout
             android:id="@+id/song_hint"
             android:layout_width="match_parent"
@@ -94,56 +85,87 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/accentColor"/>
+                android:background="@color/accentColor" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:orientation="horizontal">
+                android:layout_height="64dp">
 
-                <Button
-                    android:id="@+id/play_hint_button"
-                    android:layout_margin="8dp"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_play_hint"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/primaryColorDark">
 
-                <Button
-                    android:id="@+id/next_hint_button"
-                    android:layout_margin="8dp"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/ic_next_hint"/>
+                    <View
+                        android:id="@+id/last_hint_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="8dp"
+                        android:layout_alignParentLeft="true"
+                        android:background="@drawable/ic_skip_previous_white_48dp" />
+
+                    <View
+                        android:id="@+id/next_hint_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="8dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/ic_skip_next_white_48dp" />
+                </RelativeLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="72dp"
-                    android:orientation="vertical"
-                    android:paddingLeft="8dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#FFF"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/hint_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="0dp"
-                        android:paddingTop="12dp"
-                        android:singleLine="true"
-                        android:textSize="16sp"
-                        android:textColor="#000"/>
+                    <Button
+                        android:id="@+id/play_hint_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/ic_play_hint" />
 
-                    <TextView
-                        android:id="@+id/hint_artist"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="0dp"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_height="72dp"
+                        android:orientation="vertical"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp">
+
+                        <TextView
+                            android:id="@+id/hint_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="0dp"
+                            android:paddingTop="12dp"
+                            android:singleLine="true"
+                            android:textColor="#000"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/hint_artist"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="0dp"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
 
     </RelativeLayout>
 
