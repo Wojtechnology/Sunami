@@ -94,7 +94,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/primaryColorDark">
+                    android:background="@color/primaryColor">
 
                     <View
                         android:id="@+id/last_hint_button"
@@ -114,6 +114,7 @@
                 </RelativeLayout>
 
                 <LinearLayout
+                    android:id="@+id/hint"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#FFF"

@@ -5,12 +5,14 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
+import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -31,12 +33,17 @@ public class OuterLayout extends RelativeLayout {
     private TextView mHintTitle;
     private TextView mHintArtist;
     private SeekBar mSeekBar;
+    private LinearLayout mHint;
+    private View mNextHintButton;
     private int mDraggingBorder;
     private int mVerticalRange;
     private MainActivity mContext;
     private boolean mIsOpen;
     private boolean mActive;
     private boolean mIsFirst;
+    private boolean mAllowDrag;
+
+    private int mItemWidth;
 
     public OuterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -55,9 +62,11 @@ public class OuterLayout extends RelativeLayout {
                 // View has stopped moving
 
                 if(mDraggingBorder == 0){
-                    // Nothing
+                    mIsOpen = false;
+                    updateDefaultLocation();
                 }else if(mDraggingBorder == mVerticalRange){
                     mIsOpen = true;
+                    updateDefaultLocation();
                 }
 
             }
@@ -127,6 +136,7 @@ public class OuterLayout extends RelativeLayout {
         mIsOpen = true;
         mIsFirst = true;
         mActive = false;
+        mAllowDrag = true;
         mDraggingState = 0;
 
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
@@ -135,6 +145,12 @@ public class OuterLayout extends RelativeLayout {
         mHintTitle = (TextView) findViewById(R.id.hint_title);
         mHintArtist = (TextView) findViewById(R.id.hint_artist);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
+        mHint = (LinearLayout) findViewById(R.id.hint);
+        mNextHintButton = (View) findViewById(R.id.next_hint_button);
+
+        mNextHintButton.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mNextHintButton.getLayoutParams();
+        mItemWidth = mNextHintButton.getMeasuredWidth() + 2 * layoutParams.leftMargin;
 
         mPlayHintButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -166,21 +182,47 @@ public class OuterLayout extends RelativeLayout {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE: {
+                        if (isDragging) {
+                            int diffX = (int) event.getX() - mX;
+                            if (Math.abs(diffX) < mItemWidth) {
+                                mHint.setX((float) diffX);
+                            } else if (diffX >= mItemWidth) {
+                                mHint.setX((float) mItemWidth);
+                            } else if (diffX <= -mItemWidth) {
+                                mHint.setX((float) -mItemWidth);
+                            }
+                            if (Math.abs(diffX) > mItemWidth / 16) {
+                                mAllowDrag = false;
+                            } else {
+                                mAllowDrag = true;
+                            }
+                        }
+                        break;
+                    }
                     case MotionEvent.ACTION_DOWN: {
                         isDragging = true;
                         mX = (int) event.getX();
                         break;
                     }
+                    case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP: {
-                        if (isDragging && (int) event.getX() - mX > mDraggable.getMeasuredWidth() / 2) {
+                        if (isDragging && (int) event.getX() - mX >= mItemWidth) {
                             mContext.mTheBrain.playLast();
+                        } else if (isDragging && (int) event.getX() - mX <= -mItemWidth) {
+                            mContext.mTheBrain.playNext();
                         }
                         isDragging = false;
                         break;
                     }
                     default: {
+                        Log.e("MotionEvent", "Event: " + event.getAction());
                         break;
                     }
+                }
+                if (!isDragging) {
+                    mHint.setX(0);
+                    mAllowDrag = true;
                 }
                 return false;
             }
@@ -261,7 +303,7 @@ public class OuterLayout extends RelativeLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         try {
-            if (isDraggableTarget(event) && mDragHelper.shouldInterceptTouchEvent(event)) {
+            if (isDraggableTarget(event) && mDragHelper.shouldInterceptTouchEvent(event) && mAllowDrag) {
                 return true;
             } else {
                 return false;
