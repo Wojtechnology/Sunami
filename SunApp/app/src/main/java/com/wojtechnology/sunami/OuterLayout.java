@@ -42,8 +42,10 @@ public class OuterLayout extends RelativeLayout {
     private boolean mActive;
     private boolean mIsFirst;
     private boolean mAllowDrag;
+    private boolean mIsDragging;
 
     private int mItemWidth;
+    private int mScreenHeight;
 
     public OuterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -79,6 +81,14 @@ public class OuterLayout extends RelativeLayout {
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             mDraggingBorder = top;
+            int height = mScreenHeight - mSongHint.getMeasuredHeight();
+            float fraction = (float) top / (float) height;
+            if (fraction >= 0.5f) {
+                fraction = (fraction - 0.5f) * 2.0f;
+            } else {
+                fraction = 1.0f - fraction * 2.0f;
+            }
+            mPlayHintButton.setAlpha(fraction);
         }
 
         @Override
@@ -137,6 +147,7 @@ public class OuterLayout extends RelativeLayout {
         mIsFirst = true;
         mActive = false;
         mAllowDrag = true;
+        mIsDragging = false;
         mDraggingState = 0;
 
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
@@ -146,11 +157,13 @@ public class OuterLayout extends RelativeLayout {
         mHintArtist = (TextView) findViewById(R.id.hint_artist);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
         mHint = (LinearLayout) findViewById(R.id.hint);
-        mNextHintButton = (View) findViewById(R.id.next_hint_button);
+        mNextHintButton = findViewById(R.id.next_hint_button);
 
         mNextHintButton.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mNextHintButton.getLayoutParams();
         mItemWidth = mNextHintButton.getMeasuredWidth() + 2 * layoutParams.leftMargin;
+
+        updateScreenHeight();
 
         mPlayHintButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -177,13 +190,12 @@ public class OuterLayout extends RelativeLayout {
 
         mSongHint.setOnTouchListener(new OnTouchListener() {
             private int mX;
-            private boolean isDragging;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE: {
-                        if (isDragging) {
+                        if (mIsDragging) {
                             int diffX = (int) event.getX() - mX;
                             if (Math.abs(diffX) < mItemWidth) {
                                 mHint.setX((float) diffX);
@@ -202,19 +214,25 @@ public class OuterLayout extends RelativeLayout {
                     }
                     case MotionEvent.ACTION_DOWN: {
                         if (mIsOpen) {
-                            isDragging = true;
+                            mIsDragging = true;
                         }
                         mX = (int) event.getX();
                         break;
                     }
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP: {
-                        if (isDragging && (int) event.getX() - mX >= mItemWidth) {
+                        if (mIsDragging && (int) event.getX() - mX >= mItemWidth) {
                             mContext.mTheBrain.playLast();
-                        } else if (isDragging && (int) event.getX() - mX <= -mItemWidth) {
+                        } else if (mIsDragging && (int) event.getX() - mX <= -mItemWidth) {
                             mContext.mTheBrain.playNext();
+                        } else if (mAllowDrag) {
+                            if (mIsOpen) {
+                                openView();
+                            } else {
+                                closeView();
+                            }
                         }
-                        isDragging = false;
+                        mIsDragging = false;
                         break;
                     }
                     default: {
@@ -222,7 +240,7 @@ public class OuterLayout extends RelativeLayout {
                         break;
                     }
                 }
-                if (!isDragging) {
+                if (!mIsDragging) {
                     mHint.setX(0);
                     mAllowDrag = true;
                 }
@@ -231,18 +249,22 @@ public class OuterLayout extends RelativeLayout {
         });
     }
 
-    public void setProgress(int progress) {
-        mSeekBar.setProgress(progress);
-    }
-
-    public int updateDefaultLocation() {
+    private void updateScreenHeight() {
         Display display = mContext.getWindowManager().getDefaultDisplay();
         Window window = mContext.getWindow();
         Point size = new Point();
         Rect rectangle = new Rect();
         display.getSize(size);
         window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
-        return updateDefaultLocation(size.y - rectangle.top);
+        mScreenHeight = size.y - rectangle.top;
+    }
+
+    public void setProgress(int progress) {
+        mSeekBar.setProgress(progress);
+    }
+
+    public int updateDefaultLocation() {
+        return updateDefaultLocation(mScreenHeight);
     }
 
     public int updateDefaultLocation(int screenHeight) {
@@ -264,7 +286,6 @@ public class OuterLayout extends RelativeLayout {
                     mDragHelper.continueSettling(true);
                 }
             } else {
-                mDraggable.setTop(1);
                 if (mDragHelper.smoothSlideViewTo(mDraggable, 0, 0)) {
                     mDragHelper.continueSettling(true);
                 }
@@ -284,6 +305,7 @@ public class OuterLayout extends RelativeLayout {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        updateScreenHeight();
         mVerticalRange = h - mSongHint.getMeasuredHeight();
         if (!mIsFirst) {
             updateDefaultLocation(h);
@@ -363,6 +385,16 @@ public class OuterLayout extends RelativeLayout {
 
     public void showSong() {
         mActive = true;
+        updateDefaultLocation();
+    }
+
+    public void openView() {
+        mIsOpen = false;
+        updateDefaultLocation();
+    }
+
+    public void closeView() {
+        mIsOpen = true;
         updateDefaultLocation();
     }
 }
