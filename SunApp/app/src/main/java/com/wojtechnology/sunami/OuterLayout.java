@@ -43,6 +43,10 @@ public class OuterLayout extends RelativeLayout {
     private boolean mIsFirst;
     private boolean mAllowDrag;
     private boolean mIsDragging;
+    private boolean mPlayIconActive;
+
+    private OnClickListener mTogglePlayClickListener;
+    private OnClickListener mCloseHintClickListener;
 
     private int mItemWidth;
     private int mScreenHeight;
@@ -85,8 +89,14 @@ public class OuterLayout extends RelativeLayout {
             float fraction = (float) top / (float) height;
             if (fraction >= 0.5f) {
                 fraction = (fraction - 0.5f) * 2.0f;
+                mPlayIconActive = true;
+                mPlayHintButton.setOnClickListener(mTogglePlayClickListener);
+                updatePlayIcon();
             } else {
                 fraction = 1.0f - fraction * 2.0f;
+                mPlayIconActive = false;
+                mPlayHintButton.setOnClickListener(mCloseHintClickListener);
+                mPlayHintButton.setBackground(mContext.getResources().getDrawable(R.drawable.ic_close_hint));
             }
             mPlayHintButton.setAlpha(fraction);
         }
@@ -148,6 +158,7 @@ public class OuterLayout extends RelativeLayout {
         mActive = false;
         mAllowDrag = true;
         mIsDragging = false;
+        mPlayIconActive = true;
         mDraggingState = 0;
 
         mDraggable = (RelativeLayout) findViewById(R.id.draggable);
@@ -165,12 +176,21 @@ public class OuterLayout extends RelativeLayout {
 
         updateScreenHeight();
 
-        mPlayHintButton.setOnClickListener(new OnClickListener() {
+        mTogglePlayClickListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mContext.mTheBrain.togglePlay();
             }
-        });
+        };
+
+        mCloseHintClickListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeView();
+            }
+        };
+
+        mPlayHintButton.setOnClickListener(mTogglePlayClickListener);
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -296,10 +316,12 @@ public class OuterLayout extends RelativeLayout {
     }
 
     public void updatePlayIcon() {
-        if (mContext.mTheBrain.isPlaying()) {
-            mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
-        } else {
-            mPlayHintButton.setBackgroundResource(R.drawable.ic_play_hint);
+        if (mPlayIconActive) {
+            if (mContext.mTheBrain.isPlaying()) {
+                mPlayHintButton.setBackgroundResource(R.drawable.ic_pause_hint);
+            } else {
+                mPlayHintButton.setBackgroundResource(R.drawable.ic_play_hint);
+            }
         }
     }
 
