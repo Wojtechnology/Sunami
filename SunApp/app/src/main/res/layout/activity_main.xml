@@ -80,6 +80,7 @@
             android:id="@+id/song_hint"
             android:layout_width="match_parent"
             android:layout_height="@dimen/hint_height"
+            android:clickable="true"
             android:orientation="vertical">
 
             <View

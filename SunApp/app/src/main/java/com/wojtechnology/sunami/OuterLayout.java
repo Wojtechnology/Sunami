@@ -175,7 +175,7 @@ public class OuterLayout extends RelativeLayout {
             }
         });
 
-        mDraggable.setOnTouchListener(new OnTouchListener() {
+        mSongHint.setOnTouchListener(new OnTouchListener() {
             private int mX;
             private boolean isDragging;
 
@@ -192,7 +192,7 @@ public class OuterLayout extends RelativeLayout {
                             } else if (diffX <= -mItemWidth) {
                                 mHint.setX((float) -mItemWidth);
                             }
-                            if (Math.abs(diffX) > mItemWidth / 16) {
+                            if (Math.abs(diffX) > mItemWidth / 8) {
                                 mAllowDrag = false;
                             } else {
                                 mAllowDrag = true;
@@ -201,7 +201,9 @@ public class OuterLayout extends RelativeLayout {
                         break;
                     }
                     case MotionEvent.ACTION_DOWN: {
-                        isDragging = true;
+                        if (mIsOpen) {
+                            isDragging = true;
+                        }
                         mX = (int) event.getX();
                         break;
                     }
