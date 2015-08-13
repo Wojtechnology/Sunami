@@ -245,9 +245,9 @@
                         android:id="@+id/running_time"
                         android:layout_width="127dp"
                         android:layout_height="wrap_content"
-                        android:text="1:26"
                         android:textAlignment="textEnd"
                         android:gravity="end"
+                        android:text="0:00"
                         android:paddingRight="4dp"
                         android:textColor="#FFF"/>
 
@@ -260,8 +260,8 @@
                         android:id="@+id/total_time"
                         android:layout_width="127dp"
                         android:layout_height="wrap_content"
-                        android:text="3:41"
                         android:paddingLeft="4dp"
+                        android:text="0:00"
                         android:textColor="#FFF"/>
 
                     </LinearLayout>

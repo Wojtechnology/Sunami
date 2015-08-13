@@ -43,12 +43,16 @@ public class OuterLayout extends RelativeLayout {
     private boolean mIsFirst;
     private boolean mAllowDrag;
     private boolean mIsDragging;
+    private boolean mIsSeeking;
     private boolean mPlayIconActive;
 
     // Transport controls
     private Button mLastMainBut;
     private Button mPlayMainBut;
     private Button mNextMainBut;
+
+    private TextView mRunningTime;
+    private TextView mTotalTime;
 
     private OnClickListener mTogglePlayClickListener;
     private OnClickListener mCloseHintClickListener;
@@ -163,6 +167,7 @@ public class OuterLayout extends RelativeLayout {
         mActive = false;
         mAllowDrag = true;
         mIsDragging = false;
+        mIsSeeking = false;
         mPlayIconActive = true;
         mDraggingState = 0;
 
@@ -178,6 +183,9 @@ public class OuterLayout extends RelativeLayout {
         mLastMainBut = (Button) findViewById(R.id.last_main_button);
         mPlayMainBut = (Button) findViewById(R.id.play_main_button);
         mNextMainBut = (Button) findViewById(R.id.next_main_button);
+
+        mRunningTime = (TextView) findViewById(R.id.running_time);
+        mTotalTime = (TextView) findViewById(R.id.total_time);
 
         mLastMainBut.setOnClickListener(new OnClickListener() {
             @Override
@@ -226,15 +234,20 @@ public class OuterLayout extends RelativeLayout {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mIsSeeking) {
+                    mRunningTime.setText(ListAdapter.displayTime(Integer.toString(progress)));
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                mIsSeeking = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mContext.updateMediaPlayerProgress(seekBar.getProgress());
+                mIsSeeking = false;
             }
         });
 
@@ -310,7 +323,10 @@ public class OuterLayout extends RelativeLayout {
     }
 
     public void setProgress(int progress) {
-        mSeekBar.setProgress(progress);
+        if (!mIsSeeking) {
+            mRunningTime.setText(ListAdapter.displayTime(Integer.toString(progress)));
+            mSeekBar.setProgress(progress);
+        }
     }
 
     public int updateDefaultLocation() {
@@ -429,6 +445,7 @@ public class OuterLayout extends RelativeLayout {
             return;
         }
         mSeekBar.setMax(Integer.parseInt(song.duration));
+        mTotalTime.setText(ListAdapter.displayTime(song.duration));
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);
         updateDefaultLocation();

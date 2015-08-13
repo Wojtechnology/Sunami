@@ -436,27 +436,30 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private String displayTime(String time) {
+    public static String displayTime(String time) {
         String newTime = "";
         int intTime = Integer.parseInt(time);
         boolean hasHour = false;
-        do {
-            if (intTime < 60000) {
-                newTime += "0:";
-            } else if (intTime < 3600000) {
-                String minutes = Integer.toString(intTime / 60000);
-                if (minutes.length() == 1 && hasHour) {
-                    newTime += "0" + minutes + ":";
-                } else {
-                    newTime += minutes + ":";
-                }
-                intTime = intTime % 60000;
+
+        if (intTime >= 3600000) {
+            newTime += Integer.toString(intTime / 3600000) + ":";
+            intTime = intTime % 3600000;
+            hasHour = true;
+        }
+
+        if (intTime >= 60000) {
+            String minutes = Integer.toString(intTime / 60000);
+            if (minutes.length() == 1 && hasHour) {
+                newTime += "0" + minutes + ":";
             } else {
-                newTime += Integer.toString(intTime / 3600000) + ":";
-                intTime = intTime % 3600000;
-                hasHour = true;
+                newTime += minutes + ":";
             }
-        } while (intTime >= 60000);
+            intTime = intTime % 60000;
+        } else if (hasHour) {
+            newTime += "00:";
+        } else {
+            newTime += "0:";
+        }
 
         String seconds = Integer.toString(intTime / 1000);
         if (seconds.length() == 1) {
