@@ -64,11 +64,15 @@ public class AlbumArtHelper {
         return BitmapFactory.decodeFile(pathName);
     }
 
-    public static Bitmap decodeBitmapFromURL(String src) {
+    public static Bitmap decodeBitmapFromURL(String src, boolean large) {
 
         // If the artwork returned null, don't want to try to show artwork
         if (src.equals("null")) {
             return null;
+        }
+
+        if (large) {
+            src = src.replace("large", "t500x500");
         }
 
         InputStream inputStream = null;

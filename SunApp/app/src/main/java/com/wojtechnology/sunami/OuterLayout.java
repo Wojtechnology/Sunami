@@ -469,7 +469,7 @@ public class OuterLayout extends RelativeLayout {
             FireMixtape song = params[0];
 
             if (song.isSoundcloud) {
-                mBM = AlbumArtHelper.decodeBitmapFromURL(song.album_art_url);
+                mBM = AlbumArtHelper.decodeBitmapFromURL(song.album_art_url, true);
             } else {
                 mBM = AlbumArtHelper.decodeBitmapFromAlbumId(mContext,
                         Long.parseLong(song.album_id));
