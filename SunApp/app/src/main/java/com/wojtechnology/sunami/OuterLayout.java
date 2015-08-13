@@ -45,6 +45,11 @@ public class OuterLayout extends RelativeLayout {
     private boolean mIsDragging;
     private boolean mPlayIconActive;
 
+    // Transport controls
+    private Button mLastMainBut;
+    private Button mPlayMainBut;
+    private Button mNextMainBut;
+
     private OnClickListener mTogglePlayClickListener;
     private OnClickListener mCloseHintClickListener;
 
@@ -169,6 +174,31 @@ public class OuterLayout extends RelativeLayout {
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
         mHint = (LinearLayout) findViewById(R.id.hint);
         mNextHintButton = findViewById(R.id.next_hint_button);
+
+        mLastMainBut = (Button) findViewById(R.id.last_main_button);
+        mPlayMainBut = (Button) findViewById(R.id.play_main_button);
+        mNextMainBut = (Button) findViewById(R.id.next_main_button);
+
+        mLastMainBut.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.mTheBrain.playLast();
+            }
+        });
+
+        mNextMainBut.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.mTheBrain.playNext();
+            }
+        });
+
+        mPlayMainBut.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.mTheBrain.togglePlay();
+            }
+        });
 
         mNextHintButton.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mNextHintButton.getLayoutParams();
@@ -322,6 +352,11 @@ public class OuterLayout extends RelativeLayout {
             } else {
                 mPlayHintButton.setBackgroundResource(R.drawable.ic_play_hint);
             }
+        }
+        if (mContext.mTheBrain.isPlaying()) {
+            mPlayMainBut.setBackgroundResource(R.drawable.ic_pause_hint_white);
+        } else {
+            mPlayMainBut.setBackgroundResource(R.drawable.ic_play_hint_white);
         }
     }
 
