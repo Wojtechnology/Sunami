@@ -1,8 +1,12 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
+import android.os.AsyncTask;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.text.Layout;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -53,6 +58,8 @@ public class OuterLayout extends RelativeLayout {
 
     private TextView mRunningTime;
     private TextView mTotalTime;
+
+    private ImageView mArtworkView;
 
     private OnClickListener mTogglePlayClickListener;
     private OnClickListener mCloseHintClickListener;
@@ -186,6 +193,8 @@ public class OuterLayout extends RelativeLayout {
 
         mRunningTime = (TextView) findViewById(R.id.running_time);
         mTotalTime = (TextView) findViewById(R.id.total_time);
+
+        mArtworkView = (ImageView) findViewById(R.id.album_art_view);
 
         mLastMainBut.setOnClickListener(new OnClickListener() {
             @Override
@@ -444,11 +453,35 @@ public class OuterLayout extends RelativeLayout {
         if (song == null) {
             return;
         }
+        new GetArtworkTask().execute(song);
         mSeekBar.setMax(Integer.parseInt(song.duration));
         mTotalTime.setText(ListAdapter.displayTime(song.duration));
         mHintTitle.setText(song.title);
         mHintArtist.setText(song.artist);
         updateDefaultLocation();
+    }
+
+    private class GetArtworkTask extends AsyncTask<FireMixtape, Integer, Void> {
+        private Bitmap mBM;
+
+        @Override
+        protected Void doInBackground(FireMixtape... params) {
+            FireMixtape song = params[0];
+
+            if (song.isSoundcloud) {
+                mBM = AlbumArtHelper.decodeBitmapFromURL(song.album_art_url);
+            } else {
+                mBM = AlbumArtHelper.decodeBitmapFromAlbumId(mContext,
+                        Long.parseLong(song.album_id));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mArtworkView.setImageBitmap(mBM);
+        }
     }
 
     public void hideSong() {

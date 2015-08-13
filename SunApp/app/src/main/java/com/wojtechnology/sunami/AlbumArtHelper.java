@@ -59,7 +59,12 @@ public class AlbumArtHelper {
         return BitmapFactory.decodeFile(pathName, options);
     }
 
-    public static Bitmap decodeSampledBitmapFromURL(String src) {
+    public static Bitmap decodeBitmapFromAlbumId(Context context, long album_id) {
+        String pathName = getRealPathFromURI(context, album_id);
+        return BitmapFactory.decodeFile(pathName);
+    }
+
+    public static Bitmap decodeBitmapFromURL(String src) {
 
         // If the artwork returned null, don't want to try to show artwork
         if (src.equals("null")) {

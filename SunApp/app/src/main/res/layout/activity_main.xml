@@ -76,6 +76,15 @@
         android:background="#FFF"
         android:clickable="true">
 
+        <ImageView
+            android:id="@+id/album_art_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:paddingTop="@dimen/hint_height"
+            android:src="#FFF"
+            android:scaleType="centerCrop"/>
+
         <LinearLayout
             android:id="@+id/song_hint"
             android:layout_width="match_parent"
@@ -159,14 +168,6 @@
             </RelativeLayout>
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/album_art_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:paddingTop="@dimen/hint_height"
-            android:src="#FFF" />
 
         <RelativeLayout
             android:id="@+id/transport_controls"
