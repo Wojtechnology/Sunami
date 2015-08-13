@@ -166,7 +166,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:paddingTop="@dimen/hint_height"
-            android:src="@color/accentColor" />
+            android:src="#FFF" />
 
         <RelativeLayout
             android:id="@+id/transport_controls"
@@ -176,7 +176,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:background="#5999">
+            android:background="#5888">
 
             <LinearLayout
                 android:id="@+id/transport_buttons"
