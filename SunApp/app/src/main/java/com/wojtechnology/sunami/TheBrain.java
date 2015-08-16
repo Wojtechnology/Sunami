@@ -375,7 +375,9 @@ public class TheBrain extends Service {
             mIsInit = true;
         } else {
             mContext.setRecyclerViewData();
-            mContext.showSong();
+            if (mPlaying != null) {
+                mContext.playSong(mPlaying);
+            }
         }
     }
 

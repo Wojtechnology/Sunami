@@ -91,9 +91,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         super.onWindowFocusChanged(hasFocus);
         if (!mSongPlayingChecked) {
             mSongPlayingChecked = true;
-            if (mTheBrain != null) {
-                mOuterLayout.playSong(mTheBrain.mPlaying);
-            }
+            mOuterLayout.showSong();
         }
     }
 
@@ -273,8 +271,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
     // The following functions call functions in OuterLayout.java
     public void playSong(FireMixtape song){
-        mOuterLayout.setProgress(mTheBrain.mMediaPlayer.getCurrentPosition());
         mOuterLayout.playSong(song);
+        mOuterLayout.setProgress(mTheBrain.mMediaPlayer.getCurrentPosition());
     }
 
     public void updateMediaPlayerProgress(int progress) {
