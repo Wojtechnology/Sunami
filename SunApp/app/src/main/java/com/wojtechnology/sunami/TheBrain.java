@@ -417,7 +417,7 @@ public class TheBrain extends Service {
 
         if (mNotification == null || mNotificationView == null) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 1, notificationIntent, 0);
 
             mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
 
@@ -429,13 +429,16 @@ public class TheBrain extends Service {
 
         Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
         servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
-        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
+        servicePlayIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 1, servicePlayIntent, 0);
         Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
-        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+        serviceNextIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 1, serviceNextIntent, 0);
         Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceStopIntent.setAction(TheBrain.PLAY_STOP);
-        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
+        serviceStopIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 1, serviceStopIntent, 0);
 
         mNotificationView.setTextViewText(R.id.notif_title, song.title);
         mNotificationView.setTextViewText(R.id.notif_artist, song.artist);
@@ -448,20 +451,25 @@ public class TheBrain extends Service {
 
     private Notification.Builder getLollipopNotifBuilder(boolean isPlaying) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
+        notificationIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 1, notificationIntent, 0);
 
         Intent serviceLastIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceLastIntent.setAction(TheBrain.PLAY_LAST);
-        PendingIntent pendingLastIntent = PendingIntent.getService(mContext, 0, serviceLastIntent, 0);
+        serviceLastIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingLastIntent = PendingIntent.getService(mContext, 1, serviceLastIntent, 0);
         Intent servicePlayIntent = new Intent(getApplicationContext(), TheBrain.class);
         servicePlayIntent.setAction(TheBrain.TOGGLE_PLAY);
-        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 0, servicePlayIntent, 0);
+        servicePlayIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(mContext, 1, servicePlayIntent, 0);
         Intent serviceNextIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceNextIntent.setAction(TheBrain.PLAY_NEXT);
-        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 0, serviceNextIntent, 0);
+        serviceNextIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingNextIntent = PendingIntent.getService(mContext, 1, serviceNextIntent, 0);
         Intent serviceStopIntent = new Intent(getApplicationContext(), TheBrain.class);
         serviceStopIntent.setAction(TheBrain.PLAY_STOP);
-        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 0, serviceStopIntent, 0);
+        serviceStopIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        PendingIntent pendingStopIntent = PendingIntent.getService(mContext, 1, serviceStopIntent, 0);
 
         Notification.MediaStyle style = new Notification.MediaStyle();
         style.setShowActionsInCompactView(1, 2);
