@@ -219,7 +219,11 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v == sv && hasFocus) {
+                    hideSong();
                     mDrawerFragment.closeDrawer();
+                }
+                else if (v == sv && !hasFocus) {
+                    showSong();
                 }
             }
         });
@@ -236,7 +240,6 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.search) {
-            // Menus are for plebs...
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
