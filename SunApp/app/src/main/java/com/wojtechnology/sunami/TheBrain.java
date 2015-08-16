@@ -312,7 +312,6 @@ public class TheBrain extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (mIsInit && action != null) {
-            Log.e("TheBrain", "Received " + action);
             switch (intent.getAction()) {
                 case TOGGLE_PLAY:
                     togglePlay();

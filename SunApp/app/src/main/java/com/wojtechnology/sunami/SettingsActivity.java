@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -24,11 +25,16 @@ public class SettingsActivity extends PreferenceActivity {
         actionbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceUpdateIntent = new Intent(getApplicationContext(), TheBrain.class);
-                serviceUpdateIntent.setAction(TheBrain.UPDATE_SETTINGS);
-                startService(serviceUpdateIntent);
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent serviceUpdateIntent = new Intent(getApplicationContext(), TheBrain.class);
+        serviceUpdateIntent.setAction(TheBrain.UPDATE_SETTINGS);
+        startService(serviceUpdateIntent);
     }
 }
