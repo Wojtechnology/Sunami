@@ -422,7 +422,7 @@ public class TheBrain extends Service {
             mNotificationView = new RemoteViews(getPackageName(), R.layout.notification);
 
             mNotification = new Notification.Builder(this)
-                    .setSmallIcon(R.mipmap.sunamilogo)
+                    .setSmallIcon(R.mipmap.sunaminotif)
                     .setContentIntent(pendingIntent)
                     .setContent(mNotificationView).build();
         }
@@ -474,7 +474,7 @@ public class TheBrain extends Service {
         Notification.MediaStyle style = new Notification.MediaStyle();
         style.setShowActionsInCompactView(1, 2);
         Notification.Builder builder = new Notification.Builder(this)
-                .setSmallIcon(R.mipmap.sunamilogo)
+                .setSmallIcon(R.mipmap.sunaminotif)
                 .setContentIntent(pendingIntent)
                 .setStyle(style);
         builder.addAction(R.drawable.ic_last_hint, "Last", pendingLastIntent);
