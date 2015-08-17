@@ -39,6 +39,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     private boolean mSongPlayingChecked;
     private int mState;
 
+    private SearchView mSearchView;
+
     public TheBrain mTheBrain;
     public NavigationDrawerFragment mDrawerFragment;
     public ListAdapter mListAdapter;
@@ -168,7 +170,10 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextSubmit(String s) {
         mListAdapter.setFilterSubmit(s);
-        return false;
+        if (mSearchView != null) {
+            mSearchView.clearFocus();
+        }
+        return true;
     }
 
     @Override
@@ -210,12 +215,12 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(
+        mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        mSearchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(this);
-        final SearchView sv = searchView;
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        mSearchView.setOnQueryTextListener(this);
+        final SearchView sv = mSearchView;
+        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (v == sv && hasFocus) {

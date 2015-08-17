@@ -1,14 +1,8 @@
 package com.wojtechnology.sunami;
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -24,8 +18,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -346,13 +338,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (mVisibleData.get(position).genre == "__header__") {
+        if (mVisibleData.get(position).genre.equals("__header__")) {
             return TYPE_HEADER;
-        } else if (mVisibleData.get(position).genre == "__headersoundcloud__") {
+        } else if (mVisibleData.get(position).genre.equals("__headersoundcloud__")) {
             return TYPE_HEADER_SOUNDCLOUD;
-        } else if (mVisibleData.get(position).genre == "__final__") {
+        } else if (mVisibleData.get(position).genre.equals("__final__")) {
             return TYPE_FINAL;
-        } else if (mVisibleData.get(position).genre == "__finalsoundcloud__") {
+        } else if (mVisibleData.get(position).genre.equals("__finalsoundcloud__")) {
             return TYPE_FINAL_SOUNDCLOUD;
         } else {
             return TYPE_LIST;
