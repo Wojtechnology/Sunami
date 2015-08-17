@@ -453,7 +453,6 @@ public class OuterLayout extends RelativeLayout {
         if (song == null) {
             return;
         }
-        new GetArtworkTask().execute(song);
         mSeekBar.setMax(Integer.parseInt(song.duration));
         mTotalTime.setText(ListAdapter.displayTime(song.duration));
         mHintTitle.setText(song.title);
@@ -461,27 +460,8 @@ public class OuterLayout extends RelativeLayout {
         updateDefaultLocation();
     }
 
-    private class GetArtworkTask extends AsyncTask<FireMixtape, Integer, Void> {
-        private Bitmap mBM;
-
-        @Override
-        protected Void doInBackground(FireMixtape... params) {
-            FireMixtape song = params[0];
-
-            if (song.isSoundcloud) {
-                mBM = AlbumArtHelper.decodeBitmapFromURL(song.album_art_url, true);
-            } else {
-                mBM = AlbumArtHelper.decodeBitmapFromAlbumId(mContext,
-                        Long.parseLong(song.album_id));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            mArtworkView.setImageBitmap(mBM);
-        }
+    public void setArtwork(Bitmap artwork) {
+        mArtworkView.setImageBitmap(artwork);
     }
 
     public void hideSong() {

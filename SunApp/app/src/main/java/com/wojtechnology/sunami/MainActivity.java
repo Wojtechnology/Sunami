@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -268,6 +269,10 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
             Log.e("MainActivity", query);
         }
     }*/
+
+    public void setArtwork(Bitmap art) {
+        mOuterLayout.setArtwork(art);
+    }
 
     public void setProgressBar(boolean on){
         if(on){

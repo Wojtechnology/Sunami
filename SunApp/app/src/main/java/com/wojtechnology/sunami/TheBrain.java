@@ -111,6 +111,39 @@ public class TheBrain extends Service {
 
     private MediaPlayer.OnPreparedListener mMPPreparedListener;
 
+    private class GetArtworkTask extends AsyncTask<FireMixtape, Integer, Void> {
+        private Bitmap mBM;
+
+        @Override
+        protected Void doInBackground(FireMixtape... params) {
+            FireMixtape song = params[0];
+
+            if (song.isSoundcloud) {
+                mBM = AlbumArtHelper.decodeBitmapFromURL(song.album_art_url, true);
+            } else {
+                mBM = AlbumArtHelper.decodeBitmapFromAlbumId(mContext,
+                        Long.parseLong(song.album_id));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (mBM != null) {
+                mThumbnail = mBM;
+            } else {
+                mThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.fire_mixtape_default_large);
+            }
+            if (mBound) {
+                mContext.setArtwork(mBM);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setNotificationStatus(isPlaying());
+            }
+        }
+    }
+
     private class LoadAppDataTask extends AsyncTask<Void, Integer, Void> {
 
         private void readNew(JSONArray ja) {
@@ -485,6 +518,7 @@ public class TheBrain extends Service {
     }
 
     private void setMetadata(FireMixtape song) {
+        new GetArtworkTask().execute(song);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mNotification = getLollipopNotifBuilder(true)
                     .setLargeIcon(mThumbnail)
