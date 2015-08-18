@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -101,7 +98,6 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.e("MainActivity", "Service connected");
             TheBrain.LocalBinder binder = (TheBrain.LocalBinder) service;
             mTheBrain = binder.getServiceInstance();
             mTheBrain.registerClient(MainActivity.this);
@@ -122,7 +118,6 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.e("MainActivity", "Service disconnected");
             serviceFinished();
         }
     };

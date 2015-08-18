@@ -2,8 +2,8 @@ package com.wojtechnology.sunami;
 
 import android.content.Context;
 import android.util.Log;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,6 @@ public class GenreGraph {
     private Context context;
     private Map<String, GenreVertex> mGenreRef;
     private Map<GenreVertex, List<GenreEdge>> mEdges;
-
-    private boolean isPopulated;
 
     private final double SHORT_GENRE_MIN = 1.0;
     private final double SHORT_GENRE_MAX = 2.0;
@@ -40,11 +38,9 @@ public class GenreGraph {
         this.mEdges = new HashMap<>();
         this.mGenreRef = new HashMap<>();
         this.context = context;
-        isPopulated = false;
     }
 
     public void populateGraphJSON(JSONArray ja) {
-        long startTime = Calendar.getInstance().getTimeInMillis();
         try {
             for (int i = 0; i < ja.length(); i++) {
                 JSONObject jo = ja.getJSONObject(i);
@@ -67,20 +63,13 @@ public class GenreGraph {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("GenreGraph", "Finished populateGraphJSON() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
-        isPopulated = true;
     }
 
     public JSONArray getGraphJSON() {
-        long startTime = Calendar.getInstance().getTimeInMillis();
         try {
-            int numGenres = 0;
             JSONArray ja = new JSONArray();
             Set<GenreVertex> vertices = mEdges.keySet();
             for (GenreVertex vertex : vertices) {
-                numGenres++;
                 List<GenreEdge> edgeList = mEdges.get(vertex);
                 JSONObject jo = new JSONObject();
                 jo.put("genre", vertex.genre);
@@ -96,14 +85,10 @@ public class GenreGraph {
                 jo.put("assoc", assocList);
                 ja.put(jo);
             }
-            Log.i("GenreGraph", "Saved " + numGenres + " genres.");
             return ja;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("GenreGraph", "Finished getGraphJSON() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
         return new JSONArray();
     }
 
@@ -112,7 +97,7 @@ public class GenreGraph {
     }
 
     // Implement the update value method for a change in a genre
-    public void modifyGenre(String genreString, double r, ShuffleController shuffleController) {
+    public void modifyGenre(String genreString, double r) {
         try {
             GenreVertex genre = mGenreRef.get(genreString);
 
@@ -135,16 +120,14 @@ public class GenreGraph {
                 ltVal = LONG_GENRE_MIN;
             }
             genre.longTerm = ltVal;
-
-            Log.i("GenreGraph", "Modified " + genreString + " to st: " + stVal + " and lt: " + ltVal);
-            branchGenres(genre, r, shuffleController);
+            branchGenres(genre, r);
         } catch (Exception e) {
             Log.e("GenreGraph", "Could not find genre " + genreString);
         }
     }
 
     // Can be made into recursive for future
-    private void branchGenres(GenreVertex genre, double r, ShuffleController shuffleController) {
+    private void branchGenres(GenreVertex genre, double r) {
         List<GenreEdge> edges = mEdges.get(genre);
 
         for (int i = 0; i < edges.size(); i++) {
@@ -169,7 +152,6 @@ public class GenreGraph {
                 ltVal = LONG_GENRE_MIN;
             }
             edge.to.longTerm = ltVal;
-            Log.i("GenreGraph", "Modified " + edge.to.genre + " to st: " + edge.to.shortTerm + " and lt: " + edge.to.longTerm);
         }
     }
 
@@ -222,7 +204,6 @@ public class GenreGraph {
                 }
             }
             song.actualGenre = maxGenre;
-            Log.e("GenreGraph", "Changed genre of " + song.title + " to " + song.actualGenre);
         }
     }
 

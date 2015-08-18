@@ -1,7 +1,6 @@
 package com.wojtechnology.sunami;
 
 import android.media.RemoteControlClient;
-import android.os.Build;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 

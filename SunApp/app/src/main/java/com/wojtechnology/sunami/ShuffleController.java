@@ -1,17 +1,12 @@
 package com.wojtechnology.sunami;
 
 import android.os.AsyncTask;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by wojtekswiderski on 15-07-02.
@@ -150,7 +145,6 @@ public class ShuffleController {
         if (highestSong == null) {
             return false;
         }
-        printSongValues(highestSong);
 
         mUpNext.pushBack(highestSong);
         return true;
@@ -192,7 +186,7 @@ public class ShuffleController {
         song.multiplier = songDelta;
         //Log.i("ShuffleController", "Modified song value to " + songDelta);
 
-        mGenreGraph.modifyGenre(song.actualGenre, r, this);
+        mGenreGraph.modifyGenre(song.actualGenre, r);
 
         song.calculatedValue = calculateSongValue(song);
         setSongValuesAsync();
@@ -274,12 +268,6 @@ public class ShuffleController {
         FireMixtape song = newList.get(newList.size() - 1);
         String message = song.title + " - " + song.calculatedValue;
         Log.e("ShuffleController", message);
-        /*for (int i = 0; i < newList.size(); i++) {
-
-            FireMixtape song = newList.get(i);
-            String message = song.title + " - " + song.calculatedValue;
-            Log.e("ShuffleController", message);
-        }*/
     }
 
     private void printSongValues(FireMixtape song) {

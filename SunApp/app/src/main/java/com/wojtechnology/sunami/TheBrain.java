@@ -23,7 +23,6 @@ import android.os.PowerManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -157,7 +156,6 @@ public class TheBrain extends Service {
         }
 
         private void attemptReadOld() {
-            long startTime = Calendar.getInstance().getTimeInMillis();
             boolean isNew = false;
             int numTries = 0;
             int fileNum = getExistingFile();
@@ -166,11 +164,9 @@ public class TheBrain extends Service {
                 try {
                     String fileName = SAVE_FILE_BASE + fileNum;
                     is = TheBrain.this.openFileInput(fileName);
-                    Log.e("TheBrain", "Open existing " + fileName);
                 } catch (FileNotFoundException e) {
                     is = TheBrain.this.getResources().openRawResource(R.raw.genres);
                     isNew = true;
-                    Log.e("TheBrain", "Open new");
                 }
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -205,15 +201,11 @@ public class TheBrain extends Service {
                     }
                 }
             } while (numTries < 2);
-            Log.i("TheBrain", "Finished reading file in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
         }
 
         // Should never be called but here just in case...
         private void corruptedFile() {
             InputStream is = TheBrain.this.getResources().openRawResource(R.raw.genres);
-            Log.e("TheBrain", "Opening new because corruption");
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 String line = reader.readLine();
@@ -270,9 +262,6 @@ public class TheBrain extends Service {
             if (mSaveCount <= 0) {
                 return null;
             }
-
-            Log.i("TheBrain", "Started saving file");
-            long startTime = Calendar.getInstance().getTimeInMillis();
             int fileNum = getExistingFile();
             String fileName = SAVE_FILE_BASE + ((fileNum <= 0) ? 1 : 0);
             try {
@@ -292,9 +281,6 @@ public class TheBrain extends Service {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.i("TheBrain", "Finished saving file " + fileName + " in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
 
             if (mSaveCount > 1) {
                 mSaveCount = 1;
@@ -312,7 +298,6 @@ public class TheBrain extends Service {
 
     @Override
     public void onCreate() {
-        Log.e("TheBrain", "Started service");
         mSaveCount = 0;
         mIsInit = false;
         mBound = false;
@@ -559,7 +544,6 @@ public class TheBrain extends Service {
 
     // save all data that needs to persist in between sessions
     public void savePersistentState() {
-        Log.e("TheBrain", "Request Save");
         mSaveCount++;
         if (mLoaded) {
             saveAppData();
@@ -591,7 +575,6 @@ public class TheBrain extends Service {
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.e("TheBrain", "Error");
                 return false;
             }
         });
@@ -656,7 +639,6 @@ public class TheBrain extends Service {
             } else {
                 mShuffleController.setSongValuesAsync();
             }
-            Log.e("TheBrain", "Playing song " + mPlaying.title);
             mMediaPlayer.reset();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
@@ -670,8 +652,6 @@ public class TheBrain extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            Log.e("TheBrain", "No song provided");
         }
     }
 

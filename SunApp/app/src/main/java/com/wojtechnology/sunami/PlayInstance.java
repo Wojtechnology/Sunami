@@ -1,7 +1,5 @@
 package com.wojtechnology.sunami;
 
-import android.util.Log;
-
 import java.util.Calendar;
 
 /**

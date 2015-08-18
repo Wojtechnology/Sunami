@@ -1,7 +1,6 @@
 package com.wojtechnology.sunami;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -70,7 +69,6 @@ public class Soundcloud {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.e("Soundcloud", "Status: " + statusCode);
             }
         });
     }

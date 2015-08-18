@@ -18,14 +18,4 @@ public class GenreVertex{
         this.longTerm = longTerm;
     }
 
-    public void add_values(double shortTerm, double longTerm){
-        this.shortTerm += shortTerm;
-        this.longTerm += longTerm;
-    }
-
-    public void reset_values(){
-        this.shortTerm = 0.0;
-        this.longTerm = 0.0;
-    }
-
 }

@@ -4,19 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
-import android.text.Layout;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Display;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -308,7 +301,6 @@ public class OuterLayout extends RelativeLayout {
                         break;
                     }
                     default: {
-                        Log.e("MotionEvent", "Event: " + event.getAction());
                         break;
                     }
                 }

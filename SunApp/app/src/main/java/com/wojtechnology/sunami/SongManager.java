@@ -9,7 +9,6 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -178,7 +177,6 @@ public class SongManager {
 
         @Override
         protected Void doInBackground(Void... params) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
 
             //Some audio may be explicitly marked as not being music
             String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
@@ -197,7 +195,6 @@ public class SongManager {
             };
 
             Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            ;
 
             Cursor cursor = context.getContentResolver().query(
                     uri,
@@ -232,10 +229,6 @@ public class SongManager {
 
             }
             cursor.close();
-
-            Log.i("SongManager", "Finished getFire() in " +
-                    Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                    " millis.");
             return null;
         }
 
@@ -252,7 +245,6 @@ public class SongManager {
 
 
     public void genresFromDB(Set<String> genres) {
-        long startTime = Calendar.getInstance().getTimeInMillis();
         //Some audio may be explicitly marked as not being music
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
@@ -302,9 +294,6 @@ public class SongManager {
         }
         projectionCursor.close();
 
-        Log.i("SongManager", "Finished genresFromDB() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
     }
 
     private void setActualGenre(FireMixtape song, Set<String> genres) {
@@ -333,7 +322,6 @@ public class SongManager {
     }
 
     public void updateGenres(Set<String> genres, JSONArray songs) throws JSONException {
-        long startTime = Calendar.getInstance().getTimeInMillis();
         int sum = 0;
         for (int i = 0; i < songs.length(); i++) {
             JSONArray ja = (JSONArray) songs.get(i);
@@ -369,9 +357,6 @@ public class SongManager {
         if (sum != mSongList.size()) {
             genresFromDB(genres);
         }
-        Log.i("SongManager", "Finished updateGenres() in " +
-                Long.toString(Calendar.getInstance().getTimeInMillis() - startTime) +
-                " millis.");
     }
 
     public JSONArray getSongJSON() throws JSONException {
