@@ -416,6 +416,7 @@ public class TheBrain extends Service {
             mContext.setRecyclerViewData();
             if (mPlaying != null) {
                 mContext.playSong(mPlaying);
+                setNotification(mPlaying);
             }
         }
     }
