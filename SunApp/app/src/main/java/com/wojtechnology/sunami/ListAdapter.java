@@ -379,7 +379,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         FireMixtape song = mVisibleData.get(pos);
         int state = mContext.getState();
         String important = (state == MainActivity.STATE_SONGS) ? song.title : song.artist;
-        char firstLetter = SongManager.firstLetter(important);
+        char firstLetter = SongManager.firstLetter(important, state == MainActivity.STATE_SONGS);
         if (firstLetter >= 'A' && firstLetter <= 'Z') {
             return Character.toString(firstLetter);
         }

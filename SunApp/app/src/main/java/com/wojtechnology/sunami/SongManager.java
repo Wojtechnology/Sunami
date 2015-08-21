@@ -172,14 +172,18 @@ public class SongManager {
         return lTitle.compareTo(rTitle);
     }
 
-    public static char firstLetter(String word) {
+    public static char firstLetter(String word, boolean removeThe) {
         word = word.toUpperCase();
-        if (word.length() > 4) {
+        if (word.length() > 4 && removeThe) {
             if (word.substring(0, 4).equals("THE ")) {
                 word = word.substring(4);
             }
         }
         return word.charAt(0);
+    }
+
+    public static char firstLetter(String word) {
+        return firstLetter(word, true);
     }
 
     public List<FireMixtape> getFire() {
