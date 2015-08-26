@@ -552,6 +552,10 @@ public class TheBrain extends Service {
 
     public void setProgress(int pos, boolean isPlaying) {
         mMediaPlayer.seekTo(pos);
+        setProgressUI(pos, isPlaying);
+    }
+
+    public void setProgressUI(int pos, boolean isPlaying) {
         int speed = isPlaying ? 1 : 0;
         int playState = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
@@ -838,7 +842,7 @@ public class TheBrain extends Service {
 
     // Changes UI as required
     private void setUI(boolean isPlaying) {
-        setProgress(mMediaPlayer.getCurrentPosition(), isPlaying);
+        setProgressUI(mMediaPlayer.getCurrentPosition(), isPlaying);
         setNotificationStatus(isPlaying);
         if (mBound) {
             mContext.updateSongView();
