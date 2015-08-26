@@ -133,6 +133,9 @@ public class NavigationDrawerFragment extends Fragment {
             mOpened = false;
         }
 
+        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.up_next_drawer_list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.post(new Runnable() {
             @Override
@@ -184,10 +187,8 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void setUpRecyclerView (TheBrain theBrain) {
-        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.up_next_drawer_list);
         mListAdapter = new UpNextAdapter(getActivity(), theBrain.getUpNext(), theBrain);
         mRecyclerView.setAdapter(mListAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     public void updateRecyclerView () {
