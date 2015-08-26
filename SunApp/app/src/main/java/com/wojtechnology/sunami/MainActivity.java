@@ -96,6 +96,9 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
         mState = STATE_SONGS;
         mDrawerFragment.updateChoices(mState);
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         Intent serviceIntent = new Intent(MainActivity.this, TheBrain.class);
         startService(serviceIntent);
         bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -169,10 +172,8 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
 
     public void setRecyclerViewData(){
         setProgressBar(false);
-        mRecyclerView = (RecyclerView) findViewById(R.id.drawer_list);
         mListAdapter = new ListAdapter(this, mTheBrain.getDataByTitle(), mTheBrain, mSoundcloud);
         mRecyclerView.setAdapter(mListAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFastScroller = (FastScroller) findViewById(R.id.fast_scroller);
         mFastScroller.setRecyclerView(mRecyclerView);
         mDrawerFragment.setUpRecyclerView(mTheBrain);
