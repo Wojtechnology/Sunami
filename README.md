@@ -1,4 +1,4 @@
-# Sunami [Google Play](https://play.google.com/store/apps/details?id=com.wojtechnology.sunami&hl=en)
+# Sunami - [Google Play](https://play.google.com/store/apps/details?id=com.wojtechnology.sunami&hl=en)
 
 Sunami is the music player that learns your music taste as you listen to music. It can sense how you're feeling at the moment and picks music to match your vibes. Have a song missing from your library? Search SoundCloud for that song and add it to your library.
 Features:
